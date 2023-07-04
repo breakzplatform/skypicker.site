@@ -120,7 +120,7 @@ export default async function IndexPage({
           <div className="mb-8">
           <h1 className="lg:text-9xl text-6xl font-bold mb-4">{domain}</h1>
           <p className="text-lg mb-2">Faça um sorteio pelo Bluesky em segundos de forma simples.</p>
-          <p className="text-sm text-gray-400">Informe a URL do post no campo abaixo e aperte em "Randomizar". <strong>Os resultados já serão exibidos de forma aleatória</strong>.</p></div>
+          <p className="text-sm text-gray-400">Informe a URL do post no campo abaixo e aperte em &quot;Randomizar&quot;. <strong>Os resultados já serão exibidos de forma aleatória</strong>.</p></div>
           <form>
             <div className="grid w-full lg:max-w-2xl items-center gap-1.5">
               <div className="flex w-full lg:max-w-2xl items-center space-x-2">
