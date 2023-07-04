@@ -17,7 +17,7 @@ export function generateMetadata({ params }: { params: { domain: string } }) {
 }
 
 
-export async function getAllLikes(agent: any, uri: string, cursor: string | null | undefined, data: any = []) {
+async function getAllLikes(agent: any, uri: string, cursor: string | null | undefined, data: any = []) {
   let response: any;
 
   if (!!cursor) {
@@ -40,7 +40,7 @@ export async function getAllLikes(agent: any, uri: string, cursor: string | null
   }
 }
 
-export async function getAllReposts(agent: any, uri: string, cursor: string | null | undefined, data: any = []) {
+async function getAllReposts(agent: any, uri: string, cursor: string | null | undefined, data: any = []) {
   let response: any;
 
   if (!!cursor) {
