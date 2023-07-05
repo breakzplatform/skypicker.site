@@ -118,7 +118,7 @@ export default async function IndexPage({
       <main className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
         <div>
           <div className="mb-8">
-          <h1 className="lg:text-9xl text-6xl font-bold mb-4">{domain}</h1>
+          <h1 className="lg:text-9xl sm:text-6xl md:text-8xl text-4xl font-bold mb-4">{domain}</h1>
           <p className="text-lg mb-2">Faça um sorteio pelo Bluesky em segundos de forma simples.</p>
           <p className="text-sm text-gray-400">Informe a URL do post no campo abaixo e aperte em &quot;Randomizar&quot;. <strong>Os resultados já serão exibidos de forma aleatória</strong>.</p></div>
           <form>
