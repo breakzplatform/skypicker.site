@@ -171,7 +171,7 @@ export default async function IndexPage({
       </main>
       <footer className="container grid items-center gap-2 mb-8">
         <p className="text-sm">Diretamente de Pernambuco por <a className="bold underline underline-offset-4" href="https://joseli.to">Joselito</a>, com muito amor e carinho.</p>
-        <p className="text-xs text-gray-400">Este site não útiliza nenhum cookie nem coleta absolutamente nenhum dado.</p>
+        <p className="text-xs text-gray-400">Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado.</p>
       </footer>
     </>
   )
