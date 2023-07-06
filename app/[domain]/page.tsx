@@ -83,7 +83,11 @@ export default async function IndexPage({
   let postId: string | undefined
 
   let postLikes: any | undefined
+  let postLikes_: any | undefined
   let postReposts: any | undefined
+  let postCombined: any | undefined
+  let postCombinedOr: any | undefined
+  let postCombinedOrUniqueIds: any | undefined
 
   if (post) {
     if (post.startsWith('https://bsky.app/profile/')) {
@@ -101,8 +105,32 @@ export default async function IndexPage({
 
         postUserDid = postUser.data?.did;
 
-        postLikes = await getAllLikes(agent, `at://${postUserDid}/app.bsky.feed.post/${postId}`, null, []);
+        postLikes = [];
+        
+        postLikes_ = await getAllLikes(agent, `at://${postUserDid}/app.bsky.feed.post/${postId}`, null, []);
+
+        postLikes_.map(post => {
+          postLikes.push(post.actor)
+        });
+
         postReposts = await getAllReposts(agent, `at://${postUserDid}/app.bsky.feed.post/${postId}`, null, []);
+
+        postCombined = postReposts.filter(item => postLikes.find(_ => _.did === item.did));
+
+        postCombinedOr = postReposts.concat(postLikes);
+        postCombinedOrUniqueIds = [];
+
+        postCombinedOr = postCombinedOr.filter(element => {
+          const isDuplicate = postCombinedOrUniqueIds.includes(element.did);
+        
+          if (!isDuplicate) {
+            postCombinedOrUniqueIds.push(element.did);
+        
+            return true;
+          }
+        
+          return false;
+        });
 
       } catch (e) {
         console.error(e)
@@ -116,7 +144,7 @@ export default async function IndexPage({
   return (
     <>
       <main className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-        <div>
+        <div className="mb-8">
           <div className="mb-8">
           <h1 className="lg:text-9xl sm:text-6xl md:text-8xl text-4xl font-bold mb-4">{domain}</h1>
           <p className="text-lg mb-2">Faça um sorteio pelo Bluesky em segundos de forma simples.</p>
@@ -142,36 +170,80 @@ export default async function IndexPage({
             </div>
           </form>
         </div>
-        <div className="lg:flex gap-x-16">
-          {!!postReposts && <div>
+        <div className="lg:flex lg:flex-row gap-x-16">
+          {!!postCombined && <div className="basis-1/4">
+            <h2 className="text-2xl font-bold mb-2">Likes e Reposts</h2>
+            <p>{postCombined.length} curtiram e repostaram</p>
+
+            {postCombined
+              .sort((a: any, b: any) => 0.5 - Math.random())
+              .map((profile: any, i: Number) => {
+                return <div className="relative">
+                <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
+                {i+1}
+              </div>
+                <div>
+                <a href={`https://bsky.app/profile/${profile.handle}`} target="_blank"><Profile profile={profile} className="mt-4" /></a>
+                  </div>
+              </div>
+              })}
+          </div>}
+          {!!postCombinedOr && <div className="basis-1/4">
+            <h2 className="text-2xl font-bold mb-2">Likes ou Reposts</h2>
+            <p>{postCombinedOr.length} curtiram ou repostaram</p>
+
+            {postCombinedOr
+              .sort((a: any, b: any) => 0.5 - Math.random())
+              .map((profile: any, i: Number) => {
+                return <div className="relative">
+                  <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
+                  {i+1}
+                </div>
+                  <div>
+                  <a href={`https://bsky.app/profile/${profile.handle}`} target="_blank"><Profile profile={profile} className="mt-4" /></a>
+                    </div>
+                </div>
+              })}
+          </div>}
+          {!!postReposts && <div className="basis-1/4">
             <h2 className="text-2xl font-bold mb-2">Reposts</h2>
-            <p>{postReposts.length} repostaram este post</p>
+            <p>{postReposts.length} repostaram</p>
 
             {postReposts
               .sort((a: any, b: any) => 0.5 - Math.random())
-              .map((profile: any) => {
-                return <>
-                  <a href={`https://bsky.app/profile/${profile.handle}`} target="_blank"><Profile profile={profile} className="mt-4" /></a>
-                </>
+              .map((profile: any, i: Number) => {
+                return <div className="relative">
+                <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
+                {i+1}
+              </div>
+                <div>
+                <a href={`https://bsky.app/profile/${profile.handle}`} target="_blank"><Profile profile={profile} className="mt-4" /></a>
+                  </div>
+              </div>
               })}
           </div>}
-          {!!postLikes && <div>
+          {!!postLikes && <div className="basis-1/4">
             <h2 className="text-2xl font-bold mb-2">Likes</h2>
             <p>{postLikes.length} curtiram este post</p>
 
             {postLikes
               .sort((a: any, b: any) => 0.5 - Math.random())
-              .map((post: any) => {
-                return <>
-                 <a href={`https://bsky.app/profile/${post.actor.handle}`} target="_blank"><Profile profile={post.actor} className="mt-4" /></a>
-                </>
+              .map((profile: any, i: Number) => {
+                return <div className="relative">
+                <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
+                {i+1}
+              </div>
+                <div>
+                <a href={`https://bsky.app/profile/${profile.handle}`} target="_blank"><Profile profile={profile} className="mt-4" /></a>
+                  </div>
+              </div>
               })}
           </div>}
         </div>
       </main>
       <footer className="container grid items-center gap-2 mb-8">
-        <p className="text-sm">Diretamente de Pernambuco por <a className="bold underline underline-offset-4" href="https://joseli.to">Joselito</a>, com muito amor e carinho.</p>
-        <p className="text-xs text-gray-400">Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado.</p>
+        <p className="text-xs">Diretamente de Pernambuco por <a className="bold underline underline-offset-4" href="https://joseli.to">Joselito</a>, com muito amor e carinho.</p>
+        <p className="text-[0.7rem] text-gray-400">Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado.</p>
       </footer>
     </>
   )
