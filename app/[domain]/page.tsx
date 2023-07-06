@@ -177,7 +177,7 @@ export default async function IndexPage({
 
             {postCombined
               .sort((a: any, b: any) => 0.5 - Math.random())
-              .map((profile: any, i: Number) => {
+              .map((profile: any, i: number) => {
                 return <div className="relative">
                 <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
                 {i+1}
@@ -194,7 +194,7 @@ export default async function IndexPage({
 
             {postCombinedOr
               .sort((a: any, b: any) => 0.5 - Math.random())
-              .map((profile: any, i: Number) => {
+              .map((profile: any, i: number) => {
                 return <div className="relative">
                   <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
                   {i+1}
@@ -211,7 +211,7 @@ export default async function IndexPage({
 
             {postReposts
               .sort((a: any, b: any) => 0.5 - Math.random())
-              .map((profile: any, i: Number) => {
+              .map((profile: any, i: number) => {
                 return <div className="relative">
                 <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
                 {i+1}
@@ -228,7 +228,7 @@ export default async function IndexPage({
 
             {postLikes
               .sort((a: any, b: any) => 0.5 - Math.random())
-              .map((profile: any, i: Number) => {
+              .map((profile: any, i: number) => {
                 return <div className="relative">
                 <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
                 {i+1}
