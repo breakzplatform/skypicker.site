@@ -155,7 +155,7 @@ export default async function IndexPage({
                 <Input
                   type="text"
                   name="post"
-                  placeholder="https://bsky.app/profile/sound3vision.bsky.social/post/3jzpa4tp7r32i"
+                  placeholder="https://bsky.app/profile/sound3vision.bsky.social/post/3jzrqio5pxi27"
                   defaultValue={post}
                   required
                 />
