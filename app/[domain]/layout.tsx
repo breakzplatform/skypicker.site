@@ -1,7 +1,3 @@
-import { siteConfig } from "@/config/site"
-import { MainNav } from "@/components/main-nav"
-import { SiteHeader } from "@/components/site-header"
-
 interface Props {
   children: React.ReactNode
   params: { domain: string }
