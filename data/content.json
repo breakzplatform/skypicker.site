@@ -1,6 +1,7 @@
 {
     "sorteio.blue": {
         "meta": {
+            "lang": "pt-br",
             "title": "sorteio.blue · Sorteios no Bluesky",
             "description": "Faça sorteios de forma simples no Bluesky com o sorteio.blue"
         },
@@ -39,6 +40,7 @@
     },
     "skypicker.site": {
         "meta": {
+            "lang": "en",
             "title": "SkyPicker · Host giveaways on Bluesky",
             "description": "Host giveaways easily on Bluesky with SkyPicker"
         },
