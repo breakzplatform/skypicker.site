@@ -1,6 +1,5 @@
 import "@/styles/globals.css"
 import "@/styles/custom.css"
-import { Analytics } from "@vercel/analytics/react"
 
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
@@ -24,12 +23,10 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+
   return (
     <>
       <html lang="en" suppressHydrationWarning>
-        <head>
-          {/* <Analytics /> */}
-        </head>
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",
