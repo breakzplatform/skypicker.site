@@ -244,7 +244,7 @@ export default async function IndexPage({
         <p className="text-xs" dangerouslySetInnerHTML={{ __html: content[domain]?.footer?.by }}></p>
         <p className="text-[0.7rem] text-gray-400">{content[domain]?.footer?.noCookies}</p>
         <div className="gh-ribbon">
-          <a href="#">{content[domain]?.footer?.ghFork}</a>
+          <a href="https://github.com/breakzplatform/skypicker.site">{content[domain]?.footer?.ghFork}</a>
         </div>
       </footer>
     </>
