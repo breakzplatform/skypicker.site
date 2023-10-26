@@ -1,12 +1,12 @@
 {
     "sorteio.blue": {
         "meta": {
-            "title": "sorteio.blue - Sorteios no Bluesky",
+            "title": "sorteio.blue · Sorteios no Bluesky",
             "description": "Faça sorteios de forma simples no Bluesky com o sorteio.blue"
         },
         "title": "sorteio.blue",
         "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
-        "description": "Informe a URL do post no campo abaixo e aperte em &quot;Randomizar&quot;. <strong>Os resultados já serão exibidos de forma aleatória</strong>.",
+        "description": "Informe a URL do post no campo abaixo e aperte em &quot;Randomizar&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
         "form": {
             "submit": "Randomizar",
             "errors": {
@@ -32,12 +32,47 @@
             }
         },
         "footer": {
-            "by": "Diretamente de Pernambuco por <a className=\"bold underline underline-offset-4\" href=\"https://joseli.to\">Joselito</a>, com muito amor e carinho.",
-            "noCookies": "Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado."
+            "by": "Diretamente de Pernambuco por <a href=\"https://joseli.to\">Joselito</a>, com muito amor e carinho.",
+            "noCookies": "Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado.",
+            "ghFork": "Fork me on GitHub"
         }
     },
     "skypicker.site": {
-        "title": "skypicker.site",
-        "description": ""
+        "meta": {
+            "title": "SkyPicker · Host giveaways on Bluesky",
+            "description": "Host giveaways easily on Bluesky with SkyPicker"
+        },
+        "title": "SkyPicker",
+        "subtitle": "Host a giveaway on Bluesky in seconds with ease.",
+        "description": "Enter the post URL in the field below and click on \"Randomize.\" <strong>The results will be listed randomly</strong>.",
+        "form": {
+            "submit": "Randomize",
+            "errors": {
+                "error1": "Please enter a valid link to a Bluesky post"
+            }
+        },
+        "results": {
+            "postCombined": {
+                "title": "Likes and Reposts",
+                "info": "liked and reposted"
+            },
+            "postCombinedOr": {
+                "title": "Likes or Reposts",
+                "info": "liked or reposted"
+            },
+            "postReposts": {
+                "title": "Reposts",
+                "info": "reposted"
+            },
+            "postLikes": {
+                "title": "Likes",
+                "info": "liked this post"
+            }
+        },
+        "footer": {
+            "by": "Directly from Brazil by <a href=\"https://joseli.to\">Joselito</a>, with much love and care.",
+            "noCookies": "This site does not use any cookies or collect any data.",
+            "ghFork": "Fork me on GitHub"
+        }
     }
 }
