@@ -1,0 +1,43 @@
+{
+    "sorteio.blue": {
+        "meta": {
+            "title": "sorteio.blue - Sorteios no Bluesky",
+            "description": "Faça sorteios de forma simples no Bluesky com o sorteio.blue"
+        },
+        "title": "sorteio.blue",
+        "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
+        "description": "Informe a URL do post no campo abaixo e aperte em &quot;Randomizar&quot;. <strong>Os resultados já serão exibidos de forma aleatória</strong>.",
+        "form": {
+            "submit": "Randomizar",
+            "errors": {
+                "error1": "Por favor insira um link válido de um post do Bluesky"
+            }
+        },
+        "results": {
+            "postCombined": {
+                "title": "Likes e Reposts",
+                "info": "curtiram e repostaram"
+            },
+            "postCombinedOr": {
+                "title": "Likes ou Reposts",
+                "info": "curtiram ou repostaram"
+            },
+            "postReposts": {
+                "title": "Reposts",
+                "info": "repostaram"
+            },
+            "postLikes": {
+                "title": "Likes",
+                "info": "curtiram este post"
+            }
+        },
+        "footer": {
+            "by": "Diretamente de Pernambuco por <a className=\"bold underline underline-offset-4\" href=\"https://joseli.to\">Joselito</a>, com muito amor e carinho.",
+            "noCookies": "Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado."
+        }
+    },
+    "skypicker.site": {
+        "title": "skypicker.site",
+        "description": ""
+    }
+}
