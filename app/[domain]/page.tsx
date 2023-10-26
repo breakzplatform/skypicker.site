@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Profile } from "@/components/profile"
 
 import content from "../../data/content.json"
+import Head from "next/head"
 
 export function generateMetadata({ params }: { params: { domain: string } }) {
   const domain = params.domain
@@ -142,15 +143,18 @@ export default async function IndexPage({
 
   return (
     <>
+      <Head>
+        <html lang={content[domain]?.meta?.lang} />
+      </Head>
       <main className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
         <div className="mb-8">
           <div className="mb-8">
-          <h1 className="lg:text-9xl sm:text-6xl md:text-8xl text-4xl font-bold mb-4">{content[domain]?.title}</h1>
-          <p className="text-lg mb-2">{content[domain]?.subtitle}</p>
+          <h1 className="mb-4 text-4xl font-bold sm:text-6xl md:text-8xl lg:text-9xl">{content[domain]?.title}</h1>
+          <p className="mb-2 text-lg">{content[domain]?.subtitle}</p>
           <p className="text-sm text-gray-400" dangerouslySetInnerHTML={{ __html: content[domain]?.description }}></p></div>
           <form>
-            <div className="grid w-full lg:max-w-2xl items-center gap-1.5">
-              <div className="flex w-full lg:max-w-2xl items-center space-x-2">
+            <div className="grid w-full items-center gap-1.5 lg:max-w-2xl">
+              <div className="flex w-full items-center space-x-2 lg:max-w-2xl">
                 <Input
                   type="text"
                   name="post"
@@ -169,16 +173,16 @@ export default async function IndexPage({
             </div>
           </form>
         </div>
-        <div className="lg:flex lg:flex-row gap-x-16">
+        <div className="gap-x-16 lg:flex lg:flex-row">
           {!!postCombined && <div className="basis-1/4">
-            <h2 className="text-2xl font-bold mb-2">{content[domain]?.results?.postCombined.title}</h2>
+            <h2 className="mb-2 text-2xl font-bold">{content[domain]?.results?.postCombined.title}</h2>
             <p>{postCombined.length} {content[domain]?.results?.postCombined.info}</p>
 
             {postCombined
               .sort((a: any, b: any) => 0.5 - Math.random())
               .map((profile: any, i: number) => {
-                return <div className="relative">
-                <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
+                return <div className="relative" key={i+1}>
+                <div className="absolute left-0 top-0 h-4 rounded bg-slate-100 px-1 text-center text-xs dark:bg-slate-800">
                 {i+1}
               </div>
                 <div>
@@ -188,14 +192,14 @@ export default async function IndexPage({
               })}
           </div>}
           {!!postCombinedOr && <div className="basis-1/4">
-            <h2 className="text-2xl font-bold mb-2">{content[domain]?.results?.postCombinedOr.title}</h2>
+            <h2 className="mb-2 text-2xl font-bold">{content[domain]?.results?.postCombinedOr.title}</h2>
             <p>{postCombinedOr.length} {content[domain]?.results?.postCombinedOr.info}</p>
 
             {postCombinedOr
               .sort((a: any, b: any) => 0.5 - Math.random())
               .map((profile: any, i: number) => {
-                return <div className="relative">
-                  <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
+                return <div className="relative" key={i+1}>
+                  <div className="absolute left-0 top-0 h-4 rounded bg-slate-100 px-1 text-center text-xs dark:bg-slate-800">
                   {i+1}
                 </div>
                   <div>
@@ -205,14 +209,14 @@ export default async function IndexPage({
               })}
           </div>}
           {!!postReposts && <div className="basis-1/4">
-            <h2 className="text-2xl font-bold mb-2">{content[domain]?.results?.postReposts.title}</h2>
+            <h2 className="mb-2 text-2xl font-bold">{content[domain]?.results?.postReposts.title}</h2>
             <p>{postReposts.length} {content[domain]?.results?.postReposts.info}</p>
 
             {postReposts
               .sort((a: any, b: any) => 0.5 - Math.random())
               .map((profile: any, i: number) => {
-                return <div className="relative">
-                <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
+                return <div className="relative" key={i+1}>
+                <div className="absolute left-0 top-0 h-4 rounded bg-slate-100 px-1 text-center text-xs dark:bg-slate-800">
                 {i+1}
               </div>
                 <div>
@@ -222,14 +226,14 @@ export default async function IndexPage({
               })}
           </div>}
           {!!postLikes && <div className="basis-1/4">
-            <h2 className="text-2xl font-bold mb-2">{content[domain]?.results?.postLikes.title}</h2>
+            <h2 className="mb-2 text-2xl font-bold">{content[domain]?.results?.postLikes.title}</h2>
             <p>{postLikes.length} {content[domain]?.results?.postLikes.info}</p>
 
             {postLikes
               .sort((a: any, b: any) => 0.5 - Math.random())
               .map((profile: any, i: number) => {
-                return <div className="relative">
-                <div className="absolute h-4 text-xs px-1 top-0 left-0 rounded bg-slate-100 text-center dark:bg-slate-800">
+                return <div className="relative" key={i+1}>
+                <div className="absolute left-0 top-0 h-4 rounded bg-slate-100 px-1 text-center text-xs dark:bg-slate-800">
                 {i+1}
               </div>
                 <div>
@@ -240,7 +244,7 @@ export default async function IndexPage({
           </div>}
         </div>
       </main>
-      <footer className="container grid items-center gap-2 mb-8">
+      <footer className="container mb-8 grid items-center gap-2">
         <p className="text-xs" dangerouslySetInnerHTML={{ __html: content[domain]?.footer?.by }}></p>
         <p className="text-[0.7rem] text-gray-400">{content[domain]?.footer?.noCookies}</p>
         <div className="gh-ribbon">
