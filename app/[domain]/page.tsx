@@ -1,21 +1,20 @@
-import { AppBskyActorDefs } from "@atproto/api"
-import { kv } from "@vercel/kv"
-import { Check, X } from "lucide-react"
+import { X } from "lucide-react"
 
 import { getAgent } from "@/lib/atproto"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Profile } from "@/components/profile"
-import { Stage } from "@/components/stage"
+
+import content from "../../data/content.json"
 
 export function generateMetadata({ params }: { params: { domain: string } }) {
   const domain = params.domain
+
   return {
-    title: `${domain}`,
-    description: `'Faça sorteios de forma simples no Bluesky com o ${domain}`,
+    title: content[domain]?.meta?.title,
+    description: content[domain]?.meta?.description,
   }
 }
-
 
 async function getAllLikes(agent: any, uri: string, cursor: string | null | undefined, data: any = []) {
   let response: any;
@@ -62,6 +61,7 @@ async function getAllReposts(agent: any, uri: string, cursor: string | null | un
     return data
   }
 }
+
 export default async function IndexPage({
   params,
   searchParams,
@@ -75,15 +75,14 @@ export default async function IndexPage({
 }) {
   const domain = params.domain
   let post = searchParams.post
-  let profile: AppBskyActorDefs.ProfileView | undefined
   let error1: string | undefined
 
+  let postParams: string | undefined
   let postUserHandle: string | undefined
   let postUserDid: string | undefined
   let postId: string | undefined
 
   let postLikes: any | undefined
-  let postLikes_: any | undefined
   let postReposts: any | undefined
   let postCombined: any | undefined
   let postCombinedOr: any | undefined
@@ -93,11 +92,11 @@ export default async function IndexPage({
     if (post.startsWith('https://bsky.app/profile/')) {
       try {
 
-        postUserHandle = (post.replace('https://bsky.app/profile/', '').split("/"))[0];
-        postId = (post.replace('https://bsky.app/profile/', '').split("/"))[2];
+        postParams = post.replace('https://bsky.app/profile/', '')
+        postUserHandle = postParams.split("/")[0];
+        postId = postParams.split("/")[2];
 
         const agent = await getAgent();
-
 
         const postUser = await agent.getProfile({
           actor: postUserHandle,
@@ -107,9 +106,9 @@ export default async function IndexPage({
 
         postLikes = [];
         
-        postLikes_ = await getAllLikes(agent, `at://${postUserDid}/app.bsky.feed.post/${postId}`, null, []);
+        let postLikesData = await getAllLikes(agent, `at://${postUserDid}/app.bsky.feed.post/${postId}`, null, []);
 
-        postLikes_.map(post => {
+        postLikesData.map(post => {
           postLikes.push(post.actor)
         });
 
@@ -137,7 +136,7 @@ export default async function IndexPage({
         error1 = (e as Error)?.message ?? "unknown error"
       }
     } else {
-      error1 = "Por favor insira um link válido de um post do Bluesky"
+      error1 = content[domain]?.errors.error1
     }
   }
 
@@ -146,9 +145,9 @@ export default async function IndexPage({
       <main className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
         <div className="mb-8">
           <div className="mb-8">
-          <h1 className="lg:text-9xl sm:text-6xl md:text-8xl text-4xl font-bold mb-4">{domain}</h1>
-          <p className="text-lg mb-2">Faça um sorteio pelo Bluesky em segundos de forma simples.</p>
-          <p className="text-sm text-gray-400">Informe a URL do post no campo abaixo e aperte em &quot;Randomizar&quot;. <strong>Os resultados já serão exibidos de forma aleatória</strong>.</p></div>
+          <h1 className="lg:text-9xl sm:text-6xl md:text-8xl text-4xl font-bold mb-4">{content[domain]?.title}</h1>
+          <p className="text-lg mb-2">{content[domain]?.subtitle}</p>
+          <p className="text-sm text-gray-400" dangerouslySetInnerHTML={{ __html: content[domain]?.description }}></p></div>
           <form>
             <div className="grid w-full lg:max-w-2xl items-center gap-1.5">
               <div className="flex w-full lg:max-w-2xl items-center space-x-2">
@@ -159,7 +158,7 @@ export default async function IndexPage({
                   defaultValue={post}
                   required
                 />
-                <Button type="submit">Randomizar</Button>
+                <Button type="submit">{content[domain]?.form?.submit}</Button>
               </div>
 
               {error1 && (
@@ -172,8 +171,8 @@ export default async function IndexPage({
         </div>
         <div className="lg:flex lg:flex-row gap-x-16">
           {!!postCombined && <div className="basis-1/4">
-            <h2 className="text-2xl font-bold mb-2">Likes e Reposts</h2>
-            <p>{postCombined.length} curtiram e repostaram</p>
+            <h2 className="text-2xl font-bold mb-2">{content[domain]?.results?.postCombined.title}</h2>
+            <p>{postCombined.length} {content[domain]?.results?.postCombined.info}</p>
 
             {postCombined
               .sort((a: any, b: any) => 0.5 - Math.random())
@@ -189,8 +188,8 @@ export default async function IndexPage({
               })}
           </div>}
           {!!postCombinedOr && <div className="basis-1/4">
-            <h2 className="text-2xl font-bold mb-2">Likes ou Reposts</h2>
-            <p>{postCombinedOr.length} curtiram ou repostaram</p>
+            <h2 className="text-2xl font-bold mb-2">{content[domain]?.results?.postCombinedOr.title}</h2>
+            <p>{postCombinedOr.length} {content[domain]?.results?.postCombinedOr.info}</p>
 
             {postCombinedOr
               .sort((a: any, b: any) => 0.5 - Math.random())
@@ -206,8 +205,8 @@ export default async function IndexPage({
               })}
           </div>}
           {!!postReposts && <div className="basis-1/4">
-            <h2 className="text-2xl font-bold mb-2">Reposts</h2>
-            <p>{postReposts.length} repostaram</p>
+            <h2 className="text-2xl font-bold mb-2">{content[domain]?.results?.postReposts.title}</h2>
+            <p>{postReposts.length} {content[domain]?.results?.postReposts.info}</p>
 
             {postReposts
               .sort((a: any, b: any) => 0.5 - Math.random())
@@ -223,8 +222,8 @@ export default async function IndexPage({
               })}
           </div>}
           {!!postLikes && <div className="basis-1/4">
-            <h2 className="text-2xl font-bold mb-2">Likes</h2>
-            <p>{postLikes.length} curtiram este post</p>
+            <h2 className="text-2xl font-bold mb-2">{content[domain]?.results?.postLikes.title}</h2>
+            <p>{postLikes.length} {content[domain]?.results?.postLikes.info}</p>
 
             {postLikes
               .sort((a: any, b: any) => 0.5 - Math.random())
@@ -242,8 +241,11 @@ export default async function IndexPage({
         </div>
       </main>
       <footer className="container grid items-center gap-2 mb-8">
-        <p className="text-xs">Diretamente de Pernambuco por <a className="bold underline underline-offset-4" href="https://joseli.to">Joselito</a>, com muito amor e carinho.</p>
-        <p className="text-[0.7rem] text-gray-400">Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado.</p>
+        <p className="text-xs" dangerouslySetInnerHTML={{ __html: content[domain]?.footer?.by }}></p>
+        <p className="text-[0.7rem] text-gray-400">{content[domain]?.footer?.noCookies}</p>
+        <div className="gh-ribbon">
+          <a href="#">{content[domain]?.footer?.ghFork}</a>
+        </div>
       </footer>
     </>
   )

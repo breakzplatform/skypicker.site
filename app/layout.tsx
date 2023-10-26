@@ -1,4 +1,5 @@
 import "@/styles/globals.css"
+import "@/styles/custom.css"
 import { Analytics } from "@vercel/analytics/react"
 
 import { fontSans } from "@/lib/fonts"
