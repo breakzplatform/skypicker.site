@@ -152,7 +152,7 @@ export default async function IndexPage({
           <h1 className="mb-4 text-4xl font-bold sm:text-6xl md:text-8xl lg:text-9xl">{content[domain]?.title}</h1>
           <p className="mb-2 text-lg">{content[domain]?.subtitle}</p>
           <p className="text-sm text-gray-400" dangerouslySetInnerHTML={{ __html: content[domain]?.description }}></p>
-          <div class="bg-yellow-200 text-yellow-900 p-4 m-2 border-2 border-yellow-600 rounded-lg text-sm text-mono max-w-xl">Estamos enfrentando problemas devido a alta capacidade de uso dos servidores do Bluesky. Caso não consiga fazer seu sorteio agora, tente novamente mais tarde.</div>
+          <div className="bg-yellow-200 text-yellow-900 p-4 m-2 border-2 border-yellow-600 rounded-lg text-sm text-mono max-w-xl">Estamos enfrentando problemas devido a alta capacidade de uso dos servidores do Bluesky. Caso não consiga fazer seu sorteio agora, tente novamente mais tarde.</div>
           </div>
           <div className="text-sm bg-yellow-400">
           </div>
