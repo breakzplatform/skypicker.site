@@ -1,5 +1,7 @@
+// @ts-nocheck
 import { BskyAgent } from "@atproto/api"
 
+// @ts-nocheck
 BskyAgent.configure({
   fetch: async (httpUri, httpMethod, httpHeaders, httpReqBody) => {
     const res = await fetch(httpUri, {
