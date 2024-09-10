@@ -210,7 +210,7 @@ export default async function IndexPage({
                 <Input
                   type="password"
                   name="pass"
-                  placeholder="App Password"
+                  placeholder={content[domain]?.form?.pass}
                   defaultValue={pass}
                   required
                 />
@@ -225,7 +225,7 @@ export default async function IndexPage({
             </div>
 
             {content[domain]?.title === "sorteio.blue" && (
-              <div className="p-2 my-4 w-full text-xs text-blue-900 bg-blue-50 rounded-lg border-2 text-mono lg:max-w-2xl">
+              <div className="p-3 my-4 w-full text-sm rounded-lg border-2 text-mono lg:max-w-2xl">
                 <p className="pb-4">
                   Para evitar sobrecarga dos servidores, agora é necessário{" "}
                   <strong>autenticar seu usuário no Bluesky.</strong>. Utilize
@@ -233,12 +233,14 @@ export default async function IndexPage({
                   usando um App Password em:{" "}
                   <a
                     href="https://bsky.app/settings/app-passwords"
+                    rel="noopener"
                     className="border-b"
                     target="_blank"
                   >
                     https://bsky.app/settings/app-passwords
                   </a>
                 </p>
+                <p className="pb-4">O App Password tem 11 dígitos, no formato xxxx-xxxx-xxxx-xxxx.</p>
                 <p>
                   Sua senha é enviada e usada diretamente pelo Bluesky. O
                   sorteios.blue não salva nenhuma infomação sua.

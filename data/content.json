@@ -10,6 +10,7 @@
         "description": "Informe a URL do post no campo abaixo, seu e-mail e sua senha do Bluesky e aperte em &quot;Sortear&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
         "form": {
             "submit": "Sortear",
+            "pass": "Senha (App Password)",
             "errors": {
                 "error1": "Por favor insira um link válido de um post do Bluesky"
             }
@@ -46,9 +47,10 @@
         },
         "title": "SkyPicker",
         "subtitle": "Host a giveaway on Bluesky in seconds with ease.",
-        "description": "Enter the post URL in the field below and click on \"Randomize.\" <strong>The results will be listed randomly</strong>.",
+        "description": "Enter the post URL in the field below, fill your credentials and click on \"Randomize.\" <strong>The results will be listed randomly</strong>.",
         "form": {
             "submit": "Randomize",
+            "pass": "App Password",
             "errors": {
                 "error1": "Please enter a valid link to a Bluesky post"
             }
