@@ -188,7 +188,7 @@ export default async function IndexPage({
               dangerouslySetInnerHTML={{ __html: content[domain]?.description }}
             ></p>
           </div>
-          <form>
+          <form action="">
             <div className="grid w-full items-center gap-1.5 lg:max-w-2xl">
               <div className="flex items-center space-x-2 w-full lg:max-w-2xl">
                 <Input
@@ -224,11 +224,27 @@ export default async function IndexPage({
               )}
             </div>
 
-            {/* <div className="p-2 my-4 w-full text-xs text-yellow-900 bg-yellow-100 rounded-lg border-2 border-yellow-600 text-mono lg:max-w-2xl">
-              Estamos enfrentando problemas devido a alta capacidade de uso dos
-              servidores do Bluesky. Caso não consiga fazer seu sorteio agora,
-              tente novamente mais tarde.
-            </div> */}
+            {content[domain]?.title === "sorteio.blue" && (
+              <div className="p-2 my-4 w-full text-xs text-blue-900 bg-blue-50 rounded-lg border-2 text-mono lg:max-w-2xl">
+                <p className="pb-4">
+                  Para evitar sobrecarga dos servidores, agora é necessário{" "}
+                  <strong>autenticar seu usuário no Bluesky.</strong>. Utilize
+                  uma senha criada <strong>apenas para o sorteios.blue</strong>{" "}
+                  usando um App Password em:{" "}
+                  <a
+                    href="https://bsky.app/settings/app-passwords"
+                    className="border-b"
+                    target="_blank"
+                  >
+                    https://bsky.app/settings/app-passwords
+                  </a>
+                </p>
+                <p>
+                  Sua senha é enviada e usada diretamente pelo Bluesky. O
+                  sorteios.blue não salva nenhuma infomação sua.
+                </p>
+              </div>
+            )}
           </form>
         </div>
         <div className="gap-x-16 lg:flex lg:flex-row">

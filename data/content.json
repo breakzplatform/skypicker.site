@@ -7,7 +7,7 @@
         },
         "title": "sorteio.blue",
         "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
-        "description": "Informe a URL do post no campo abaixo e aperte em &quot;Randomizar&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
+        "description": "Informe a URL do post no campo abaixo, seu e-mail e sua senha do Bluesky e aperte em &quot;Sortear&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
         "form": {
             "submit": "Sortear",
             "errors": {
