@@ -9,7 +9,7 @@
         "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
         "description": "Informe a URL do post no campo abaixo e aperte em &quot;Randomizar&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
         "form": {
-            "submit": "Randomizar",
+            "submit": "Sortear",
             "errors": {
                 "error1": "Por favor insira um link válido de um post do Bluesky"
             }

@@ -49,3 +49,14 @@ export const getAgent = async () => {
 
   return agent
 }
+
+export const getAgentParams = async (user:string, pass:string) => {
+  await agent.login({
+    identifier: user,
+    password: pass,
+  })
+
+  if (!agent.hasSession) throw new Error("Failed to login")
+
+  return agent
+}
