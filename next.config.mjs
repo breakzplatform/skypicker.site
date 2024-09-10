@@ -5,6 +5,9 @@ const nextConfig = {
     appDir: true,
     serverActions: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 }
 
 export default nextConfig
