@@ -224,11 +224,11 @@ export default async function IndexPage({
               )}
             </div>
 
-            <div className="p-2 my-4 w-full text-xs text-yellow-900 bg-yellow-100 rounded-lg border-2 border-yellow-600 text-mono lg:max-w-2xl">
+            {/* <div className="p-2 my-4 w-full text-xs text-yellow-900 bg-yellow-100 rounded-lg border-2 border-yellow-600 text-mono lg:max-w-2xl">
               Estamos enfrentando problemas devido a alta capacidade de uso dos
               servidores do Bluesky. Caso não consiga fazer seu sorteio agora,
               tente novamente mais tarde.
-            </div>
+            </div> */}
           </form>
         </div>
         <div className="gap-x-16 lg:flex lg:flex-row">
