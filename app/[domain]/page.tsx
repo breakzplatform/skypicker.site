@@ -105,20 +105,14 @@ export default async function IndexPage({
   let postCombinedOr: any | undefined
   let postCombinedOrUniqueIds: any | undefined
 
-  if (post) {
+  if (post && !!searchParams?.user && !!searchParams?.auth) {
     if (post.startsWith("https://bsky.app/profile/")) {
       try {
         postParams = post.replace("https://bsky.app/profile/", "")
         postUserHandle = postParams.split("/")[0]
         postId = postParams.split("/")[2]
 
-        let agent
-
-        if (!!searchParams?.user && !!searchParams?.auth) {
-          agent = await getAgentParams(searchParams.user, searchParams.auth)
-        } else {
-          agent = await getAgent()
-        }
+        const agent = await getAgentParams(searchParams.user, searchParams.auth);
 
         const postUser = await agent.getProfile({
           actor: postUserHandle,
@@ -196,7 +190,7 @@ export default async function IndexPage({
                 <Input
                   type="text"
                   name="current"
-                  defaultValue={() => return Array.from({ length: 400 }, () => Math.random().toString(36)[2]).join('')}</Input>
+                  defaultValue={() => return Array.from({ length: 400 }, () => Math.random().toString(36)[2]).join('')}
                 />
               </div>
               <div className="flex items-center space-x-2 w-full lg:max-w-2xl">
