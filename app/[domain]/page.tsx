@@ -91,7 +91,7 @@ export default async function IndexPage({
   let post = searchParams.post
   let user = searchParams.user
   let auth = searchParams.auth
-  let current = Array.from({ length: 400 }, () => Math.random().toString(36)[2]).join('')
+  let current = searchParams.current
   let error1: string | undefined
 
   let postParams: string | undefined
@@ -196,7 +196,7 @@ export default async function IndexPage({
                 <Input
                   type="text"
                   name="current"
-                  defaultValue={current}
+                  defaultValue={() => return Array.from({ length: 400 }, () => Math.random().toString(36)[2]).join('')}</Input>
                 />
               </div>
               <div className="flex items-center space-x-2 w-full lg:max-w-2xl">
