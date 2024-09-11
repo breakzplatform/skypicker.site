@@ -91,7 +91,7 @@ export default async function IndexPage({
   let post = searchParams.post
   let user = searchParams.user
   let auth = searchParams.auth
-  let current = return Array.from({ length: 400 }, () => Math.random().toString(36)[2]).join('');
+  let current = Array.from({ length: 400 }, () => Math.random().toString(36)[2]).join('')
   let error1: string | undefined
 
   let postParams: string | undefined
