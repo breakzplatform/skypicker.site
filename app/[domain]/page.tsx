@@ -81,8 +81,9 @@ export default async function IndexPage({
     domain: string
   }
   searchParams: {
-    post?: string
+    current?: string
     user?: string
+    post?: string
     auth?: string
   }
 }) {
@@ -90,6 +91,7 @@ export default async function IndexPage({
   let post = searchParams.post
   let user = searchParams.user
   let auth = searchParams.auth
+  let current = Array.from({ length: 40 }, () => Math.random().toString(36)[2]).join('') + Date.now().toString(36)
   let error1: string | undefined
 
   let postParams: string | undefined
@@ -190,6 +192,7 @@ export default async function IndexPage({
           </div>
           <form action="">
             <div className="grid w-full items-center gap-1.5 lg:max-w-2xl">
+              <input type="hidden" name="current" value={current} />
               <div className="flex items-center space-x-2 w-full lg:max-w-2xl">
                 <Input
                   type="text"
