@@ -192,7 +192,6 @@ export default async function IndexPage({
           </div>
           <form action="">
             <div className="grid w-full items-center gap-1.5 lg:max-w-2xl">
-              <input type="hidden" name="current" value={current} />
               <div className="flex items-center space-x-2 w-full lg:max-w-2xl">
                 <Input
                   type="text"
@@ -202,6 +201,7 @@ export default async function IndexPage({
                   required
                 />
               </div>
+              <input type="hidden" name="current" value={current} />
               <div className="flex gap-2">
                 <Input
                   type="text"
