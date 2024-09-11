@@ -83,13 +83,13 @@ export default async function IndexPage({
   searchParams: {
     post?: string
     user?: string
-    pass?: string
+    auth?: string
   }
 }) {
   const domain = params.domain
   let post = searchParams.post
   let user = searchParams.user
-  let pass = searchParams.pass
+  let auth = searchParams.auth
   let error1: string | undefined
 
   let postParams: string | undefined
@@ -193,7 +193,7 @@ export default async function IndexPage({
               <div className="flex items-center space-x-2 w-full lg:max-w-2xl">
                 <Input
                   type="text"
-                  name="post"
+                  name="`post"
                   placeholder="https://bsky.app/profile/sound3vision.bsky.social/post/3jzrqio5pxi27"
                   defaultValue={post}
                   required
@@ -209,9 +209,9 @@ export default async function IndexPage({
                 />
                 <Input
                   type="password"
-                  name="pass"
-                  placeholder={content[domain]?.form?.pass}
-                  defaultValue={pass}
+                  name="auth"
+                  placeholder={content[domain]?.form?.auth}
+                  defaultValue={auth}
                   required
                 />
                 <Button type="submit">{content[domain]?.form?.submit}</Button>
@@ -228,13 +228,13 @@ export default async function IndexPage({
               <div className="p-3 my-4 w-full text-sm rounded-lg border-2 text-mono lg:max-w-2xl">
                 <p className="pb-4">
                   Para evitar sobrecarga dos servidores, agora é necessário{" "}
-                  <strong>autenticar seu usuário no Bluesky.</strong>. Utilize
+                  <strong>autenticar seu usuário no Bluesky</strong>. Utilize
                   uma senha criada <strong>apenas para o sorteios.blue</strong>{" "}
                   usando um App Password em:{" "}
                   <a
                     href="https://bsky.app/settings/app-passwords"
                     rel="noopener"
-                    className="border-b"
+                    className="border-b border-white"
                     target="_blank"
                   >
                     https://bsky.app/settings/app-passwords
@@ -242,8 +242,8 @@ export default async function IndexPage({
                 </p>
                 <p className="pb-4">O App Password tem 11 dígitos, no formato xxxx-xxxx-xxxx-xxxx.</p>
                 <p>
-                  Sua senha é enviada e usada diretamente pelo Bluesky. O
-                  sorteios.blue não salva nenhuma infomação sua.
+                  Sua senha é enviada e usada diretamente pelo Bluesky. <strong>O
+                  sorteios.blue não salva nenhuma infomação sua.</strong>
                 </p>
               </div>
             )}
