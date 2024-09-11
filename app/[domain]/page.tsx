@@ -224,7 +224,7 @@ export default async function IndexPage({
               )}
             </div>
 
-            {content[domain]?.title === "sorteio.blue" && (
+            {(content[domain]?.title === "sorteio.blue" && !post) && (
               <div className="p-3 my-4 w-full text-sm rounded-lg border-2 text-mono lg:max-w-2xl">
                 <p className="pb-4">
                   Para evitar sobrecarga dos servidores, agora é necessário{" "}
