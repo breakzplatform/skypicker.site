@@ -112,8 +112,8 @@ export default async function IndexPage({
 
         let agent
 
-        if (!!searchParams?.user && !!searchParams?.pass) {
-          agent = await getAgentParams(searchParams.user, searchParams.pass)
+        if (!!searchParams?.user && !!searchParams?.auth) {
+          agent = await getAgentParams(searchParams.user, searchParams.auth)
         } else {
           agent = await getAgent()
         }
