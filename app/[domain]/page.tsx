@@ -14,6 +14,9 @@ export function generateMetadata({ params }: { params: { domain: string } }) {
   return {
     title: content[domain]?.meta?.title,
     description: content[domain]?.meta?.description,
+    openGraph: {
+      images: `https://${params.domain}/og/${params.domain}.png`˜,
+    },
   }
 }
 
