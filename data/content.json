@@ -10,6 +10,7 @@
         "description": "Informe a URL do post no campo abaixo, seu e-mail e sua senha do Bluesky e aperte em &quot;Sortear&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
         "form": {
             "submit": "Sortear",
+            "user": "E-mail ou usuário",
             "pass": "Senha (App Password)",
             "errors": {
                 "error1": "Por favor insira um link válido de um post do Bluesky"
@@ -50,6 +51,7 @@
         "description": "Enter the post URL in the field below, fill your credentials and click on \"Randomize.\" <strong>The results will be listed randomly</strong>.",
         "form": {
             "submit": "Randomize",
+            "user": "E-mail or Username",
             "pass": "App Password",
             "errors": {
                 "error1": "Please enter a valid link to a Bluesky post"
