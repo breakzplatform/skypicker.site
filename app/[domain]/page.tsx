@@ -1,4 +1,5 @@
 import Head from "next/head"
+import Script from "next/script"
 import { X } from "lucide-react"
 
 import { getAgent, getAgentParams } from "@/lib/atproto"
@@ -297,7 +298,7 @@ export default async function IndexPage({
             </div>
 
             {content[domain]?.title === "sorteio.blue" && !post && (
-              <div className="p-3 my-4 w-full text-sm rounded-lg border border-none bg-[#208BFE]/5 shadow dark:bg-black/20 lg:max-w-2xl">
+              <div className="my-4 w-full rounded-lg border border-none bg-[#208BFE]/5 p-3 text-sm shadow lg:max-w-2xl dark:bg-black/20">
                 <p className="pb-4">
                   Para evitar sobrecarga dos servidores, agora é necessário{" "}
                   <strong>autenticar seu usuário no Bluesky</strong>. Utilize
@@ -476,7 +477,7 @@ export default async function IndexPage({
               border: "0",
               right: "0",
             }}
-            className="text-[#f4f4f4] dark:text-[#102642] dark:fill-[#95cad9] fill-[#208BFE]"
+            className="fill-[#208BFE] text-[#f4f4f4] dark:fill-[#95cad9] dark:text-[#102642]"
             aria-hidden="true"
           >
             <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
@@ -494,6 +495,9 @@ export default async function IndexPage({
           </svg>
         </a>
       </footer>
+      <Script id="show-banner">
+        {`window.history.replaceState(null, '', window.location.pathname);`}
+      </Script>
     </>
   )
 }
