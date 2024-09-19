@@ -8,6 +8,7 @@
         "title": "sorteio.blue",
         "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
         "description": "Informe a URL do post no campo abaixo, seu e-mail e sua senha do Bluesky e aperte em &quot;Sortear&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
+        "supporters": "Apoiadores",
         "form": {
             "submit": "Sortear",
             "user": "E-mail ou usuário",
@@ -49,6 +50,7 @@
         "title": "SkyPicker",
         "subtitle": "Host a giveaway on Bluesky in seconds with ease.",
         "description": "Enter the post URL in the field below, fill your credentials and click on \"Randomize.\" <strong>The results will be listed randomly</strong>.",
+        "supporters": "Supperters",
         "form": {
             "submit": "Randomize",
             "user": "E-mail or Username",

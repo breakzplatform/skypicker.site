@@ -181,7 +181,7 @@ export default async function IndexPage({
         <html lang={content[domain]?.meta?.lang} />
       </Head>
       <main className="container grid gap-6 items-center pt-6 pb-8 md:py-10">
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="mb-8">
             {content[domain]?.title === "sorteio.blue" ? (
               <>
@@ -328,6 +328,24 @@ export default async function IndexPage({
             )}
           </form>
         </div>
+        <div className="mb-6 text-xs">
+          <h2 className="mb-4 font-bold">{content[domain]?.supporters}</h2>
+          <div className="flex gap-4 items-center">
+            <a
+              href="https://bsky.app/profile/frameacademy.com.br"
+              className="p-2 bg-white rounded shadow"
+            >
+              <img
+                src="https://notx.blue/supporters/frameacademy.com.br.svg"
+                className="rounded"
+                title="frameacademy.com.br"
+                width="200"
+                height="150"
+              />
+            </a>
+          </div>
+        </div>
+
         <div className="gap-x-16 lg:flex lg:flex-row">
           {!!postCombined && (
             <div className="basis-1/4">
@@ -454,7 +472,38 @@ export default async function IndexPage({
           )}
         </div>
       </main>
-      <footer className="container grid gap-2 items-center mb-8">
+      <footer className="container grid gap-2 items-center mb-6">
+        <div className="mb-4">
+          {content[domain]?.title === "sorteio.blue" ? (
+            <a
+              href="https://apoia.se/joselito"
+              target="_blank"
+              rel="noopener"
+              className="px-3 py-2 mr-2 font-mono text-xs font-bold text-white bg-gray-700 rounded-full shadow hover:bg-blue-600"
+            >
+              APOIA.se
+            </a>
+          ) : (
+            <>
+              <a
+                href="https://ko-fi.com/joselito"
+                target="_blank"
+                rel="noopener"
+                className="px-3 py-2 mr-2 font-mono text-xs font-bold text-white bg-gray-700 rounded-full shadow hover:bg-blue-600"
+              >
+                Ko-fi
+              </a>
+              <a
+                href="https://github.com/sponsors/breakzplatform"
+                target="_blank"
+                rel="noopener"
+                className="px-3 py-2 mr-2 font-mono text-xs font-bold text-white bg-gray-700 rounded-full shadow hover:bg-blue-600"
+              >
+                GitHub
+              </a>
+            </>
+          )}
+        </div>
         <p
           className="text-xs"
           dangerouslySetInnerHTML={{ __html: content[domain]?.footer?.by }}
