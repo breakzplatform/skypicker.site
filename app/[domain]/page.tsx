@@ -336,7 +336,7 @@ export default async function IndexPage({
               className="p-2 bg-white rounded shadow"
             >
               <img
-                src="https://notx.blue/supporters/frameacademy.com.br.svg"
+                src="https://notx.blue/supporters/frameacademy.com.br.png"
                 className="rounded"
                 title="frameacademy.com.br"
                 width="200"
