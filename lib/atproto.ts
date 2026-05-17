@@ -1,64 +1,25 @@
-// @ts-nocheck
-import { BskyAgent } from "@atproto/api"
+import { Agent } from "@atproto/api"
 
-// @ts-nocheck
-BskyAgent.configure({
-  fetch: async (httpUri, httpMethod, httpHeaders, httpReqBody) => {
-    const res = await fetch(httpUri, {
-      method: httpMethod.toUpperCase(),
-      headers: new Headers(httpHeaders),
-      body:
-        typeof httpReqBody === "string"
-          ? httpReqBody
-          : JSON.stringify(httpReqBody),
-      cache: "no-cache",
-    })
-    const status = res.status
-    const body = await res.json()
-    const headers: Record<string, string> = {}
-    res.headers.forEach((value, key) => {
-      headers[key] = value
-    })
-    return {
-      body,
-      headers,
-      status,
-    }
-  },
-})
+import { getOAuthClient } from "./oauth/client"
+import { getOriginFromHeaders } from "./oauth/origin"
+import { getOAuthCookie } from "./oauth/session"
 
-const agent = new BskyAgent({
-  service: "https://bsky.social",
-  async persistSession(evt) {
-    switch (evt) {
-      case "expired":
-        console.log("Session expired, logging in again...")
-        await agent.login({
-          identifier: process.env.BSKY_USERNAME!,
-          password: process.env.BSKY_PASSWORD!,
-        })
-    }
-  },
-})
+export async function getCurrentAgent(): Promise<Agent | null> {
+  const cookie = await getOAuthCookie()
+  if (!cookie.did) return null
 
-export const getAgent = async () => {
-  await agent.login({
-    identifier: process.env.BSKY_USERNAME!,
-    password: process.env.BSKY_PASSWORD!,
-  })
-
-  if (!agent.hasSession) throw new Error("Failed to login")
-
-  return agent
+  try {
+    const origin = await getOriginFromHeaders()
+    const client = getOAuthClient(origin)
+    const oauthSession = await client.restore(cookie.did)
+    return new Agent(oauthSession)
+  } catch {
+    cookie.destroy()
+    return null
+  }
 }
 
-export const getAgentParams = async (user:string, pass:string) => {
-  await agent.login({
-    identifier: user,
-    password: pass,
-  })
-
-  if (!agent.hasSession) throw new Error("Failed to login")
-
-  return agent
+export async function getCurrentDid(): Promise<string | null> {
+  const cookie = await getOAuthCookie()
+  return cookie.did ?? null
 }
