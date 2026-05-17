@@ -1,13 +1,15 @@
 import { clsx, type ClassValue } from "clsx"
-import psl from "psl"
+import { parse as pslParse, type ParsedDomain } from "psl"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getDomain(host: string) {
-  const domain = psl.parse(host)
-  if (domain.error) throw new Error(domain.error.message)
-  return domain
+export function getDomain(host: string): ParsedDomain {
+  const parsed = pslParse(host)
+  if ("error" in parsed) {
+    throw new Error(String(parsed.error.message))
+  }
+  return parsed
 }

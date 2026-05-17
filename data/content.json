@@ -7,37 +7,35 @@
         },
         "title": "sorteio.blue",
         "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
-        "description": "Informe a URL do post no campo abaixo, seu e-mail e sua senha do Bluesky e aperte em &quot;Sortear&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
+        "description": "Faça login com sua conta do Bluesky, informe a URL do post, escolha quantos vão ser sorteados e aperte em &quot;Sortear&quot;.",
         "supporters": "Apoiadores",
-        "form": {
+        "raffle": {
+            "postUrlPlaceholder": "https://bsky.app/profile/handle.bsky.social/post/abc123",
+            "modeLabel": "Considerar",
+            "countLabel": "Ganhadores",
             "submit": "Sortear",
-            "user": "E-mail ou usuário",
-            "pass": "Senha (App Password)",
-            "errors": {
-                "error1": "Por favor insira um link válido de um post do Bluesky"
-            }
-        },
-        "results": {
-            "postCombined": {
-                "title": "Likes e Reposts",
-                "info": "curtiram e repostaram"
+            "cancel": "Cancelar",
+            "modes": {
+                "likes": "Apenas likes",
+                "reposts": "Apenas reposts",
+                "and": "Likes E reposts (interseção)",
+                "or": "Likes OU reposts (união)"
             },
-            "postCombinedOr": {
-                "title": "Likes ou Reposts",
-                "info": "curtiram ou repostaram"
+            "progress": {
+                "resolving": "Localizando o post...",
+                "fetching": "Carregando participantes...",
+                "sampling": "Sorteando...",
+                "fetchingProfiles": "Buscando perfis dos sorteados..."
             },
-            "postReposts": {
-                "title": "Reposts",
-                "info": "repostaram"
-            },
-            "postLikes": {
-                "title": "Likes",
-                "info": "curtiram este post"
-            }
+            "loginCta": "Entre com sua conta do Bluesky para sortear (cota de API por usuário).",
+            "loginPlaceholder": "seuhandle.bsky.social",
+            "loginButton": "Entrar com Bluesky",
+            "signedInAs": "Conectado como",
+            "signOut": "Sair"
         },
         "footer": {
             "by": "Diretamente de Pernambuco por <a href=\"https://joseli.to\">Joselito</a>, com muito amor e carinho.",
-            "noCookies": "Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado.",
+            "noCookies": "Este site só armazena um cookie de sessão OAuth assinado, sem rastreamento.",
             "ghFork": "Veja o código-fonte no GitHub"
         }
     },
@@ -49,37 +47,35 @@
         },
         "title": "SkyPicker",
         "subtitle": "Host a giveaway on Bluesky in seconds with ease.",
-        "description": "Enter the post URL in the field below, fill your credentials and click on \"Randomize.\" <strong>The results will be listed randomly</strong>.",
-        "supporters": "Supperters",
-        "form": {
+        "description": "Sign in with your Bluesky account, enter the post URL, choose how many winners and click &quot;Randomize&quot;.",
+        "supporters": "Supporters",
+        "raffle": {
+            "postUrlPlaceholder": "https://bsky.app/profile/handle.bsky.social/post/abc123",
+            "modeLabel": "Filter",
+            "countLabel": "Winners",
             "submit": "Randomize",
-            "user": "E-mail or Username",
-            "pass": "App Password",
-            "errors": {
-                "error1": "Please enter a valid link to a Bluesky post"
-            }
-        },
-        "results": {
-            "postCombined": {
-                "title": "Likes and Reposts",
-                "info": "liked and reposted"
+            "cancel": "Cancel",
+            "modes": {
+                "likes": "Likes only",
+                "reposts": "Reposts only",
+                "and": "Likes AND reposts (intersection)",
+                "or": "Likes OR reposts (union)"
             },
-            "postCombinedOr": {
-                "title": "Likes or Reposts",
-                "info": "liked or reposted"
+            "progress": {
+                "resolving": "Resolving post...",
+                "fetching": "Loading participants...",
+                "sampling": "Drawing winners...",
+                "fetchingProfiles": "Fetching winner profiles..."
             },
-            "postReposts": {
-                "title": "Reposts",
-                "info": "reposted"
-            },
-            "postLikes": {
-                "title": "Likes",
-                "info": "liked this post"
-            }
+            "loginCta": "Sign in with your Bluesky account to run the raffle (per-user API quota).",
+            "loginPlaceholder": "yourhandle.bsky.social",
+            "loginButton": "Sign in with Bluesky",
+            "signedInAs": "Signed in as",
+            "signOut": "Sign out"
         },
         "footer": {
             "by": "Directly from Brazil by <a href=\"https://joseli.to\">Joselito</a>, with much love and care.",
-            "noCookies": "This site does not use any cookies or collect any data.",
+            "noCookies": "This site only stores a signed OAuth session cookie, no tracking.",
             "ghFork": "View source on GitHub"
         }
     }

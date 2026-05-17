@@ -1,10 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-import { AppBskyActorDefs } from "@atproto/api"
-
 import { cn } from "@/lib/utils"
 
+interface ProfileLike {
+  handle: string
+  displayName?: string
+  avatar?: string
+}
+
 interface Props {
-  profile: AppBskyActorDefs.ProfileView
+  profile: ProfileLike
   className?: string
 }
 
@@ -14,7 +18,7 @@ export function Profile({ profile, className }: Props) {
       <img
         src={profile.avatar}
         className="h-12 w-12 rounded-full"
-        alt="profile picture"
+        alt={`${profile.handle} avatar`}
       />
       <div className="flex flex-col">
         <p className="text-lg font-semibold leading-5">{profile.displayName}</p>
