@@ -35,3 +35,6 @@ yarn-error.log*
 .contentlayer
 .env
 .vercel
+
+# build artifacts
+tsconfig.tsbuildinfo
