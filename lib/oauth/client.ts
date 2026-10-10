@@ -1,5 +1,6 @@
 import { NodeOAuthClient } from "@atproto/oauth-client-node"
 
+import { knownDomainForHost } from "../hosts"
 import { getSessionStore, getStateStore } from "./stores"
 
 const cache = new Map<string, NodeOAuthClient>()
@@ -37,7 +38,10 @@ export function getOAuthClient(origin: string): NodeOAuthClient {
   const client = new NodeOAuthClient({
     clientMetadata: {
       client_id: clientId,
-      client_name: "SkyPicker",
+      client_name:
+        knownDomainForHost(new URL(cleanOrigin).host) === "sorteio.blue"
+          ? "sorteio.blue"
+          : "SkyPicker",
       client_uri: cleanOrigin,
       logo_uri: `${cleanOrigin}/favicon.ico`,
       redirect_uris: [callbackUrl],
