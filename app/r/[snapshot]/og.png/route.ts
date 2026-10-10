@@ -1,7 +1,8 @@
 import { type NextRequest } from "next/server"
 
-import { decodeSnapshot } from "@/lib/snapshot"
+import { knownDomainForHost } from "@/lib/hosts"
 import { renderSnapshotImage } from "@/lib/og-image"
+import { decodeSnapshot } from "@/lib/snapshot"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -27,7 +28,12 @@ export async function GET(
     request.nextUrl.searchParams.get("download") === "1" ||
     request.nextUrl.searchParams.has("dl")
 
-  const response = renderSnapshotImage(snapshot)
+  const host =
+    request.headers.get("x-forwarded-host") ??
+    request.headers.get("host") ??
+    request.nextUrl.host
+  const domain = knownDomainForHost(host) ?? undefined
+  const response = await renderSnapshotImage(snapshot, domain)
   const headers = new Headers(response.headers)
   if (wantsDownload) {
     const slug = (snapshot.t ?? "raffle")

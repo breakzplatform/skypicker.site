@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { decodeSnapshot, type Snapshot } from "@/lib/snapshot"
+import { BrandMark } from "@/components/brand-mark"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -93,8 +94,9 @@ export default async function SnapshotPage({
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
       <header className="mb-8">
-        <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
-          🎯 SkyPicker · Raffle snapshot
+        <p className="mb-4 flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+          <BrandMark className="h-5 w-5" />
+          SkyPicker · Raffle snapshot
         </p>
         <h1 className="text-3xl font-bold sm:text-5xl">
           {snapshot.t ?? "Bluesky Raffle"}

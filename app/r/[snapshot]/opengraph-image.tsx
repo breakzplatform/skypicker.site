@@ -1,5 +1,8 @@
+import { headers } from "next/headers"
+
+import { knownDomainForHost } from "@/lib/hosts"
+import { OG_CONTENT_TYPE, OG_SIZE, renderSnapshotImage } from "@/lib/og-image"
 import { decodeSnapshot } from "@/lib/snapshot"
-import { renderSnapshotImage, OG_SIZE, OG_CONTENT_TYPE } from "@/lib/og-image"
 
 export const runtime = "nodejs"
 export const alt = "Bluesky raffle results"
@@ -13,5 +16,7 @@ export default async function Image({
 }) {
   const { snapshot: encoded } = await params
   const snapshot = decodeSnapshot(encoded)
-  return renderSnapshotImage(snapshot)
+  const h = await headers()
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? ""
+  return renderSnapshotImage(snapshot, knownDomainForHost(host) ?? undefined)
 }
