@@ -106,6 +106,6 @@ export const config = {
      * early-return fast path inside middleware() so OAuth/at proxy handlers
      * still execute unmodified.
      */
-    "/((?!_next/|_static/|[\\w-]+\\.(?:ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|css|js|map|txt|xml|pdf)$|[a-zA-Z0-9-_.]+/[a-zA-Z0-9-_]+/opengraph-image).*)",
+    "/((?!_next/|_static/|[\\w.-]+\\.(?:ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|css|js|map|txt|xml|pdf)$|[a-zA-Z0-9-_.]+/[a-zA-Z0-9-_]+/opengraph-image).*)",
   ],
 }
