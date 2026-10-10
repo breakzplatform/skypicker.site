@@ -8,7 +8,6 @@
         "title": "sorteio.blue",
         "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
         "description": "Faça login com sua conta do Bluesky, informe a URL do post, escolha quantos vão ser sorteados e aperte em &quot;Sortear&quot;.",
-        "supporters": "Apoiadores",
         "raffle": {
             "postUrlPlaceholder": "https://bsky.app/profile/handle.bsky.social/post/abc123",
             "modeLabel": "Considerar",
@@ -36,7 +35,8 @@
         "footer": {
             "by": "Diretamente de Pernambuco por <a href=\"https://joseli.to\">Joselito</a>, com muito amor e carinho.",
             "noCookies": "Este site só armazena um cookie de sessão OAuth assinado, sem rastreamento.",
-            "ghFork": "Veja o código-fonte no GitHub"
+            "ghFork": "Veja o código-fonte no GitHub",
+            "support": "Apoie este projeto:"
         }
     },
     "skypicker.site": {
@@ -48,7 +48,6 @@
         "title": "SkyPicker",
         "subtitle": "Host a giveaway on Bluesky in seconds with ease.",
         "description": "Sign in with your Bluesky account, enter the post URL, choose how many winners and click &quot;Randomize&quot;.",
-        "supporters": "Supporters",
         "raffle": {
             "postUrlPlaceholder": "https://bsky.app/profile/handle.bsky.social/post/abc123",
             "modeLabel": "Filter",
@@ -76,7 +75,8 @@
         "footer": {
             "by": "Directly from Brazil by <a href=\"https://joseli.to\">Joselito</a>, with much love and care.",
             "noCookies": "This site only stores a signed OAuth session cookie, no tracking.",
-            "ghFork": "View source on GitHub"
+            "ghFork": "View source on GitHub",
+            "support": "Support this project:"
         }
     }
 }

@@ -2,11 +2,30 @@ import { Raffle, type RaffleStrings } from "./raffle"
 
 import { getCurrentAgent, getCurrentDid } from "@/lib/atproto"
 import { getOriginFromHeaders } from "@/lib/oauth/origin"
+import { cn } from "@/lib/utils"
 import { BrandMark } from "@/components/brand-mark"
 
 import content from "../../data/content.json"
 
 type DomainContent = (typeof content)[keyof typeof content]
+
+const SUPPORT_LINKS = [
+  {
+    label: "Pix",
+    href: "https://pix.joseli.to",
+    className: "bg-pix text-pix-foreground",
+  },
+  {
+    label: "Buy Me a Coffee",
+    href: "https://buymeacoffee.com/joselito",
+    className: "bg-coffee text-coffee-foreground",
+  },
+  {
+    label: "GitHub Sponsors",
+    href: "https://github.com/sponsors/breakzplatform",
+    className: "bg-sponsors text-sponsors-foreground",
+  },
+]
 
 export async function generateMetadata({
   params,
@@ -114,6 +133,23 @@ export default async function IndexPage({
       />
 
       <footer className="mt-16 text-xs text-muted-foreground">
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <span className="mr-1">{c.footer.support}</span>
+          {SUPPORT_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener"
+              className={cn(
+                "rounded-full px-3 py-1.5 font-bold shadow transition hover:brightness-95 dark:hover:brightness-110",
+                link.className
+              )}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
         <p
           className="mb-1"
           dangerouslySetInnerHTML={{ __html: c.footer.by }}
