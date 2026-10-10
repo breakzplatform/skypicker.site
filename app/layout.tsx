@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import "@/styles/globals.css"
 import "@/styles/custom.css"
 
+import { brandCssVariables } from "@/lib/brand"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
@@ -28,10 +29,12 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-
   return (
     <>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          <style dangerouslySetInnerHTML={{ __html: brandCssVariables }} />
+        </head>
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",

@@ -14,6 +14,22 @@ module.exports = {
     },
     extend: {
       colors: {
+        brand: {
+          DEFAULT: "rgb(var(--brand) / <alpha-value>)",
+          foreground: "rgb(var(--brand-foreground) / <alpha-value>)",
+        },
+        pix: {
+          DEFAULT: "rgb(var(--pix) / <alpha-value>)",
+          foreground: "rgb(var(--pix-foreground) / <alpha-value>)",
+        },
+        coffee: {
+          DEFAULT: "rgb(var(--coffee) / <alpha-value>)",
+          foreground: "rgb(var(--coffee-foreground) / <alpha-value>)",
+        },
+        sponsors: {
+          DEFAULT: "rgb(var(--sponsors) / <alpha-value>)",
+          foreground: "rgb(var(--sponsors-foreground) / <alpha-value>)",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
