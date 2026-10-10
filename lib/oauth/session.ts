@@ -5,13 +5,13 @@ import type {
   NodeSavedState,
 } from "@atproto/oauth-client-node"
 
+export type StoredState = { v: NodeSavedState; exp: number }
+
 export type OAuthCookie = {
   did?: string
-  states?: Record<string, NodeSavedState>
+  states?: Record<string, StoredState>
   sessions?: Record<string, NodeSavedSession>
 }
-
-const SESSION_NAME = "skypicker_oauth"
 
 function sessionPassword(): string {
   const secret = process.env.SESSION_SECRET
@@ -23,21 +23,34 @@ function sessionPassword(): string {
   return secret
 }
 
-function options(): SessionOptions {
+function isLoopbackHostname(hostname: string): boolean {
+  return /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/i.test(hostname)
+}
+
+function cookieName(origin: string): string {
+  const host = new URL(origin).hostname.toLowerCase()
+  return `skypicker_oauth_${host.replace(/[^a-z0-9]+/g, "_")}`
+}
+
+function options(origin: string): SessionOptions {
+  const hostname = new URL(origin).hostname
+  const isProd = process.env.NODE_ENV === "production"
+  const loopback = isLoopbackHostname(hostname)
   return {
-    cookieName: SESSION_NAME,
+    cookieName: cookieName(origin),
     password: sessionPassword(),
     cookieOptions: {
-      secure: process.env.NODE_ENV === "production",
+      secure: isProd,
       sameSite: "lax",
       httpOnly: true,
       path: "/",
       maxAge: 60 * 60 * 24 * 30,
+      ...(isProd && !loopback ? { domain: hostname } : {}),
     },
   }
 }
 
-export async function getOAuthCookie() {
+export async function getOAuthCookie(origin: string) {
   const store = await cookies()
-  return getIronSession<OAuthCookie>(store, options())
+  return getIronSession<OAuthCookie>(store, options(origin))
 }

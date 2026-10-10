@@ -1,6 +1,6 @@
 import { NodeOAuthClient } from "@atproto/oauth-client-node"
 
-import { sessionStore, stateStore } from "./stores"
+import { getSessionStore, getStateStore } from "./stores"
 
 const cache = new Map<string, NodeOAuthClient>()
 
@@ -12,12 +12,21 @@ function canonicalizeLoopback(origin: string): string {
   return origin.replace(/^http:\/\/localhost/i, "http://127.0.0.1")
 }
 
+type RedirectUri = `https://${string}` | `http://127.0.0.1${string}`
+
+function assertRedirectUri(uri: string): RedirectUri {
+  if (uri.startsWith("https://") || uri.startsWith("http://127.0.0.1")) {
+    return uri as RedirectUri
+  }
+  throw new Error(`invalid redirect_uri: ${uri}`)
+}
+
 export function getOAuthClient(origin: string): NodeOAuthClient {
   const cleanOrigin = canonicalizeLoopback(origin.replace(/\/$/, ""))
   const cached = cache.get(cleanOrigin)
   if (cached) return cached
 
-  const callbackUrl = `${cleanOrigin}/api/oauth/callback`
+  const callbackUrl = assertRedirectUri(`${cleanOrigin}/api/oauth/callback`)
   const isLoopback = isLocalhostOrigin(cleanOrigin)
   const scope = "atproto transition:generic"
 
@@ -31,7 +40,7 @@ export function getOAuthClient(origin: string): NodeOAuthClient {
       client_name: "SkyPicker",
       client_uri: cleanOrigin,
       logo_uri: `${cleanOrigin}/favicon.ico`,
-      redirect_uris: [callbackUrl as `https://${string}` | `http://127.0.0.1`],
+      redirect_uris: [callbackUrl],
       grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
       scope,
@@ -39,8 +48,8 @@ export function getOAuthClient(origin: string): NodeOAuthClient {
       token_endpoint_auth_method: "none",
       dpop_bound_access_tokens: true,
     },
-    stateStore,
-    sessionStore,
+    stateStore: getStateStore(cleanOrigin),
+    sessionStore: getSessionStore(cleanOrigin),
   })
 
   cache.set(cleanOrigin, client)

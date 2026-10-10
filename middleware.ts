@@ -15,6 +15,11 @@ function pathStartsWithKnownDomain(pathname: string): boolean {
   )
 }
 
+function hostAllowed(host: string): boolean {
+  const h = host.split(":")[0].toLowerCase()
+  return KNOWN_DOMAINS.some((d) => h === d || h.endsWith(`.${d}`))
+}
+
 export function middleware(request: NextRequest) {
   const url = new URL(request.url)
   const realHost =
@@ -30,10 +35,14 @@ export function middleware(request: NextRequest) {
     return
   }
 
+  if (pathStartsWithKnownDomain(url.pathname)) {
+    return
+  }
+
   const hostIsLoopback = isLoopback(realHost)
 
-  if (hostIsLoopback && pathStartsWithKnownDomain(url.pathname)) {
-    return
+  if (!hostIsLoopback && !hostAllowed(realHost)) {
+    return new NextResponse("bad host", { status: 400 })
   }
 
   const overrideDomain = url.searchParams.get("dev_domain")
@@ -68,17 +77,16 @@ export function middleware(request: NextRequest) {
     return s ? `?${s}` : ""
   })()
 
+  const suffix = url.pathname === "/" ? "" : url.pathname
+
   if (subdomain && subdomain !== process.env.LANDING_SUBDOMAIN) {
     return NextResponse.rewrite(
-      new URL(
-        `/${domain}/${subdomain}${url.pathname}${cleanedSearch}`,
-        url
-      )
+      new URL(`/${domain}/${subdomain}${suffix}${cleanedSearch}`, url)
     )
   }
 
   return NextResponse.rewrite(
-    new URL(`/${domain}${url.pathname}${cleanedSearch}`, url)
+    new URL(`/${domain}${suffix}${cleanedSearch}`, url)
   )
 }
 
@@ -91,8 +99,9 @@ export const config = {
      *  - root-level files with a known static extension (favicon.ico, og-*.png, robots.txt, etc.)
      *  - .../opengraph-image
      *
-     * NOTE: /api/* IS NOT excluded so the localhost → 127.0.0.1 redirect
-     * applies to OAuth callback URLs too.
+     * NOTE: /api/* and /r/* are NOT excluded here — they pass through the
+     * early-return fast path inside middleware() so OAuth/at proxy handlers
+     * still execute unmodified.
      */
     "/((?!_next/|_static/|[\\w-]+\\.(?:ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|css|js|map|txt|xml|pdf)$|[a-zA-Z0-9-_.]+/[a-zA-Z0-9-_]+/opengraph-image).*)",
   ],

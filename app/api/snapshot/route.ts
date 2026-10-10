@@ -2,6 +2,12 @@ import { type NextRequest, NextResponse } from "next/server"
 
 import { buildSnapshot, encodeSnapshot, type FilterMode } from "@/lib/snapshot"
 
+const VALID_MODES: readonly FilterMode[] = ["likes", "reposts", "and", "or"]
+
+function isValidMode(m: unknown): m is FilterMode {
+  return typeof m === "string" && (VALID_MODES as readonly string[]).includes(m)
+}
+
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
@@ -25,6 +31,9 @@ export async function POST(request: NextRequest) {
 
   if (!body.postUri || !body.mode || !Array.isArray(body.winners)) {
     return NextResponse.json({ error: "missing fields" }, { status: 400 })
+  }
+  if (!isValidMode(body.mode)) {
+    return NextResponse.json({ error: "invalid mode" }, { status: 400 })
   }
 
   try {

@@ -111,7 +111,7 @@ export function buildSnapshot(input: {
 
 export function encodeSnapshot(snapshot: Snapshot): string {
   const json = Buffer.from(JSON.stringify(snapshot), "utf-8")
-  const compressed = deflateRawSync(json, { level: 9 })
+  const compressed = deflateRawSync(json, { level: 6 })
   if (compressed.length > MAX_PAYLOAD_BYTES) {
     throw new Error(
       `snapshot payload too large (${compressed.length} > ${MAX_PAYLOAD_BYTES} bytes)`

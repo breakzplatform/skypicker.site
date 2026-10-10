@@ -15,7 +15,11 @@ export async function GET(
   let snapshot
   try {
     snapshot = decodeSnapshot(encoded)
-  } catch {
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    if (message.toLowerCase().includes("signature")) {
+      console.warn("[og] invalid snapshot signature: %s", message)
+    }
     return new Response("Not found", { status: 404 })
   }
 

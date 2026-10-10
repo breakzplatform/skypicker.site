@@ -33,7 +33,11 @@ async function fetchPaged(
     })
 
     if (res.status === 429) {
-      const retryAfter = Number(res.headers.get("retry-after") ?? "5")
+      const raw = Number(res.headers.get("retry-after") ?? "5")
+      const retryAfter = Math.min(
+        Math.max(1, Number.isFinite(raw) ? raw : 5),
+        120
+      )
       await new Promise((r) => setTimeout(r, retryAfter * 1000))
       continue
     }

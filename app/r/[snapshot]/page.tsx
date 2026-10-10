@@ -50,7 +50,7 @@ export async function generateMetadata({
   try {
     snapshot = decodeSnapshot(encoded)
   } catch {
-    return { title: "Raffle not found" }
+    notFound()
   }
 
   const title = snapshot.t ?? "Bluesky Raffle"

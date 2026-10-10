@@ -4,7 +4,7 @@ import { getCurrentAgent } from "@/lib/atproto"
 
 export const dynamic = "force-dynamic"
 
-const POST_URL_PREFIX = "https://bsky.app/profile/"
+const BSKY_ORIGIN = "https://bsky.app"
 
 export async function POST(request: NextRequest) {
   const agent = await getCurrentAgent()
@@ -19,16 +19,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 })
   }
 
-  const url = body.url?.trim()
-  if (!url || !url.startsWith(POST_URL_PREFIX)) {
+  const raw = typeof body.url === "string" ? body.url.trim() : ""
+  if (!raw) {
     return NextResponse.json({ error: "invalid post url" }, { status: 400 })
   }
 
-  const path = url.slice(POST_URL_PREFIX.length).split("?")[0]
-  const [handle, kind, postId] = path.split("/")
-  if (!handle || kind !== "post" || !postId) {
+  let parsed: URL
+  try {
+    parsed = new URL(raw)
+  } catch {
     return NextResponse.json({ error: "invalid post url" }, { status: 400 })
   }
+  if (parsed.origin !== BSKY_ORIGIN) {
+    return NextResponse.json({ error: "invalid post url" }, { status: 400 })
+  }
+  const parts = parsed.pathname.split("/").filter(Boolean)
+  if (parts.length !== 4 || parts[0] !== "profile" || parts[2] !== "post") {
+    return NextResponse.json({ error: "invalid post url" }, { status: 400 })
+  }
+  const handle = parts[1]
+  const postId = parts[3]
 
   try {
     const profile = await agent.app.bsky.actor.getProfile({ actor: handle })

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic"
 
 export async function POST(request: NextRequest) {
   const origin = getOriginFromRequest(request)
-  const cookie = await getOAuthCookie()
+  const cookie = await getOAuthCookie(origin)
   const did = cookie.did
 
   if (did) {

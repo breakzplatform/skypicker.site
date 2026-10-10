@@ -19,7 +19,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 })
   }
 
-  const dids = Array.isArray(body.dids) ? body.dids.filter(Boolean) : []
+  const dids = Array.isArray(body.dids)
+    ? body.dids.filter((d): d is string => typeof d === "string" && d.length > 0)
+    : []
   if (dids.length === 0) {
     return NextResponse.json({ profiles: [] })
   }
@@ -28,6 +30,10 @@ export async function POST(request: NextRequest) {
       { error: `max ${MAX_DIDS} dids per request` },
       { status: 400 }
     )
+  }
+  const DID_RE = /^did:[a-z]+:[A-Za-z0-9._:%-]+$/i
+  if (!dids.every((d) => d.length <= 320 && DID_RE.test(d))) {
+    return NextResponse.json({ error: "invalid did" }, { status: 400 })
   }
 
   try {

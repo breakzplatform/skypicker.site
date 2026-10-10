@@ -17,8 +17,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 })
   }
 
-  if (!body.uri) {
-    return NextResponse.json({ error: "missing uri" }, { status: 400 })
+  if (
+    typeof body.uri !== "string" ||
+    !body.uri.startsWith("at://") ||
+    body.uri.length > 512
+  ) {
+    return NextResponse.json({ error: "invalid uri" }, { status: 400 })
+  }
+  if (body.cursor !== undefined && typeof body.cursor !== "string") {
+    return NextResponse.json({ error: "invalid cursor" }, { status: 400 })
   }
 
   try {
