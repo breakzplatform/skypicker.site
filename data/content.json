@@ -29,6 +29,7 @@
             "loginCta": "Entre com sua conta do Bluesky para sortear (cota de API por usuário).",
             "loginPlaceholder": "seuhandle.bsky.social",
             "loginButton": "Entrar com Bluesky",
+            "customHandle": "Usar outro handle / PDS",
             "signedInAs": "Conectado como",
             "signOut": "Sair"
         },
@@ -69,6 +70,7 @@
             "loginCta": "Sign in with your Bluesky account to run the raffle (per-user API quota).",
             "loginPlaceholder": "yourhandle.bsky.social",
             "loginButton": "Sign in with Bluesky",
+            "customHandle": "Use a custom handle / PDS",
             "signedInAs": "Signed in as",
             "signOut": "Sign out"
         },

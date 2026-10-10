@@ -40,6 +40,7 @@ type Strings = {
   loginCta: string
   loginPlaceholder: string
   loginButton: string
+  customHandle: string
   titlePlaceholder: string
   createSnapshot: string
   creatingSnapshot: string
@@ -213,7 +214,7 @@ export function Raffle({
           <Button type="submit">{strings.loginButton}</Button>
         </form>
         <details className="text-xs text-muted-foreground">
-          <summary className="cursor-pointer">Use a custom handle / PDS</summary>
+          <summary className="cursor-pointer">{strings.customHandle}</summary>
           <div className="mt-2 flex gap-2">
             <Input
               type="text"

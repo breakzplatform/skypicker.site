@@ -61,6 +61,7 @@ function buildStrings(c: DomainContent): RaffleStrings {
     loginCta: r.loginCta,
     loginPlaceholder: r.loginPlaceholder,
     loginButton: r.loginButton,
+    customHandle: r.customHandle,
     signedInAs: r.signedInAs,
     signOut: r.signOut,
     winner: isPt ? "ganhador" : "winner",
