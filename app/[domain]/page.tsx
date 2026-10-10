@@ -2,6 +2,7 @@ import { Raffle, type RaffleStrings } from "./raffle"
 
 import { getCurrentAgent, getCurrentDid } from "@/lib/atproto"
 import { getOriginFromHeaders } from "@/lib/oauth/origin"
+import { BrandMark } from "@/components/brand-mark"
 
 import content from "../../data/content.json"
 
@@ -93,11 +94,14 @@ export default async function IndexPage({
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
-      <header className="mb-8">
-        <h1 className="mb-2 text-4xl font-bold sm:text-6xl">{c.title}</h1>
-        <p className="text-lg">{c.subtitle}</p>
+      <header className="mb-10">
+        <h1 className="flex items-center gap-3 text-4xl font-bold leading-none tracking-tight sm:gap-4 sm:text-6xl">
+          <BrandMark className="h-9 w-9 sm:h-14 sm:w-14" />
+          {c.title}
+        </h1>
+        <p className="mt-5 text-lg sm:mt-7 sm:text-xl">{c.subtitle}</p>
         <p
-          className="mt-2 text-sm text-gray-700 dark:text-[#FEF3E2]/80"
+          className="mt-3 text-sm text-gray-700 dark:text-[#FEF3E2]/80"
           dangerouslySetInnerHTML={{ __html: c.description }}
         />
       </header>
