@@ -1,8 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server"
 
+import {
+  isKnownDomain,
+  KNOWN_DOMAINS,
+  knownDomainForHost,
+  stagingDomainForHost,
+} from "./lib/hosts"
 import { getDomain } from "./lib/utils"
 
-const KNOWN_DOMAINS = ["skypicker.site", "sorteio.blue"]
 const DEFAULT_DEV_DOMAIN = "skypicker.site"
 
 function isLoopback(host: string): boolean {
@@ -13,11 +18,6 @@ function pathStartsWithKnownDomain(pathname: string): boolean {
   return KNOWN_DOMAINS.some(
     (d) => pathname === `/${d}` || pathname.startsWith(`/${d}/`)
   )
-}
-
-function hostAllowed(host: string): boolean {
-  const h = host.split(":")[0].toLowerCase()
-  return KNOWN_DOMAINS.some((d) => h === d || h.endsWith(`.${d}`))
 }
 
 export function middleware(request: NextRequest) {
@@ -41,20 +41,23 @@ export function middleware(request: NextRequest) {
 
   const hostIsLoopback = isLoopback(realHost)
 
-  if (!hostIsLoopback && !hostAllowed(realHost)) {
+  if (!hostIsLoopback && !knownDomainForHost(realHost)) {
     return new NextResponse("bad host", { status: 400 })
   }
 
   const overrideDomain = url.searchParams.get("dev_domain")
-  if (overrideDomain && !KNOWN_DOMAINS.includes(overrideDomain)) {
+  if (overrideDomain && !isKnownDomain(overrideDomain)) {
     return
   }
 
   let domain: string | null = null
   let subdomain: string | null = null
+  const stagingDomain = stagingDomainForHost(realHost)
 
   if (overrideDomain) {
     domain = overrideDomain
+  } else if (stagingDomain) {
+    domain = stagingDomain
   } else if (hostIsLoopback) {
     domain = process.env.DEV_DOMAIN ?? DEFAULT_DEV_DOMAIN
   } else {
