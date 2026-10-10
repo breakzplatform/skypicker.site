@@ -1,6 +1,7 @@
 import { Raffle, type RaffleStrings } from "./raffle"
 
 import { getCurrentAgent, getCurrentDid } from "@/lib/atproto"
+import { getOriginFromHeaders } from "@/lib/oauth/origin"
 
 import content from "../../data/content.json"
 
@@ -19,8 +20,9 @@ export async function generateMetadata({
   return {
     title: c?.meta?.title,
     description: c?.meta?.description,
+    metadataBase: new URL(await getOriginFromHeaders()),
     openGraph: {
-      images: `https://${domain}/og-${domain}.png`,
+      images: `/og-${domain}.png`,
     },
   }
 }
