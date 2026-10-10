@@ -103,7 +103,7 @@ Cada chamada `/api/at/*` usa a sessão OAuth do cookie pra falar com o PDS do us
 
 ### Pré-requisitos
 
-- **Node.js** ≥ 20
+- **Node.js** 24.x (fixado em `engines.node`)
 - **pnpm** 10+ (`corepack enable`)
 - Uma conta Bluesky qualquer (não precisa App Password — OAuth resolve o login)
 
@@ -132,6 +132,8 @@ OAuth funciona local (formato loopback do AT Proto) com qualquer um deles. Sess�
 | --------------------- | ----------- | -------------------------------------------------------------------- |
 | `SESSION_SECRET`      | sim         | ≥32 chars. Cifragem do cookie de sessão. Gere com `openssl rand -base64 48`. |
 | `LANDING_SUBDOMAIN`   | não         | Subdomínio tratado como root (ex.: `www`).                           |
+| `SNAPSHOT_SECRET`     | não         | Chave HMAC dos links de snapshot. Cai no `SESSION_SECRET` se ausente. |
+| `STAGING_HOSTS`       | não         | Hosts extras exatos → domínio (ex.: `skypicker-staging.vercel.app=skypicker.site`). |
 
 > O origin (host + protocolo) é derivado do request — não há `PUBLIC_URL` fixa. Isso permite servir múltiplos domínios pelo mesmo deploy, cada um com seu próprio cliente OAuth.
 
@@ -144,6 +146,7 @@ pnpm start          # serve o build
 pnpm typecheck      # tsc --noEmit
 pnpm lint           # next lint (deprecado no Next 16, ainda funciona)
 pnpm format:write   # prettier --write
+pnpm brand-assets   # regenera favicon, apple-touch-icon e OG da home a partir de lib/brand.ts
 ```
 
 ---
@@ -156,7 +159,7 @@ pnpm format:write   # prettier --write
 - **Sem KV/Redis/DB**.
 - **Paginação no cliente**: cada request HTTP do servidor é curto (<2s), evitando timeouts de plataformas serverless.
 
-Funciona em Vercel, Cloudflare Workers, Fly.io, Render, AWS, Docker self-host, Railway etc. O `vercel.json` (com `maxDuration: 250`) é opcional — só relevante na Vercel e principalmente legado (não há mais loops longos no servidor).
+Funciona em Vercel, Cloudflare Workers, Fly.io, Render, AWS, Docker self-host, Railway etc. O `vercel.json` limita `maxDuration` a 60s (teto do plano Hobby); nenhuma rota faz trabalho ilimitado numa só chamada.
 
 ### Cliente OAuth (multi-domínio)
 
@@ -174,6 +177,14 @@ Pra testar 2 domínios localmente, aliase em `/etc/hosts` e use portas:
 ```
 
 Cada um vira seu próprio "cliente" automaticamente.
+
+### Staging
+
+Aliases de staging entram via `STAGING_HOSTS` (só no target Preview da Vercel), sem afrouxar a allowlist. Cada alias vira seu próprio cliente OAuth, com `client-metadata.json` no próprio host.
+
+### Marca
+
+A cor do projeto é o magenta do DS joseli.to (`#D6008F`/branco no claro, `#EE6ABE`/preto no escuro), definida só em `lib/brand.ts`. O CSS recebe as variáveis pelo `app/layout.tsx`; OG e ícones importam direto.
 
 ---
 
