@@ -30,7 +30,8 @@
             "handleLabel": "Seu handle ou servidor",
             "handlePlaceholder": "voce.exemplo.com ou https://pds.exemplo.com",
             "continue": "Continuar",
-            "handleHint": "Buscamos o servidor (PDS) do seu handle e levamos você até ele para entrar. Sua senha nunca passa por este site."
+            "handleHint": "Buscamos o servidor (PDS) do seu handle e levamos você até ele para entrar. Sua senha nunca passa por este site.",
+            "error": "Não deu para entrar com essa conta. Confira o handle ou o endereço do servidor."
         },
         "raffle": {
             "panelTitle": "Novo sorteio",
@@ -125,7 +126,8 @@
             "handleLabel": "Your handle or server",
             "handlePlaceholder": "you.example.com or https://pds.example.com",
             "continue": "Continue",
-            "handleHint": "We look up the server (PDS) behind your handle and send you there to sign in. Your password never touches this site."
+            "handleHint": "We look up the server (PDS) behind your handle and send you there to sign in. Your password never touches this site.",
+            "error": "Could not sign in with that account. Check the handle or the server address."
         },
         "raffle": {
             "panelTitle": "New giveaway",

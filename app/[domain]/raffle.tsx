@@ -2,7 +2,6 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from "react"
-import { usePathname } from "next/navigation"
 
 import {
   collectParticipants,
@@ -14,6 +13,7 @@ import {
   type RaffleProgress,
 } from "@/lib/raffle"
 import type { SiteContent } from "@/lib/site"
+import { SignIn } from "@/components/sign-in"
 
 export type RaffleStrings = SiteContent["raffle"] & {
   signin: SiteContent["signin"]
@@ -64,8 +64,6 @@ export function Raffle({
   const [snapshotBusy, setSnapshotBusy] = useState(false)
   const [copied, setCopied] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
-  const [loginHandle, setLoginHandle] = useState("")
-  const pathname = usePathname()
 
   useEffect(() => {
     return () => abortRef.current?.abort()
@@ -185,31 +183,14 @@ export function Raffle({
 
   if (!sessionDid) {
     return (
-      <section className="panel cast">
-        <h2 className="panel-h">{strings.signin.title}</h2>
-        <div className="panel-b sp-stack">
-          <p>{strings.signin.why}</p>
-          <form action="/api/oauth/login" method="GET" className="sp-stack">
-            <input type="hidden" name="return_to" value={pathname || "/"} />
-            <label className="field-block">
-              <span className="label">{strings.signin.handleLabel}</span>
-              <span className="field cast">
-                <input
-                  type="text"
-                  name="handle"
-                  value={loginHandle}
-                  onChange={(e) => setLoginHandle(e.target.value)}
-                  placeholder={strings.signin.handlePlaceholder}
-                />
-              </span>
-            </label>
-            <button type="submit" className="btn lg primary cast press">
-              {strings.signin.bluesky}
-            </button>
-          </form>
-          {error && <ErrorLine message={error} />}
-        </div>
-      </section>
+      <SignIn
+        strings={strings.signin}
+        error={
+          error && (
+            <ErrorLine message={`${strings.signin.error} (${error})`} />
+          )
+        }
+      />
     )
   }
 
