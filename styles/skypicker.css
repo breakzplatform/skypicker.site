@@ -167,6 +167,10 @@ p {
 .sp-section {
   border-top: var(--border);
 }
+.sp-section-label {
+  padding: var(--space-5) var(--box-pad);
+  border-top: var(--border);
+}
 
 /* Winner rows sit inside a panel that already casts, so they stay flat. */
 .sp-winners {
@@ -208,7 +212,7 @@ a.sp-row:hover {
   flex: none;
   border: var(--border);
   object-fit: cover;
-  background: var(--surface-fill);
+  background-color: var(--surface-fill);
 }
 .sp-who {
   display: grid;

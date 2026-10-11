@@ -126,7 +126,7 @@ export default async function SnapshotPage({
             </p>
           </div>
 
-          <h2 className="label sp-section panel-b m-0">
+          <h2 className="label sp-section-label m-0">
             {snapshot.w.length}{" "}
             {snapshot.w.length === 1 ? c.raffle.winner : c.raffle.winners}
           </h2>
