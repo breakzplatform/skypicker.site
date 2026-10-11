@@ -10,24 +10,40 @@ import type { Snapshot } from "./snapshot"
 export const OG_SIZE = { width: 1200, height: 630 } as const
 export const OG_CONTENT_TYPE = "image/png"
 
+/*
+ * The images follow the joseli.to DS light theme: newsprint paper, Computer
+ * Modern, 2px-at-1x square blocks with a halftone dot shadow and a tilted ink
+ * block on the wordmark. Satori cannot read woff2, so the CMU faces ship here
+ * as Latin/Greek/Cyrillic TTF subsets of the "computer-modern" npm package
+ * (the same binaries static.joseli.to serves as woff2).
+ */
 const FONT_DIR = join(process.cwd(), "assets", "fonts")
-const ink = brand.dark.ink
-const onInk = brand.dark.onInk
+
+const SERIF = "CMU Serif"
+const SANS = "CMU Sans Serif"
+const MONO = "CMU Typewriter Text"
 
 type OgFont = {
   name: string
   data: Buffer
-  weight: 500 | 800
+  weight: 500 | 700
   style: "normal"
 }
+
+const FONT_FILES: Array<[string, 500 | 700, string]> = [
+  [SERIF, 700, "cmu-serif-700-roman.ttf"],
+  [SANS, 500, "cmu-sans-serif-500-roman.ttf"],
+  [SANS, 700, "cmu-sans-serif-700-roman.ttf"],
+  [MONO, 700, "cmu-typewriter-text-700-roman.ttf"],
+]
 
 let fontsPromise: Promise<OgFont[]> | null = null
 
 function loadFonts(): Promise<OgFont[]> {
   fontsPromise ??= Promise.all(
-    ([500, 800] as const).map(async (weight) => ({
-      name: "Inter",
-      data: await readFile(join(FONT_DIR, `Inter-${weight}.ttf`)),
+    FONT_FILES.map(async ([name, weight, file]) => ({
+      name,
+      data: await readFile(join(FONT_DIR, file)),
       weight,
       style: "normal" as const,
     }))
@@ -35,15 +51,35 @@ function loadFonts(): Promise<OgFont[]> {
   return fontsPromise
 }
 
+/* The DS geometry scaled for a 1200px card: 4px rules, a 6px dot pitch and a 16px shadow offset. */
+const BORDER = 4
+const DOT_PITCH = 6
+const SHADOW = 16
+const TILT = "rotate(1.5deg)"
+
 type Locale = "en" | "pt"
 
-const SITE: Record<KnownDomain, { name: string; locale: Locale }> = {
-  "skypicker.site": { name: "SkyPicker", locale: "en" },
-  "sorteio.blue": { name: "sorteio.blue", locale: "pt" },
+const SITE: Record<
+  KnownDomain,
+  { name: string; suffix: string; locale: Locale; tagline: string }
+> = {
+  "skypicker.site": {
+    name: "skypicker",
+    suffix: ".site",
+    locale: "en",
+    tagline: "Giveaways on Bluesky and the Atmosphere",
+  },
+  "sorteio.blue": {
+    name: "sorteio",
+    suffix: ".blue",
+    locale: "pt",
+    tagline: "Sorteios no Bluesky e na Atmosphere",
+  },
 }
 
 const LABELS = {
   en: {
+    kicker: "Raffle result",
     fallbackTitle: "Bluesky giveaway",
     winner: "winner",
     winners: "winners",
@@ -57,6 +93,7 @@ const LABELS = {
     more: (n: number) => `+${n} more`,
   },
   pt: {
+    kicker: "Resultado do sorteio",
     fallbackTitle: "Sorteio no Bluesky",
     winner: "ganhador",
     winners: "ganhadores",
@@ -71,24 +108,140 @@ const LABELS = {
   },
 } satisfies Record<Locale, unknown>
 
+/* Satori only honours percentage stops here; in a square cell the default
+   ellipse is a circle and 46% of its farthest-corner radius is ~2px. */
+function dotField(color: string = brand.text): React.CSSProperties {
+  return {
+    backgroundImage: `radial-gradient(${color} 46%, transparent 52%)`,
+    backgroundSize: `${DOT_PITCH}px ${DOT_PITCH}px`,
+    backgroundRepeat: "repeat",
+  }
+}
+
+/** A square block with a 2px (here 4px) rule casting a halftone shadow. */
+function Cast({
+  width,
+  height,
+  background = brand.card,
+  style,
+  children,
+}: {
+  width?: number
+  height?: number
+  background?: string
+  style?: React.CSSProperties
+  children?: React.ReactNode
+}) {
+  return (
+    <div style={{ display: "flex", position: "relative", width, height }}>
+      <div
+        style={{
+          position: "absolute",
+          left: SHADOW,
+          top: SHADOW,
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          ...dotField(),
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          width: "100%",
+          height: "100%",
+          border: `${BORDER}px solid ${brand.text}`,
+          background,
+          ...style,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
 function Mark({ size }: { size: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64">
-      <rect width="64" height="64" rx="14" fill={ink} />
+      <rect width="64" height="64" fill={brand.ink} />
       <circle
         cx="32"
         cy="32"
         r="18"
         fill="none"
-        stroke={onInk}
+        stroke={brand.onInk}
         strokeWidth="7"
       />
-      <circle cx="32" cy="32" r="6.5" fill={onInk} />
+      <circle cx="32" cy="32" r="6.5" fill={brand.onInk} />
     </svg>
   )
 }
 
-function Frame({ children }: { children: React.ReactNode }) {
+function Wordmark({ domain, size }: { domain: KnownDomain; size: number }) {
+  const site = SITE[domain]
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: size * 0.18,
+        fontFamily: SERIF,
+        fontWeight: 700,
+        fontSize: size,
+        letterSpacing: "-0.02em",
+        lineHeight: 1,
+        color: brand.text,
+      }}
+    >
+      <Mark size={Math.round(size * 0.72)} />
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <span>{site.name}</span>
+        <span
+          style={{
+            marginLeft: size * 0.04,
+            lineHeight: 0.8,
+            padding: `${size * 0.08}px ${size * 0.07}px ${size * 0.04}px`,
+            background: brand.ink,
+            color: brand.onInk,
+            transform: TILT,
+          }}
+        >
+          {site.suffix}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function Meta({
+  children,
+  size = 22,
+  color = brand.text3,
+}: {
+  children: React.ReactNode
+  size?: number
+  color?: string
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        fontFamily: MONO,
+        fontWeight: 700,
+        fontSize: size,
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        color,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+function Page({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
@@ -96,24 +249,12 @@ function Frame({ children }: { children: React.ReactNode }) {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: brand.night,
-        color: brand.cream,
-        fontFamily: "Inter",
-        position: "relative",
+        background: brand.paper,
+        color: brand.text,
+        fontFamily: SANS,
       }}
     >
       {children}
-      <div
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: 14,
-          background: ink,
-          display: "flex",
-        }}
-      />
     </div>
   )
 }
@@ -126,61 +267,69 @@ export async function renderHomeImage(
   const site = SITE[domain]
   return new ImageResponse(
     (
-      <Frame>
+      <Page>
         <div
           style={{
             flex: 1,
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            padding: "0 96px",
+            padding: "64px 76px 76px 64px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 36 }}>
-            <Mark size={132} />
+          <Cast
+            width={1200 - 64 - 76}
+            height={630 - 64 - 76}
+            style={{ flexDirection: "column" }}
+          >
             <div
               style={{
-                fontSize: 136,
-                fontWeight: 800,
-                letterSpacing: "-0.04em",
-                lineHeight: 1,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "14px 24px",
+                background: brand.ink,
+                color: brand.onInk,
+                borderBottom: `${BORDER}px solid ${brand.text}`,
               }}
             >
-              {site.name}
+              <Meta size={22} color={brand.onInk}>
+                {site.tagline}
+              </Meta>
+              <Meta size={22} color={brand.onInk}>
+                {domain}
+              </Meta>
             </div>
-          </div>
-          <div
-            style={{
-              marginTop: 48,
-              fontSize: 40,
-              fontWeight: 500,
-              lineHeight: 1.25,
-              opacity: 0.85,
-              maxWidth: 1008,
-              display: "flex",
-            }}
-          >
-            {subtitle}
-          </div>
-          <div
-            style={{
-              marginTop: 40,
-              fontSize: 32,
-              fontWeight: 800,
-              color: ink,
-              display: "flex",
-            }}
-          >
-            {domain}
-          </div>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "0 56px",
+              }}
+            >
+              <Wordmark domain={domain} size={124} />
+              <div
+                style={{
+                  marginTop: 40,
+                  fontSize: 38,
+                  fontWeight: 700,
+                  lineHeight: 1.25,
+                  color: brand.text,
+                  display: "flex",
+                }}
+              >
+                {subtitle}
+              </div>
+            </div>
+          </Cast>
         </div>
-      </Frame>
+      </Page>
     ),
     { ...OG_SIZE, fonts: await loadFonts() }
   )
 }
 
-const AVATAR_SIZE = 132
+const AVATAR_SIZE = 128
 const MAX_AVATARS = 5
 
 const PUBLIC_APPVIEW = "https://public.api.bsky.app"
@@ -238,6 +387,10 @@ function participantCount(snapshot: Snapshot): number {
   }
 }
 
+function truncate(text: string, max: number): string {
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text
+}
+
 export async function renderSnapshotImage(
   snapshot: Snapshot,
   domain: KnownDomain = "skypicker.site"
@@ -247,18 +400,18 @@ export async function renderSnapshotImage(
   const numberLocale = site.locale === "pt" ? "pt-BR" : "en-US"
   const winners = snapshot.w.slice(0, MAX_AVATARS)
   const remaining = snapshot.w.length - winners.length
-  const title = snapshot.t ?? labels.fallbackTitle
+  const title = truncate(snapshot.t ?? labels.fallbackTitle, 70)
   const avatars = await fetchAvatars(winners.map((w) => w.did))
 
   return new ImageResponse(
     (
-      <Frame>
+      <Page>
         <div
           style={{
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            padding: "56px 72px 64px",
+            padding: "44px 64px 52px",
           }}
         >
           <div
@@ -268,61 +421,48 @@ export async function renderSnapshotImage(
               justifyContent: "space-between",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                fontSize: 34,
-                fontWeight: 800,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              <Mark size={48} />
-              {site.name}
-            </div>
-            <div
-              style={{
-                fontSize: 22,
-                fontWeight: 500,
-                opacity: 0.7,
-                display: "flex",
-              }}
-            >
-              {formatDate(snapshot.ts, site.locale)}
-            </div>
+            <Wordmark domain={domain} size={46} />
+            <Meta size={20}>{formatDate(snapshot.ts, site.locale)}</Meta>
           </div>
-
           <div
             style={{
-              marginTop: 44,
-              fontSize: title.length > 40 ? 52 : 68,
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
+              display: "flex",
+              marginTop: 22,
+              borderTop: `6px solid ${brand.text}`,
+              borderBottom: `2px solid ${brand.text}`,
+              height: 12,
+            }}
+          />
+
+          <div style={{ display: "flex", marginTop: 26 }}>
+            <Meta size={22} color={brand.spot}>
+              {labels.kicker}
+            </Meta>
+          </div>
+          <div
+            style={{
+              marginTop: 8,
+              fontFamily: SERIF,
+              fontSize: title.length > 40 ? 50 : 64,
+              fontWeight: 700,
+              letterSpacing: "-0.02em",
               lineHeight: 1.08,
               display: "flex",
             }}
           >
             {title}
           </div>
-
-          <div
-            style={{
-              marginTop: 16,
-              fontSize: 26,
-              fontWeight: 500,
-              opacity: 0.8,
-              display: "flex",
-            }}
-          >
-            {`${snapshot.w.length} ${snapshot.w.length === 1 ? labels.winner : labels.winners} · ${participantCount(snapshot).toLocaleString(numberLocale)} ${labels.participants} · ${labels.modes[snapshot.m]}${snapshot.ph ? ` · @${snapshot.ph}` : ""}`}
+          <div style={{ display: "flex", marginTop: 14 }}>
+            <Meta size={20}>
+              {`${snapshot.w.length} ${snapshot.w.length === 1 ? labels.winner : labels.winners} · ${participantCount(snapshot).toLocaleString(numberLocale)} ${labels.participants} · ${labels.modes[snapshot.m]}${snapshot.ph ? ` · @${truncate(snapshot.ph, 28)}` : ""}`}
+            </Meta>
           </div>
 
           <div
             style={{
               marginTop: "auto",
               display: "flex",
-              gap: 28,
+              gap: 44,
               alignItems: "flex-start",
             }}
           >
@@ -332,56 +472,48 @@ export async function renderSnapshotImage(
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center",
-                  width: AVATAR_SIZE + 28,
+                  width: AVATAR_SIZE + SHADOW,
                 }}
               >
-                <div
-                  style={{
-                    width: AVATAR_SIZE,
-                    height: AVATAR_SIZE,
-                    display: "flex",
-                    position: "relative",
-                  }}
-                >
-                  {avatars.has(w.did) ? (
-                    <img
-                      src={avatars.get(w.did)}
-                      alt=""
-                      width={AVATAR_SIZE}
-                      height={AVATAR_SIZE}
-                      style={{
-                        width: AVATAR_SIZE,
-                        height: AVATAR_SIZE,
-                        borderRadius: AVATAR_SIZE,
-                        border: `5px solid ${ink}`,
-                        objectFit: "cover",
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: AVATAR_SIZE,
-                        height: AVATAR_SIZE,
-                        borderRadius: AVATAR_SIZE,
-                        border: `5px solid ${ink}`,
-                        background: "rgba(254,243,226,0.12)",
-                        display: "flex",
-                      }}
-                    />
-                  )}
+                <div style={{ display: "flex", position: "relative" }}>
+                  <Cast
+                    width={AVATAR_SIZE}
+                    height={AVATAR_SIZE}
+                    background={brand.sunken}
+                  >
+                    {avatars.has(w.did) ? (
+                      <img
+                        src={avatars.get(w.did)}
+                        alt=""
+                        width={AVATAR_SIZE - 2 * BORDER}
+                        height={AVATAR_SIZE - 2 * BORDER}
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          width: "100%",
+                          height: "100%",
+                          ...dotField(brand.ink),
+                        }}
+                      />
+                    )}
+                  </Cast>
                   <div
                     style={{
                       position: "absolute",
-                      top: -6,
-                      left: -6,
-                      width: 42,
-                      height: 42,
-                      borderRadius: 42,
-                      background: ink,
-                      color: onInk,
-                      fontSize: 22,
-                      fontWeight: 800,
+                      top: -14,
+                      left: -14,
+                      minWidth: 44,
+                      height: 44,
+                      padding: "0 8px",
+                      background: brand.ink,
+                      color: brand.onInk,
+                      border: `${BORDER}px solid ${brand.text}`,
+                      fontFamily: SERIF,
+                      fontSize: 26,
+                      fontWeight: 700,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -392,30 +524,31 @@ export async function renderSnapshotImage(
                 </div>
                 <div
                   style={{
-                    marginTop: 14,
-                    fontSize: 20,
-                    fontWeight: 800,
+                    marginTop: 20,
+                    fontSize: 21,
+                    fontWeight: 700,
                     display: "flex",
-                    justifyContent: "center",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     maxWidth: "100%",
                   }}
                 >
-                  {(w.n ?? w.h).slice(0, 16)}
+                  {truncate(w.n ?? w.h, 14)}
                 </div>
                 <div
                   style={{
-                    fontSize: 16,
-                    fontWeight: 500,
-                    opacity: 0.7,
+                    marginTop: 2,
+                    fontFamily: MONO,
+                    fontWeight: 700,
+                    fontSize: 15,
+                    color: brand.text3,
                     display: "flex",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     maxWidth: "100%",
                   }}
                 >
-                  @{w.h.slice(0, 18)}
+                  @{truncate(w.h, 16)}
                 </div>
               </div>
             ))}
@@ -425,9 +558,10 @@ export async function renderSnapshotImage(
                   height: AVATAR_SIZE,
                   display: "flex",
                   alignItems: "center",
-                  fontSize: 30,
-                  fontWeight: 800,
-                  color: ink,
+                  fontFamily: SERIF,
+                  fontSize: 34,
+                  fontWeight: 700,
+                  color: brand.ink,
                   whiteSpace: "nowrap",
                 }}
               >
@@ -436,7 +570,7 @@ export async function renderSnapshotImage(
             )}
           </div>
         </div>
-      </Frame>
+      </Page>
     ),
     { ...OG_SIZE, fonts: await loadFonts() }
   )

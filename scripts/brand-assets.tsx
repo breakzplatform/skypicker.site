@@ -14,24 +14,12 @@ import { renderHomeImage } from "../lib/og-image"
 
 const PUBLIC_DIR = join(process.cwd(), "public")
 
-function markSvg(ink: string, onInk: string, radius = 14): string {
-  return `<rect width="64" height="64" rx="${radius}" fill="${ink}"/><circle cx="32" cy="32" r="18" fill="none" stroke="${onInk}" stroke-width="7"/><circle cx="32" cy="32" r="6.5" fill="${onInk}"/>`
-}
-
-const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<style>.ink{fill:${brand.light.ink}}.on{fill:${brand.light.onInk};stroke:${brand.light.onInk}}@media (prefers-color-scheme:dark){.ink{fill:${brand.dark.ink}}.on{fill:${brand.dark.onInk};stroke:${brand.dark.onInk}}}</style>
-<rect class="ink" width="64" height="64" rx="14"/><circle class="on" cx="32" cy="32" r="18" fill="none" style="fill:none" stroke-width="7"/><circle class="on" cx="32" cy="32" r="6.5" stroke-width="0"/>
-</svg>
+/** The square target mark; same geometry as components/brand-mark.tsx. */
+const markSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="${brand.ink}"/><circle cx="32" cy="32" r="18" fill="none" stroke="${brand.onInk}" stroke-width="7"/><circle cx="32" cy="32" r="6.5" fill="${brand.onInk}"/></svg>
 `
 
-function rasterSvg(radius: number): Buffer {
-  return Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">${markSvg(brand.light.ink, brand.light.onInk, radius)}</svg>`
-  )
-}
-
-async function png(size: number, radius: number): Promise<Buffer> {
-  return sharp(rasterSvg(radius), { density: 72 * (size / 64) * 4 })
+async function png(size: number): Promise<Buffer> {
+  return sharp(Buffer.from(markSvg), { density: 72 * (size / 64) * 4 })
     .resize(size, size)
     .png()
     .toBuffer()
@@ -62,16 +50,16 @@ function ico(images: Array<{ size: number; data: Buffer }>): Buffer {
 }
 
 async function main() {
-  await writeFile(join(PUBLIC_DIR, "icon.svg"), iconSvg)
+  await writeFile(join(PUBLIC_DIR, "icon.svg"), markSvg)
 
   const icoSizes = [16, 32, 48]
   const icoImages = await Promise.all(
-    icoSizes.map(async (size) => ({ size, data: await png(size, 14) }))
+    icoSizes.map(async (size) => ({ size, data: await png(size) }))
   )
   await writeFile(join(PUBLIC_DIR, "favicon.ico"), ico(icoImages))
 
-  // iOS applies its own mask, so the touch icon is a full-bleed square.
-  await writeFile(join(PUBLIC_DIR, "apple-touch-icon.png"), await png(180, 0))
+  // iOS applies its own mask, so the touch icon is the full-bleed square.
+  await writeFile(join(PUBLIC_DIR, "apple-touch-icon.png"), await png(180))
 
   for (const domain of KNOWN_DOMAINS) {
     const image = await renderHomeImage(domain, content[domain].subtitle)

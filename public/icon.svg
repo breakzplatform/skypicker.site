@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<style>.ink{fill:#D6008F}.on{fill:#FFFFFF;stroke:#FFFFFF}@media (prefers-color-scheme:dark){.ink{fill:#EE6ABE}.on{fill:#000000;stroke:#000000}}</style>
-<rect class="ink" width="64" height="64" rx="14"/><circle class="on" cx="32" cy="32" r="18" fill="none" style="fill:none" stroke-width="7"/><circle class="on" cx="32" cy="32" r="6.5" stroke-width="0"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#D6008F"/><circle cx="32" cy="32" r="18" fill="none" stroke="#FFFFFF" stroke-width="7"/><circle cx="32" cy="32" r="6.5" fill="#FFFFFF"/></svg>
