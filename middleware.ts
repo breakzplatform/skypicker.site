@@ -1,23 +1,31 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 import {
+  DEFAULT_DOMAIN,
   isKnownDomain,
   KNOWN_DOMAINS,
   knownDomainForHost,
+  SITE_DOMAIN_HEADER,
   stagingDomainForHost,
+  type KnownDomain,
 } from "./lib/hosts"
 import { getDomain } from "./lib/utils"
-
-const DEFAULT_DEV_DOMAIN = "skypicker.site"
 
 function isLoopback(host: string): boolean {
   return /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(host)
 }
 
-function pathStartsWithKnownDomain(pathname: string): boolean {
-  return KNOWN_DOMAINS.some(
+function knownDomainInPath(pathname: string): KnownDomain | undefined {
+  return KNOWN_DOMAINS.find(
     (d) => pathname === `/${d}` || pathname.startsWith(`/${d}/`)
   )
+}
+
+/** Forwards the rendered domain so the root layout can set <html lang>. */
+function withSiteDomain(request: NextRequest, domain: string): Headers {
+  const headers = new Headers(request.headers)
+  headers.set(SITE_DOMAIN_HEADER, domain)
+  return headers
 }
 
 export function middleware(request: NextRequest) {
@@ -35,8 +43,11 @@ export function middleware(request: NextRequest) {
     return
   }
 
-  if (pathStartsWithKnownDomain(url.pathname)) {
-    return
+  const pathDomain = knownDomainInPath(url.pathname)
+  if (pathDomain) {
+    return NextResponse.next({
+      request: { headers: withSiteDomain(request, pathDomain) },
+    })
   }
 
   const hostIsLoopback = isLoopback(realHost)
@@ -59,7 +70,7 @@ export function middleware(request: NextRequest) {
   } else if (stagingDomain) {
     domain = stagingDomain
   } else if (hostIsLoopback) {
-    domain = process.env.DEV_DOMAIN ?? DEFAULT_DEV_DOMAIN
+    domain = process.env.DEV_DOMAIN ?? DEFAULT_DOMAIN
   } else {
     try {
       const parsed = getDomain(realHost.split(":")[0])
@@ -82,14 +93,18 @@ export function middleware(request: NextRequest) {
 
   const suffix = url.pathname === "/" ? "" : url.pathname
 
+  const forwarded = { headers: withSiteDomain(request, domain) }
+
   if (subdomain && subdomain !== process.env.LANDING_SUBDOMAIN) {
     return NextResponse.rewrite(
-      new URL(`/${domain}/${subdomain}${suffix}${cleanedSearch}`, url)
+      new URL(`/${domain}/${subdomain}${suffix}${cleanedSearch}`, url),
+      { request: forwarded }
     )
   }
 
   return NextResponse.rewrite(
-    new URL(`/${domain}${suffix}${cleanedSearch}`, url)
+    new URL(`/${domain}${suffix}${cleanedSearch}`, url),
+    { request: forwarded }
   )
 }
 

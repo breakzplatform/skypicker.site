@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 
 import "@/styles/globals.css"
 
+import { getSiteDomain, siteContent } from "@/lib/site"
 import { THEME_BOOT_SCRIPT } from "@/lib/theme"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 
@@ -26,9 +27,11 @@ interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const domain = await getSiteDomain()
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={siteContent(domain).meta.lang} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <link rel="preconnect" href={FONT_HOST} crossOrigin="anonymous" />

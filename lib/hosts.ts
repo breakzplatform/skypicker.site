@@ -34,3 +34,8 @@ export function knownDomainForHost(host: string): KnownDomain | null {
   const known = KNOWN_DOMAINS.find((d) => name === d || name.endsWith(`.${d}`))
   return known ?? stagingDomainForHost(name)
 }
+
+/** Request header the middleware sets to the known domain a page renders. */
+export const SITE_DOMAIN_HEADER = "x-site-domain"
+
+export const DEFAULT_DOMAIN: KnownDomain = "skypicker.site"
