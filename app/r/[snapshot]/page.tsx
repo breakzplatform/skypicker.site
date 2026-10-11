@@ -2,21 +2,16 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
+import { getSiteDomain, siteContent } from "@/lib/site"
 import { decodeSnapshot, type Snapshot } from "@/lib/snapshot"
-import { BrandMark } from "@/components/brand-mark"
+import { SiteFooter, TopBar } from "@/components/site-shell"
+import { Wordmark } from "@/components/wordmark"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
 const PUBLIC_APPVIEW = "https://public.api.bsky.app"
 const MAX_PROFILE_BATCH = 25
-
-const MODE_LABELS: Record<Snapshot["m"], string> = {
-  likes: "Likes only",
-  reposts: "Reposts only",
-  and: "Likes ∩ Reposts",
-  or: "Likes ∪ Reposts",
-}
 
 type LiveProfile = {
   did: string
@@ -25,7 +20,9 @@ type LiveProfile = {
   avatar?: string
 }
 
-async function fetchLiveProfiles(dids: string[]): Promise<Map<string, LiveProfile>> {
+async function fetchLiveProfiles(
+  dids: string[]
+): Promise<Map<string, LiveProfile>> {
   const out = new Map<string, LiveProfile>()
   for (let i = 0; i < dids.length; i += MAX_PROFILE_BATCH) {
     const batch = dids.slice(i, i + MAX_PROFILE_BATCH)
@@ -41,21 +38,26 @@ async function fetchLiveProfiles(dids: string[]): Promise<Map<string, LiveProfil
   return out
 }
 
+function decodeOrNotFound(encoded: string): Snapshot {
+  try {
+    return decodeSnapshot(encoded)
+  } catch {
+    notFound()
+  }
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ snapshot: string }>
 }): Promise<Metadata> {
   const { snapshot: encoded } = await params
-  let snapshot: Snapshot
-  try {
-    snapshot = decodeSnapshot(encoded)
-  } catch {
-    notFound()
-  }
+  const snapshot = decodeOrNotFound(encoded)
+  const c = siteContent(await getSiteDomain())
 
-  const title = snapshot.t ?? "Bluesky Raffle"
-  const description = `${snapshot.w.length} ${snapshot.w.length === 1 ? "winner" : "winners"} · ${MODE_LABELS[snapshot.m]}`
+  const title = snapshot.t ?? c.snapshot.fallbackTitle
+  const winners = snapshot.w.length === 1 ? c.raffle.winner : c.raffle.winners
+  const description = `${snapshot.w.length} ${winners} · ${c.snapshot.modes[snapshot.m]}`
 
   return {
     title,
@@ -80,114 +82,115 @@ export default async function SnapshotPage({
   params: Promise<{ snapshot: string }>
 }) {
   const { snapshot: encoded } = await params
-
-  let snapshot: Snapshot
-  try {
-    snapshot = decodeSnapshot(encoded)
-  } catch {
-    notFound()
-  }
+  const snapshot = decodeOrNotFound(encoded)
+  const c = siteContent(await getSiteDomain())
+  const locale = c.meta.locale
 
   const live = await fetchLiveProfiles(snapshot.w.map((w) => w.did))
   const ts = new Date(snapshot.ts)
+  const when = ts.toLocaleString(locale, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+  })
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-12">
-      <header className="mb-8">
-        <p className="mb-4 flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-          <BrandMark className="h-5 w-5" />
-          SkyPicker · Raffle snapshot
-        </p>
-        <h1 className="text-3xl font-bold sm:text-5xl">
-          {snapshot.t ?? "Bluesky Raffle"}
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          <time dateTime={ts.toISOString()}>{ts.toUTCString()}</time>
-          {" · "}
-          {MODE_LABELS[snapshot.m]}
-          {" · "}
-          {snapshot.tl[0].toLocaleString()} likes ·{" "}
-          {snapshot.tl[1].toLocaleString()} reposts
-          {snapshot.ph ? ` · post by @${snapshot.ph}` : ""}
-        </p>
-      </header>
+    <div className="sp-page">
+      <TopBar content={c} />
+      <main>
+        <header className="sp-masthead sp-masthead-sm">
+          <a href="/" className="wordmark" data-no-invert>
+            <Wordmark content={c} as="p" />
+          </a>
+        </header>
 
-      <section className="mb-8 grid gap-3">
-        <h2 className="text-lg font-semibold">
-          {snapshot.w.length}{" "}
-          {snapshot.w.length === 1 ? "winner" : "winners"}
-        </h2>
-        <ol className="grid gap-3">
-          {snapshot.w.map((w, i) => {
-            const liveProfile = live.get(w.did)
-            const handle = liveProfile?.handle ?? w.h
-            const displayName = liveProfile?.displayName ?? w.n ?? w.h
-            return (
-              <li
-                key={w.did}
-                className="flex items-center gap-4 rounded-md border border-border/40 p-3"
-              >
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-semibold dark:bg-slate-800">
-                  {i + 1}
-                </span>
-                {liveProfile?.avatar ? (
-                  <img
-                    src={liveProfile.avatar}
-                    alt={`${handle} avatar`}
-                    className="h-12 w-12 rounded-full"
-                  />
-                ) : (
-                  <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800" />
-                )}
-                <div className="flex flex-1 flex-col">
+        <section className="panel cast">
+          <h1 className="panel-h">{c.snapshot.kicker}</h1>
+          <div className="panel-b sp-stack">
+            <p className="sp-result-title">
+              {snapshot.t ?? c.snapshot.fallbackTitle}
+            </p>
+            <p className="meta">
+              <time dateTime={ts.toISOString()}>{when} UTC</time>
+              {" · "}
+              {c.snapshot.modes[snapshot.m]}
+              {" · "}
+              {snapshot.tl[0].toLocaleString(locale)} {c.raffle.likesLabel}
+              {" · "}
+              {snapshot.tl[1].toLocaleString(locale)} {c.raffle.repostsLabel}
+              {snapshot.ph ? ` · ${c.snapshot.postBy} @${snapshot.ph}` : ""}
+            </p>
+          </div>
+
+          <h2 className="label sp-section panel-b m-0">
+            {snapshot.w.length}{" "}
+            {snapshot.w.length === 1 ? c.raffle.winner : c.raffle.winners}
+          </h2>
+          <ol className="sp-winners sp-section">
+            {snapshot.w.map((w, i) => {
+              const liveProfile = live.get(w.did)
+              const handle = liveProfile?.handle ?? w.h
+              const displayName = liveProfile?.displayName || w.n || handle
+              return (
+                <li key={w.did}>
                   <a
                     href={`https://bsky.app/profile/${handle}`}
                     target="_blank"
                     rel="noopener"
-                    className="font-semibold hover:underline"
+                    className="sp-row"
                   >
-                    {displayName}
+                    <span className="sp-rank">{i + 1}</span>
+                    {liveProfile?.avatar ? (
+                      <img
+                        src={liveProfile.avatar}
+                        alt=""
+                        className="sp-avatar"
+                      />
+                    ) : (
+                      <span className="sp-avatar screen" />
+                    )}
+                    <span className="sp-who">
+                      <span className="sp-name">{displayName}</span>
+                      <span className="sp-handle">@{handle}</span>
+                    </span>
                   </a>
-                  <span className="text-sm text-muted-foreground">
-                    @{handle}
-                  </span>
-                </div>
-              </li>
-            )
-          })}
-        </ol>
-      </section>
+                </li>
+              )
+            })}
+          </ol>
 
-      <section className="mb-8 grid gap-3 rounded-md border border-border/40 p-4 text-sm">
-        <h3 className="font-semibold">Share</h3>
-        <div className="flex flex-wrap gap-2">
-          <a
-            href={`/r/${encoded}/og.png?dl=1`}
-            download
-            className="rounded-md border px-3 py-2 hover:bg-muted/50"
-          >
-            ⬇︎ Download OG image
-          </a>
-          <a
-            href={`/r/${encoded}/og.png`}
-            target="_blank"
-            rel="noopener"
-            className="rounded-md border px-3 py-2 hover:bg-muted/50"
-          >
-            ↗ Open OG image
-          </a>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          The image above is generated from this URL. Anyone with this link
-          can verify the result — the snapshot is signed.
+          <div className="panel-b sp-section sp-stack">
+            <span className="label m-0">{c.snapshot.shareTitle}</span>
+            <div className="sp-actions">
+              <a
+                href={`/r/${encoded}/og.png?dl=1`}
+                download
+                className="btn primary cast press"
+              >
+                {c.snapshot.downloadOg}
+              </a>
+              <a
+                href={`/r/${encoded}/og.png`}
+                target="_blank"
+                rel="noopener"
+                className="btn cast press"
+              >
+                {c.snapshot.openOg} ↗
+              </a>
+            </div>
+            <p className="hint m-0">{c.snapshot.shareHint}</p>
+          </div>
+        </section>
+
+        <p className="sp-back">
+          <a href="/">← {c.snapshot.newRaffle}</a>
         </p>
-      </section>
-
-      <footer className="mt-12 text-xs text-muted-foreground">
-        <a href="/" className="underline">
-          ← New raffle
-        </a>
-      </footer>
+      </main>
+      <SiteFooter content={c} />
     </div>
   )
 }
