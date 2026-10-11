@@ -74,16 +74,18 @@ lib/
     stores.ts                      StateStore + SessionStore (cookie-backed)
   raffle.ts                        Orquestração client (collect, sample, profiles)
   utils.ts                         cn() + getDomain()
-  fonts.ts                         Inter + JetBrains Mono
+  site.ts                          Domínio servido + conteúdo (en/pt-BR)
+  theme.ts                         Temas manuais (claro/escuro/terminal)
+  og-image.tsx                     OG da home e do resultado (fontes CMU em assets/fonts)
 middleware.ts                      Reescrita por hostname
 public/                            Favicons + OG images
-styles/                            globals.css + custom.css
+styles/                            globals.css + skypicker.css + ds/ (cópia do joseli.to DS)
 types/nav.ts
 ```
 
 ### Como funciona o sorteio
 
-1. Visitante faz login OAuth (Bluesky) — cookie de sessão é gravado.
+1. Visitante faz login OAuth com o Bluesky ou qualquer conta da Atmosphere (handle ou endereço do PDS) — cookie de sessão é gravado.
 2. Cola URL do post + escolhe modo (likes/reposts/AND/OR) + número de ganhadores.
 3. Cliente chama `/api/at/post` pra resolver a URL → AT URI.
 4. Cliente enfileira chamadas paralelas a `/api/at/likes` e `/api/at/reposts`, paginando até `cursor === null`. Progresso aparece em tempo real.
