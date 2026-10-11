@@ -273,11 +273,11 @@ a.sp-chip:hover {
   padding-top: var(--space-8);
   border-top: var(--border);
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-4);
   text-align: center;
 }
-.sp-foot .meta a {
-  color: var(--link);
+.sp-foot .sp-chips {
+  margin-bottom: var(--space-6);
 }
 .sp-note {
   font: var(--type-dek);
