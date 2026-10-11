@@ -1,0 +1,301 @@
+/* SkyPicker / sorteio.blue components on top of the joseli.to design system.
+   Nothing here invents a value: colours, rules, gaps and fonts are DS tokens,
+   and the halftone shadow, press and lift come from .cast / .press / .lift in
+   the markup. */
+
+/* The project ink is the DS magenta in every theme; this rule has to sit on
+   `:root, [data-theme]` after the DS imports so it beats each theme block's
+   default (terminal still folds it to amber, as the DS wants). */
+:root,
+[data-theme] {
+  --project-ink: var(--ink-magenta);
+  --project-ink-contrast: var(--on-magenta);
+}
+
+p {
+  margin: 0;
+}
+
+.sp-page {
+  max-width: calc(720px + 2 * var(--page-pad-x));
+  margin: 0 auto;
+  padding: 0 var(--page-pad-x) var(--page-pad-bottom);
+}
+
+.sp-topbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding-top: var(--space-6);
+}
+
+/* A single-purpose tool page: the masthead is centred and the wordmark runs
+   past the top of the type scale, as on down.blue. */
+.sp-masthead {
+  text-align: center;
+  margin: var(--space-10) 0 var(--space-11);
+}
+.sp-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18em;
+  margin: 0;
+  font: var(--weight-display) clamp(44px, 12vw, 96px) / 1.1 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--text-1);
+  white-space: nowrap;
+}
+.sp-wordmark .ink-block {
+  margin-left: 0.04em;
+}
+.sp-mark {
+  width: 0.72em;
+  height: 0.72em;
+  flex: none;
+}
+/* The subheadline keeps real breathing room under the wordmark. */
+.sp-lede {
+  margin: var(--space-9) auto 0;
+  max-width: var(--measure-dek);
+  font: var(--type-title);
+  font-size: var(--text-feed-title);
+  color: var(--text-1);
+}
+.sp-dek {
+  margin: var(--space-6) auto 0;
+  max-width: var(--measure-dek);
+  font: var(--type-dek);
+  font-size: var(--text-body);
+  color: var(--text-2);
+}
+
+.sp-stack {
+  display: grid;
+  gap: var(--space-6);
+}
+.sp-stack > .field-block {
+  margin: 0;
+}
+
+/* Sign-in: two equally weighted choices, stacked on phones. */
+.sp-signin {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .sp-signin {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.sp-signin form {
+  display: contents;
+}
+.sp-signin .btn {
+  width: 100%;
+  min-height: 56px;
+  font-size: var(--text-body);
+}
+.sp-atmo {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+  font: var(--type-dek);
+  font-size: var(--text-body);
+  color: var(--text-2);
+}
+.sp-atmo strong {
+  color: var(--text-1);
+}
+
+.sp-session {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.sp-session code {
+  font: var(--type-code);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-1);
+}
+
+.sp-row-fields {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 560px) {
+  .sp-row-fields {
+    grid-template-columns: 1fr 9rem;
+  }
+}
+.field select {
+  appearance: none;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-1) 50%),
+    linear-gradient(135deg, var(--text-1) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 55%, calc(100% - 10px) 55%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 28px;
+}
+.field select option {
+  background: var(--surface-page);
+  color: var(--text-1);
+}
+.sp-submit {
+  width: 100%;
+}
+
+/* Machine output: typewriter, lowercase-friendly. */
+.sp-status {
+  font: var(--type-code);
+  font-size: var(--text-body-sm);
+  color: var(--text-2);
+}
+.sp-status-error {
+  color: var(--status-error);
+  font-weight: var(--weight-bold);
+}
+
+.sp-results {
+  margin-top: var(--space-10);
+}
+.sp-section {
+  border-top: var(--border);
+}
+
+/* Winner rows sit inside a panel that already casts, so they stay flat. */
+.sp-winners {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sp-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--box-pad);
+  border-top: var(--border-hair);
+  color: var(--text-1);
+  text-decoration: none;
+}
+.sp-winners > li:first-child .sp-row {
+  border-top: 0;
+}
+a.sp-row,
+a.sp-row:visited,
+a.sp-row:hover {
+  color: var(--text-1);
+  background: transparent;
+  text-decoration: none;
+}
+a.sp-row:hover {
+  background: var(--surface-fill);
+}
+.sp-rank {
+  min-width: 1.6em;
+  text-align: right;
+  font: var(--type-rank);
+  color: var(--spot);
+}
+.sp-avatar {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border: var(--border);
+  object-fit: cover;
+  background: var(--surface-fill);
+}
+.sp-who {
+  display: grid;
+  min-width: 0;
+}
+.sp-name {
+  font: var(--type-title);
+  overflow-wrap: anywhere;
+}
+.sp-handle {
+  font: var(--type-meta);
+  color: var(--text-3);
+  overflow-wrap: anywhere;
+}
+
+.sp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+a.btn,
+a.btn:visited,
+a.btn:hover {
+  color: var(--text-1);
+  text-decoration: none;
+}
+a.btn.primary,
+a.btn.primary:visited,
+a.btn.primary:hover {
+  color: var(--project-ink-contrast);
+}
+
+/* Support chips: each takes a DS ink with its on-* partner (Pix, Buy Me a
+   Coffee on yellow, Sponsors on its own soft pink) and keeps it on :visited
+   and :hover. Order is fixed: Pix > Buy Me a Coffee > GitHub Sponsors. */
+.sp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+}
+.sp-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  font: var(--type-label);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+a.sp-chip,
+a.sp-chip:visited,
+a.sp-chip:hover {
+  background: var(--ink);
+  color: var(--on-ink);
+  text-decoration: none;
+}
+
+.sp-foot {
+  margin-top: var(--space-12);
+  padding-top: var(--space-8);
+  border-top: var(--border);
+  display: grid;
+  gap: var(--space-6);
+  text-align: center;
+}
+.sp-foot .meta a {
+  color: var(--link);
+}
+.sp-note {
+  font: var(--type-dek);
+  color: var(--text-3);
+}
+
+/* Result page: a smaller masthead that links home, then the result. */
+.sp-masthead-sm {
+  margin: var(--space-8) 0 var(--space-10);
+}
+.sp-masthead-sm .sp-wordmark {
+  font-size: clamp(34px, 9vw, 52px);
+}
+.sp-result-title {
+  font: var(--type-display);
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: anywhere;
+}
+.sp-back {
+  margin-top: var(--space-10);
+}

@@ -1,8 +1,8 @@
 "use client"
 
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
-import { X } from "lucide-react"
 
 import {
   collectParticipants,
@@ -13,55 +13,34 @@ import {
   type ProfileView,
   type RaffleProgress,
 } from "@/lib/raffle"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Profile } from "@/components/profile"
+import type { SiteContent } from "@/lib/site"
 
-type Strings = {
-  postUrlPlaceholder: string
-  modeLabel: string
-  countLabel: string
-  submit: string
-  modes: { likes: string; reposts: string; and: string; or: string }
-  progress: {
-    resolving: string
-    fetching: string
-    sampling: string
-    fetchingProfiles: string
-  }
-  winner: string
-  winners: string
-  poolLabel: string
-  likesLabel: string
-  repostsLabel: string
-  cancel: string
-  signedInAs: string
-  signOut: string
-  loginCta: string
-  loginPlaceholder: string
-  loginButton: string
-  customHandle: string
-  titlePlaceholder: string
-  createSnapshot: string
-  creatingSnapshot: string
-  openSnapshot: string
-  copyLink: string
-  copied: string
-  downloadOg: string
-  snapshotHint: string
+export type RaffleStrings = SiteContent["raffle"] & {
+  signin: SiteContent["signin"]
 }
 
-export type RaffleStrings = Strings
+const MODES: FilterMode[] = ["or", "and", "likes", "reposts"]
+
+function ErrorLine({ message }: { message: string }) {
+  return (
+    <p role="alert" className="sp-status sp-status-error">
+      ✕ {message}
+    </p>
+  )
+}
 
 export function Raffle({
   sessionDid,
   sessionHandle,
   strings,
+  locale,
   initialError,
 }: {
   sessionDid: string | null
   sessionHandle: string | null
-  strings: Strings
+  strings: RaffleStrings
+  /** BCP 47 locale for number formatting. */
+  locale: string
   initialError?: string
 }) {
   const [postUrl, setPostUrl] = useState("")
@@ -125,7 +104,7 @@ export function Raffle({
       )
 
       if (pool.length === 0) {
-        throw new Error("no participants found")
+        throw new Error(strings.noParticipants)
       }
 
       setPhase(strings.progress.sampling)
@@ -206,196 +185,228 @@ export function Raffle({
 
   if (!sessionDid) {
     return (
-      <div className="grid w-full items-center gap-3 lg:max-w-2xl">
-        <p className="text-sm text-muted-foreground">{strings.loginCta}</p>
-        <form action="/api/oauth/login" method="GET" className="flex gap-2">
-          <input type="hidden" name="handle" value={loginHandle} />
-          <input type="hidden" name="return_to" value={pathname || "/"} />
-          <Button type="submit">{strings.loginButton}</Button>
-        </form>
-        <details className="text-xs text-muted-foreground">
-          <summary className="cursor-pointer">{strings.customHandle}</summary>
-          <div className="mt-2 flex gap-2">
-            <Input
-              type="text"
-              value={loginHandle}
-              onChange={(e) => setLoginHandle(e.target.value)}
-              placeholder={strings.loginPlaceholder}
-            />
-          </div>
-        </details>
-        {error && (
-          <p className="flex flex-row items-center gap-2 text-sm text-red-400">
-            <X className="h-4 w-4" /> {error}
-          </p>
-        )}
-      </div>
+      <section className="panel cast">
+        <h2 className="panel-h">{strings.signin.title}</h2>
+        <div className="panel-b sp-stack">
+          <p>{strings.signin.why}</p>
+          <form action="/api/oauth/login" method="GET" className="sp-stack">
+            <input type="hidden" name="return_to" value={pathname || "/"} />
+            <label className="field-block">
+              <span className="label">{strings.signin.handleLabel}</span>
+              <span className="field cast">
+                <input
+                  type="text"
+                  name="handle"
+                  value={loginHandle}
+                  onChange={(e) => setLoginHandle(e.target.value)}
+                  placeholder={strings.signin.handlePlaceholder}
+                />
+              </span>
+            </label>
+            <button type="submit" className="btn lg primary cast press">
+              {strings.signin.bluesky}
+            </button>
+          </form>
+          {error && <ErrorLine message={error} />}
+        </div>
+      </section>
     )
   }
 
   return (
-    <div className="grid w-full items-center gap-3 lg:max-w-2xl">
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+    <>
+      <div className="sp-session meta">
         <span>
-          {strings.signedInAs}{" "}
-          <code className="font-mono">{sessionHandle ?? sessionDid}</code>
+          {strings.signedInAs} <code>@{sessionHandle ?? sessionDid}</code>
         </span>
-        <a href="/api/oauth/logout" className="underline">
-          {strings.signOut}
-        </a>
+        <a href="/api/oauth/logout">{strings.signOut}</a>
       </div>
 
-      <form onSubmit={onSortear} className="grid gap-2">
-        <Input
-          type="url"
-          value={postUrl}
-          onChange={(e) => setPostUrl(e.target.value)}
-          placeholder={strings.postUrlPlaceholder}
-          required
-          disabled={busy}
-        />
-        <Input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder={strings.titlePlaceholder}
-          maxLength={100}
-          disabled={busy}
-        />
-        <div className="flex flex-wrap items-end gap-2">
-          <label className="grid flex-1 gap-1 text-xs">
-            <span className="text-muted-foreground">{strings.modeLabel}</span>
-            <select
-              value={mode}
-              onChange={(e) => setMode(e.target.value as FilterMode)}
-              disabled={busy}
-              className="h-9 rounded-md border border-input bg-transparent px-2 text-sm"
-            >
-              <option value="or">{strings.modes.or}</option>
-              <option value="and">{strings.modes.and}</option>
-              <option value="likes">{strings.modes.likes}</option>
-              <option value="reposts">{strings.modes.reposts}</option>
-            </select>
+      <section className="panel cast">
+        <h2 className="panel-h">{strings.panelTitle}</h2>
+        <form onSubmit={onSortear} className="panel-b sp-stack">
+          <label className="field-block">
+            <span className="label">{strings.postLabel}</span>
+            <span className="field cast">
+              <input
+                type="url"
+                value={postUrl}
+                onChange={(e) => setPostUrl(e.target.value)}
+                placeholder={strings.postUrlPlaceholder}
+                required
+                disabled={busy}
+              />
+            </span>
           </label>
 
-          <label className="grid w-32 gap-1 text-xs">
-            <span className="text-muted-foreground">{strings.countLabel}</span>
-            <Input
-              type="number"
-              min={1}
-              max={1000}
-              value={count}
-              onChange={(e) =>
-                setCount(Math.max(1, Math.min(1000, Number(e.target.value))))
-              }
-              disabled={busy}
-            />
+          <label className="field-block">
+            <span className="label">{strings.titleLabel}</span>
+            <span className="field cast">
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={strings.titlePlaceholder}
+                maxLength={100}
+                disabled={busy}
+              />
+            </span>
           </label>
+
+          <div className="sp-row-fields">
+            <label className="field-block m-0">
+              <span className="label">{strings.modeLabel}</span>
+              <span className="field cast">
+                <select
+                  value={mode}
+                  onChange={(e) => setMode(e.target.value as FilterMode)}
+                  disabled={busy}
+                >
+                  {MODES.map((m) => (
+                    <option key={m} value={m}>
+                      {strings.modes[m]}
+                    </option>
+                  ))}
+                </select>
+              </span>
+            </label>
+
+            <label className="field-block m-0">
+              <span className="label">{strings.countLabel}</span>
+              <span className="field cast">
+                <input
+                  type="number"
+                  min={1}
+                  max={1000}
+                  value={count}
+                  onChange={(e) =>
+                    setCount(
+                      Math.max(1, Math.min(1000, Number(e.target.value)))
+                    )
+                  }
+                  disabled={busy}
+                />
+              </span>
+            </label>
+          </div>
 
           {busy ? (
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="btn lg cast press sp-submit"
+            >
               {strings.cancel}
-            </Button>
+            </button>
           ) : (
-            <Button type="submit">{strings.submit}</Button>
+            <button type="submit" className="btn lg primary cast press sp-submit">
+              {strings.submit}
+            </button>
           )}
-        </div>
 
-        {phase && (
-          <p className="text-sm text-muted-foreground">
-            {phase}
-            {progress && (
-              <>
-                {" — "}
-                {progress.likesDone ? "✓" : "⋯"} {progress.likes.toLocaleString()} likes
-                {" / "}
-                {progress.repostsDone ? "✓" : "⋯"}{" "}
-                {progress.reposts.toLocaleString()} reposts
-              </>
-            )}
-          </p>
-        )}
+          {phase && (
+            <p className="sp-status" aria-live="polite">
+              {phase}
+              {progress && (
+                <>
+                  {" — "}
+                  {progress.likesDone ? "✓" : "…"}{" "}
+                  {progress.likes.toLocaleString(locale)}{" "}
+                  {strings.likesLabel}
+                  {" · "}
+                  {progress.repostsDone ? "✓" : "…"}{" "}
+                  {progress.reposts.toLocaleString(locale)}{" "}
+                  {strings.repostsLabel}
+                </>
+              )}
+            </p>
+          )}
 
-        {error && (
-          <p className="flex flex-row items-center gap-2 text-sm text-red-400">
-            <X className="h-4 w-4" /> {error}
-          </p>
-        )}
-      </form>
+          {error && <ErrorLine message={error} />}
+        </form>
+      </section>
 
       {winners && totals && (
-        <div className="mt-6 grid gap-4">
-          <h2 className="text-2xl font-bold">
+        <section className="panel cast sp-results" aria-live="polite">
+          <h2 className="panel-h">
             {winners.length}{" "}
             {winners.length === 1 ? strings.winner : strings.winners}
           </h2>
-          <p className="text-xs text-muted-foreground">
-            {strings.poolLabel}: {totals.likes.toLocaleString()}{" "}
-            {strings.likesLabel} · {totals.reposts.toLocaleString()}{" "}
+          <p className="meta panel-b">
+            {strings.poolLabel}: {totals.likes.toLocaleString(locale)}{" "}
+            {strings.likesLabel} ·{" "}
+            {totals.reposts.toLocaleString(locale)}{" "}
             {strings.repostsLabel}
           </p>
-          <div className="grid gap-3">
+          <ol className="sp-winners sp-section">
             {winners.map((profile, i) => (
-              <a
-                key={profile.did}
-                href={`https://bsky.app/profile/${profile.handle}`}
-                target="_blank"
-                rel="noopener"
-                className="relative"
-              >
-                <div className="absolute -left-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-slate-100 text-xs dark:bg-slate-800">
-                  {i + 1}
-                </div>
-                <Profile profile={profile} className="pl-6" />
-              </a>
+              <li key={profile.did}>
+                <a
+                  href={`https://bsky.app/profile/${profile.handle}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="sp-row"
+                >
+                  <span className="sp-rank">{i + 1}</span>
+                  {profile.avatar ? (
+                    <img src={profile.avatar} alt="" className="sp-avatar" />
+                  ) : (
+                    <span className="sp-avatar screen" />
+                  )}
+                  <span className="sp-who">
+                    <span className="sp-name">
+                      {profile.displayName || profile.handle}
+                    </span>
+                    <span className="sp-handle">@{profile.handle}</span>
+                  </span>
+                </a>
+              </li>
             ))}
-          </div>
+          </ol>
 
-          <div className="mt-4 grid gap-3 rounded-md border border-border/40 p-3 text-sm">
+          <div className="panel-b sp-section sp-stack">
+            <span className="label m-0">{strings.shareTitle}</span>
             {!snapshotPath ? (
-              <Button
+              <button
                 type="button"
                 onClick={onCreateSnapshot}
                 disabled={snapshotBusy}
+                className="btn primary cast press sp-submit"
               >
                 {snapshotBusy
                   ? strings.creatingSnapshot
                   : strings.createSnapshot}
-              </Button>
+              </button>
             ) : (
-              <div className="grid gap-2">
-                <div className="flex flex-wrap gap-2">
-                  <a
-                    href={snapshotPath}
-                    target="_blank"
-                    rel="noopener"
-                    className="rounded-md border px-3 py-2 text-xs hover:bg-muted/50"
-                  >
-                    ↗ {strings.openSnapshot}
-                  </a>
-                  <button
-                    type="button"
-                    onClick={onCopyLink}
-                    className="rounded-md border px-3 py-2 text-xs hover:bg-muted/50"
-                  >
-                    {copied ? `✓ ${strings.copied}` : `⎘ ${strings.copyLink}`}
-                  </button>
-                  <a
-                    href={`${snapshotPath}/og.png?dl=1`}
-                    download
-                    className="rounded-md border px-3 py-2 text-xs hover:bg-muted/50"
-                  >
-                    ⬇︎ {strings.downloadOg}
-                  </a>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {strings.snapshotHint}
-                </p>
+              <div className="sp-actions">
+                <a
+                  href={snapshotPath}
+                  target="_blank"
+                  rel="noopener"
+                  className="btn primary cast press"
+                >
+                  {strings.openSnapshot} ↗
+                </a>
+                <button
+                  type="button"
+                  onClick={onCopyLink}
+                  className="btn cast press"
+                >
+                  {copied ? `✓ ${strings.copied}` : strings.copyLink}
+                </button>
+                <a
+                  href={`${snapshotPath}/og.png?dl=1`}
+                  download
+                  className="btn cast press"
+                >
+                  {strings.downloadOg}
+                </a>
               </div>
             )}
+            <p className="hint m-0">{strings.snapshotHint}</p>
           </div>
-        </div>
+        </section>
       )}
-    </div>
+    </>
   )
 }

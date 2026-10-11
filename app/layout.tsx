@@ -1,20 +1,16 @@
-import type { Metadata, Viewport } from "next"
+import type { Metadata } from "next"
 
 import "@/styles/globals.css"
-import "@/styles/custom.css"
 
-import { brandCssVariables } from "@/lib/brand"
-import { fontSans } from "@/lib/fonts"
-import { cn } from "@/lib/utils"
+import { THEME_BOOT_SCRIPT } from "@/lib/theme"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
-import { ThemeProvider } from "@/components/theme-provider"
 
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
-}
+const FONT_HOST = "https://static.joseli.to"
+const FIRST_PAINT_FONTS = [
+  "cmu-serif-700-roman",
+  "cmu-sans-serif-500-roman",
+  "cmu-sans-serif-700-roman",
+]
 
 export const metadata: Metadata = {
   icons: {
@@ -32,25 +28,25 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <>
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <style dangerouslySetInnerHTML={{ __html: brandCssVariables }} />
-        </head>
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="flex relative flex-col min-h-screen">
-              {children}
-            </div>
-            <TailwindIndicator />
-          </ThemeProvider>
-        </body>
-      </html>
-    </>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        <link rel="preconnect" href={FONT_HOST} crossOrigin="anonymous" />
+        {FIRST_PAINT_FONTS.map((font) => (
+          <link
+            key={font}
+            rel="preload"
+            as="font"
+            type="font/woff2"
+            href={`${FONT_HOST}/assets/fonts/${font}.woff2`}
+            crossOrigin="anonymous"
+          />
+        ))}
+      </head>
+      <body>
+        {children}
+        <TailwindIndicator />
+      </body>
+    </html>
   )
 }

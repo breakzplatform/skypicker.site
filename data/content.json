@@ -1,15 +1,43 @@
 {
     "sorteio.blue": {
         "meta": {
-            "lang": "pt-br",
+            "lang": "pt-BR",
+            "locale": "pt-BR",
             "title": "sorteio.blue · Sorteios no Bluesky",
             "description": "Faça sorteios de forma simples no Bluesky com o sorteio.blue"
         },
         "title": "sorteio.blue",
+        "wordmark": {
+            "name": "sorteio",
+            "suffix": ".blue"
+        },
         "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
-        "description": "Faça login com sua conta do Bluesky, informe a URL do post, escolha quantos vão ser sorteados e aperte em &quot;Sortear&quot;.",
+        "description": "Entre com sua conta, cole o link do post, escolha quantas pessoas vão ganhar e aperte em &quot;Sortear&quot;.",
+        "theme": {
+            "names": {
+                "light": "claro",
+                "dark": "escuro",
+                "terminal": "terminal"
+            },
+            "label": "Tema: {current}, toque para {next}"
+        },
+        "signin": {
+            "title": "Entrar",
+            "why": "Entre para sortear. Cada pessoa usa a própria cota de API, então um sorteio não atrasa o de ninguém.",
+            "atmosphere": "Funciona com o Bluesky e com qualquer servidor do AT Protocol (Atmosphere).",
+            "bluesky": "Entrar com o Bluesky",
+            "other": "Entrar com outra conta da Atmosphere",
+            "handleLabel": "Seu handle ou servidor",
+            "handlePlaceholder": "voce.exemplo.com ou https://pds.exemplo.com",
+            "continue": "Continuar",
+            "handleHint": "Buscamos o servidor (PDS) do seu handle e levamos você até ele para entrar. Sua senha nunca passa por este site."
+        },
         "raffle": {
+            "panelTitle": "Novo sorteio",
+            "postLabel": "Link do post",
             "postUrlPlaceholder": "https://bsky.app/profile/handle.bsky.social/post/abc123",
+            "titleLabel": "Título (opcional)",
+            "titlePlaceholder": "Sorteio de adesivos",
             "modeLabel": "Considerar",
             "countLabel": "Ganhadores",
             "submit": "Sortear",
@@ -26,31 +54,85 @@
                 "sampling": "Sorteando...",
                 "fetchingProfiles": "Buscando perfis dos sorteados..."
             },
-            "loginCta": "Entre com sua conta do Bluesky para sortear (cota de API por usuário).",
-            "loginPlaceholder": "seuhandle.bsky.social",
-            "loginButton": "Entrar com Bluesky",
-            "customHandle": "Usar outro handle / PDS",
+            "noParticipants": "Nenhum participante encontrado neste post.",
             "signedInAs": "Conectado como",
-            "signOut": "Sair"
+            "signOut": "Sair",
+            "winner": "ganhador",
+            "winners": "ganhadores",
+            "poolLabel": "Participantes",
+            "likesLabel": "likes",
+            "repostsLabel": "reposts",
+            "shareTitle": "Compartilhar",
+            "createSnapshot": "Gerar link compartilhável",
+            "creatingSnapshot": "Gerando...",
+            "openSnapshot": "Abrir página do resultado",
+            "copyLink": "Copiar link",
+            "copied": "Link copiado",
+            "downloadOg": "Baixar imagem",
+            "snapshotHint": "Link assinado e imutável. Qualquer pessoa com ele confere o resultado."
+        },
+        "snapshot": {
+            "kicker": "Resultado do sorteio",
+            "fallbackTitle": "Sorteio no Bluesky",
+            "modes": {
+                "likes": "Apenas likes",
+                "reposts": "Apenas reposts",
+                "and": "Likes e reposts",
+                "or": "Likes ou reposts"
+            },
+            "postBy": "post de",
+            "shareTitle": "Compartilhar",
+            "downloadOg": "Baixar imagem",
+            "openOg": "Abrir imagem",
+            "shareHint": "A imagem é gerada a partir deste link. O resultado é assinado, então qualquer pessoa com o link pode conferir.",
+            "newRaffle": "Fazer outro sorteio"
         },
         "footer": {
             "by": "Diretamente de Pernambuco por <a href=\"https://joseli.to\">Joselito</a>, com muito amor e carinho.",
             "noCookies": "Este site só armazena um cookie de sessão OAuth assinado, sem rastreamento.",
             "ghFork": "Veja o código-fonte no GitHub",
-            "support": "Apoie este projeto:"
+            "support": "Apoie este projeto"
         }
     },
     "skypicker.site": {
         "meta": {
             "lang": "en",
+            "locale": "en-US",
             "title": "SkyPicker · Host giveaways on Bluesky",
             "description": "Host giveaways easily on Bluesky with SkyPicker"
         },
         "title": "SkyPicker",
+        "wordmark": {
+            "name": "skypicker",
+            "suffix": ".site"
+        },
         "subtitle": "Host a giveaway on Bluesky in seconds with ease.",
-        "description": "Sign in with your Bluesky account, enter the post URL, choose how many winners and click &quot;Randomize&quot;.",
+        "description": "Sign in, paste the post link, choose how many winners and click &quot;Randomize&quot;.",
+        "theme": {
+            "names": {
+                "light": "light",
+                "dark": "dark",
+                "terminal": "terminal"
+            },
+            "label": "Theme: {current}, tap for {next}"
+        },
+        "signin": {
+            "title": "Sign in",
+            "why": "Sign in to run the raffle. Each visitor uses their own API quota, so one giveaway never slows down another.",
+            "atmosphere": "Works with Bluesky and any AT Protocol (Atmosphere) server.",
+            "bluesky": "Sign in with Bluesky",
+            "other": "Sign in with another Atmosphere account",
+            "handleLabel": "Your handle or server",
+            "handlePlaceholder": "you.example.com or https://pds.example.com",
+            "continue": "Continue",
+            "handleHint": "We look up the server (PDS) behind your handle and send you there to sign in. Your password never touches this site."
+        },
         "raffle": {
+            "panelTitle": "New giveaway",
+            "postLabel": "Post link",
             "postUrlPlaceholder": "https://bsky.app/profile/handle.bsky.social/post/abc123",
+            "titleLabel": "Title (optional)",
+            "titlePlaceholder": "Sticker giveaway",
             "modeLabel": "Filter",
             "countLabel": "Winners",
             "submit": "Randomize",
@@ -67,18 +149,44 @@
                 "sampling": "Drawing winners...",
                 "fetchingProfiles": "Fetching winner profiles..."
             },
-            "loginCta": "Sign in with your Bluesky account to run the raffle (per-user API quota).",
-            "loginPlaceholder": "yourhandle.bsky.social",
-            "loginButton": "Sign in with Bluesky",
-            "customHandle": "Use a custom handle / PDS",
+            "noParticipants": "No participants found on this post.",
             "signedInAs": "Signed in as",
-            "signOut": "Sign out"
+            "signOut": "Sign out",
+            "winner": "winner",
+            "winners": "winners",
+            "poolLabel": "Pool",
+            "likesLabel": "likes",
+            "repostsLabel": "reposts",
+            "shareTitle": "Share",
+            "createSnapshot": "Create shareable link",
+            "creatingSnapshot": "Creating...",
+            "openSnapshot": "Open result page",
+            "copyLink": "Copy link",
+            "copied": "Link copied",
+            "downloadOg": "Download image",
+            "snapshotHint": "Signed, immutable link. Anyone with it can check the result."
+        },
+        "snapshot": {
+            "kicker": "Raffle result",
+            "fallbackTitle": "Bluesky giveaway",
+            "modes": {
+                "likes": "Likes only",
+                "reposts": "Reposts only",
+                "and": "Likes and reposts",
+                "or": "Likes or reposts"
+            },
+            "postBy": "post by",
+            "shareTitle": "Share",
+            "downloadOg": "Download image",
+            "openOg": "Open image",
+            "shareHint": "The image is generated from this link. The result is signed, so anyone with the link can verify it.",
+            "newRaffle": "Run another raffle"
         },
         "footer": {
             "by": "Directly from Brazil by <a href=\"https://joseli.to\">Joselito</a>, with much love and care.",
             "noCookies": "This site only stores a signed OAuth session cookie, no tracking.",
             "ghFork": "View source on GitHub",
-            "support": "Support this project:"
+            "support": "Support this project"
         }
     }
 }
