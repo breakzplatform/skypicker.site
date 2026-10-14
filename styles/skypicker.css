@@ -183,6 +183,15 @@ p {
   font-weight: var(--weight-bold);
 }
 
+/* User-supplied text (error details, handles, DIDs, titles) can be one long
+   unbroken token; let it break instead of widening the page on phones. */
+.sp-status,
+.sp-session code,
+.sp-result-title,
+.sp-page .meta {
+  overflow-wrap: anywhere;
+}
+
 .sp-results {
   margin-top: var(--space-10);
 }
