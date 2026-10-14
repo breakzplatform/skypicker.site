@@ -1,206 +1,212 @@
 # SkyPicker
 
-> Sorteios no Bluesky com OAuth e cota por usuário — disponível em **[skypicker.site](https://skypicker.site)** (EN) e **[sorteio.blue](https://sorteio.blue)** (PT-BR).
+> Bluesky giveaways with AT Protocol OAuth and a per-user API quota, live at **[skypicker.site](https://skypicker.site)** (English) and **[sorteio.blue](https://sorteio.blue)** (Brazilian Portuguese).
 
-Aplicação Next.js que coleta os usuários que **curtiram** e/ou **repostaram** um post do Bluesky via [AT Protocol](https://atproto.com/) e sorteia ganhadores aleatoriamente. A autenticação é feita via **OAuth do AT Protocol** — cada visitante usa a própria cota de API, eliminando rate limits compartilhados.
+A Next.js app that collects the accounts that **liked** and/or **reposted** a Bluesky post through the [AT Protocol](https://atproto.com/) and draws winners at random. Sign-in uses **AT Protocol OAuth**: every visitor spends their own API quota, so there is no shared rate limit.
 
 ---
 
-## Recursos
+## Features
 
-- **OAuth Bluesky** — login com a própria conta. Sem App Password, sem credenciais em URL.
-- **Cota por usuário** — cada visitante traz seu próprio orçamento de API; posts grandes não derrubam o app pra todo mundo.
-- **Quatro modos de filtro**:
-  - Likes **e** Reposts (interseção)
-  - Likes **ou** Reposts (união, sem duplicatas)
-  - Apenas Reposts
-  - Apenas Likes
-- **Quantos ganhadores você quiser** (1-1000) — todos os participantes são considerados pra justiça do sorteio, mas só os N escolhidos aparecem.
-- **Paginação client-driven** — chamadas pequenas e enfileiradas pelo browser, com progresso real-time. Sem timeout de servidor.
-- **Multi-domínio** — `skypicker.site` (en) e `sorteio.blue` (pt-br) servidos pelo mesmo deploy.
-- **Sem rastreamento** — só um cookie de sessão OAuth assinado.
+- **Bluesky / Atmosphere OAuth**: sign in with your own account (on bsky.social or any other PDS). No app passwords, no credentials in URLs.
+- **Per-user quota**: each visitor brings their own API budget; a huge post cannot take the app down for everyone.
+- **Four filter modes**:
+  - Likes **and** reposts (intersection)
+  - Likes **or** reposts (union, no duplicates)
+  - Reposts only
+  - Likes only
+- **Any number of winners** (1 to 1000). Every participant is in the pool; only the N winners are shown. Winners are drawn with a partial Fisher–Yates shuffle over `crypto.getRandomValues` (no modulo bias).
+- **Shareable results**: a signed snapshot link (`/r/<snapshot>`) with its own OG image, for up to 100 winners.
+- **Client-driven pagination**: small calls queued by the browser with live progress, so no server request runs long.
+- **Two domains, one deploy**: `skypicker.site` (en) and `sorteio.blue` (pt-BR).
+- **No tracking**: the only cookie is the encrypted OAuth session.
 
 ---
 
 ## Stack
 
-| Camada                   | Tecnologia                                                                |
-| ------------------------ | ------------------------------------------------------------------------- |
-| Framework                | [Next.js 15](https://nextjs.org/) (App Router) · React 19 · TypeScript    |
-| AT Protocol              | [`@atproto/api`](https://www.npmjs.com/package/@atproto/api) (Agent)      |
-| OAuth                    | [`@atproto/oauth-client-node`](https://www.npmjs.com/package/@atproto/oauth-client-node) |
-| Sessão                   | [`iron-session`](https://github.com/vvo/iron-session) (cookie cifrado)    |
-| Estilo                   | [Tailwind CSS 3](https://tailwindcss.com/) + `tailwindcss-animate`        |
-| Componentes              | [Radix UI](https://www.radix-ui.com/) primitives + shadcn/ui patterns     |
-| Ícones                   | [Lucide](https://lucide.dev/)                                             |
-| Tema                     | [`next-themes`](https://github.com/pacocoursey/next-themes)               |
-| Roteamento de domínio    | Middleware do Next.js + [`psl`](https://www.npmjs.com/package/psl)        |
-| Hospedagem               | Portátil — Vercel, Cloudflare Workers, Node self-host                     |
+| Layer          | Technology                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------- |
+| Framework      | [Next.js 15](https://nextjs.org/) (App Router), React 19, TypeScript                        |
+| AT Protocol    | [`@atproto/api`](https://www.npmjs.com/package/@atproto/api) (`Agent`)                      |
+| OAuth          | [`@atproto/oauth-client-node`](https://www.npmjs.com/package/@atproto/oauth-client-node), with [`@atproto-labs/fetch-node`](https://www.npmjs.com/package/@atproto-labs/fetch-node) SSRF protection |
+| Session        | [`iron-session`](https://github.com/vvo/iron-session) (encrypted cookie)                    |
+| Styles         | joseli.to design system tokens (`styles/ds/`, a verbatim copy) + `sp-*` components + Tailwind CSS 3 |
+| Domain routing | Next.js middleware + [`psl`](https://www.npmjs.com/package/psl)                            |
+| Tests          | [Vitest](https://vitest.dev/)                                                               |
+| Hosting        | Portable: Vercel, or any Node host                                                          |
 
 ---
 
-## Estrutura
+## Layout
 
 ```
 app/
-  layout.tsx                       Root layout (fontes, tema, viewport)
+  layout.tsx                       Root layout (<html lang>, theme boot script, font preloads)
   [domain]/
-    layout.tsx                     Layout específico do domínio
-    page.tsx                       Server shell (resolve sessão, monta Raffle)
-    raffle.tsx                     Client component (formulário, fetch, display)
-  client-metadata.json/route.ts    Metadata pública do cliente OAuth
+    layout.tsx                     Per-domain layout
+    page.tsx                       Server shell (reads the session, renders Raffle)
+    raffle.tsx                     Client component (form, fetching, results)
+  r/[snapshot]/
+    page.tsx                       Shared result page (signed snapshot)
+    og.png/route.ts                Result image (also offered as a download)
+    opengraph-image.tsx            OG image for the result page
+  client-metadata.json/route.ts    Public OAuth client metadata
   api/
     oauth/
-      login/route.ts               Inicia o fluxo OAuth
-      callback/route.ts            Recebe code, troca por tokens
-      logout/route.ts              Revoga sessão e limpa cookie
+      login/route.ts               Starts the OAuth flow
+      callback/route.ts            Receives the code and exchanges it for tokens
+      logout/route.ts              Revokes the session and clears the cookie (POST)
     at/
-      post/route.ts                URL → AT URI (resolve handle pra DID)
-      likes/route.ts               Página de likes (proxy autenticado)
-      reposts/route.ts             Página de reposts (proxy autenticado)
-      profiles/route.ts            Batch de perfis (até 25 DIDs)
-components/
-  ui/                              Primitivos (button, input, label, tabs)
-  profile.tsx                      Card do perfil
-  theme-provider.tsx               Provider next-themes
-  tailwind-indicator.tsx           Helper dev
-config/site.ts
-data/content.json                  Strings localizadas por domínio
+      post/route.ts                bsky.app URL -> at:// URI (resolves handle to DID)
+      likes/route.ts               One page of likes (authenticated proxy)
+      reposts/route.ts             One page of reposts (authenticated proxy)
+      profiles/route.ts            Profile batch (up to 25 DIDs)
+    snapshot/route.ts              Signs a result into a snapshot link (signed-in users only)
+components/                        Site shell, sign-in, theme switch, wordmark
+data/content.json                  Localized strings per domain
 lib/
   atproto.ts                       getCurrentAgent / getCurrentDid
+  at-proxy.ts                      Input validation and upstream error mapping for /api/at/*
+  hosts.ts                         Known domains, staging aliases, Host allowlist
   oauth/
-    client.ts                      NodeOAuthClient (cached)
-    session.ts                     getOAuthCookie via iron-session
-    stores.ts                      StateStore + SessionStore (cookie-backed)
-  raffle.ts                        Orquestração client (collect, sample, profiles)
-  utils.ts                         cn() + getDomain()
-  site.ts                          Domínio servido + conteúdo (en/pt-BR)
-  theme.ts                         Temas manuais (claro/escuro/terminal)
-  og-image.tsx                     OG da home e do resultado (fontes CMU em assets/fonts)
-middleware.ts                      Reescrita por hostname
-public/                            Favicons + OG images
-styles/                            globals.css + skypicker.css + ds/ (cópia do joseli.to DS)
-types/nav.ts
+    client.ts                      NodeOAuthClient per origin (cached, SSRF-safe fetch)
+    origin.ts                      Request origin from a validated Host header
+    return-to.ts                   Same-origin return_to validation
+    session.ts                     Session cookie via iron-session
+    stores.ts                      State and session stores (cookie-backed)
+  raffle.ts                        Client orchestration (collect, pool, draw, profiles)
+  snapshot.ts                      Snapshot build, HMAC sign and verify
+  site.ts                          Served domain and its content (en / pt-BR)
+  theme.ts                         Manual themes (light / dark / terminal)
+  og-image.tsx                     Home and result OG images (CMU fonts in assets/fonts)
+  brand.ts                         Raw brand colours for images and icons
+middleware.ts                      Host allowlist and per-domain rewrite
+public/                            Favicons and home OG images
+styles/                            globals.css, skypicker.css, ds/ (design system copy)
+test/                              Vitest suites
 ```
 
-### Como funciona o sorteio
+### How a draw works
 
-1. Visitante faz login OAuth com o Bluesky ou qualquer conta da Atmosphere (handle ou endereço do PDS) — cookie de sessão é gravado.
-2. Cola URL do post + escolhe modo (likes/reposts/AND/OR) + número de ganhadores.
-3. Cliente chama `/api/at/post` pra resolver a URL → AT URI.
-4. Cliente enfileira chamadas paralelas a `/api/at/likes` e `/api/at/reposts`, paginando até `cursor === null`. Progresso aparece em tempo real.
-5. Ao fim, cliente filtra (AND/OR/etc), embaralha, escolhe N DIDs.
-6. Cliente chama `/api/at/profiles` em batches de 25 só pros N escolhidos.
-7. UI mostra os ganhadores.
+1. The visitor signs in with Bluesky or any Atmosphere account (handle or PDS address); an encrypted session cookie is set.
+2. They paste a post URL and pick a mode (likes / reposts / and / or) and the number of winners.
+3. The browser calls `/api/at/post` to turn the URL into an `at://` URI.
+4. The browser pages through `/api/at/likes` and `/api/at/reposts` in parallel until `cursor` is `null`, showing progress. A `429` from upstream is passed through with `Retry-After`, and the browser waits and resumes.
+5. The browser builds the pool for the chosen mode (deduplicated), then draws N DIDs.
+6. It calls `/api/at/profiles` in batches of 25 for the winners only.
+7. The winners are shown, and the host can create a signed snapshot link.
 
-Cada chamada `/api/at/*` usa a sessão OAuth do cookie pra falar com o PDS do usuário — quota é per-user.
+Every `/api/at/*` call uses the visitor's OAuth session to talk to their own PDS, so the quota is per user.
 
-### Multi-domínio
+### Domains
 
-`middleware.ts` lê o hostname, resolve domínio via `psl`, reescreve pra `/<domain>/...`. A rota dinâmica `app/[domain]/page.tsx` carrega `data/content.json[<domain>]` e renderiza com as strings corretas.
+`middleware.ts` rejects any Host that is not a known domain, a subdomain of one, a `STAGING_HOSTS` alias or a loopback address. It then rewrites the request to `/<domain>/...`, and `app/[domain]/page.tsx` renders `data/content.json[<domain>]`.
 
 ---
 
-## Setup local
+## Local setup
 
-### Pré-requisitos
+### Requirements
 
-- **Node.js** 24.x (fixado em `engines.node`)
+- **Node.js** 24.x (pinned in `engines.node`)
 - **pnpm** 10+ (`corepack enable`)
-- Uma conta Bluesky qualquer (não precisa App Password — OAuth resolve o login)
+- Any Bluesky account (OAuth handles sign-in; no app password needed)
 
-### Passos
+### Steps
 
 ```bash
 git clone https://github.com/breakzplatform/skypicker.site.git
 cd skypicker.site
-cp .env.example .env
-# Edite .env (veja seção abaixo)
+cp .env.example .env.local
+# Fill in .env.local (see below)
 pnpm install
 pnpm dev
 ```
 
-Abra `http://localhost:3000`. Pra testar cada domínio em dev, use **prefixo de path**:
+Open `http://127.0.0.1:3000` (use `127.0.0.1`, not `localhost`: the AT Protocol loopback client always redirects back to `127.0.0.1`, and the session cookie is per host). To try each domain in development, use a **path prefix**:
 
-- `http://localhost:3000/skypicker.site/` — copy em inglês
-- `http://localhost:3000/sorteio.blue/` — copy em português
-- `http://localhost:3000/` — default (`DEV_DOMAIN` env, fallback `skypicker.site`)
+- `http://127.0.0.1:3000/skypicker.site/`: English copy
+- `http://127.0.0.1:3000/sorteio.blue/`: Portuguese copy
+- `http://127.0.0.1:3000/`: the default (`DEV_DOMAIN`, falling back to `skypicker.site`), or `?dev_domain=sorteio.blue`
 
-OAuth funciona local (formato loopback do AT Proto) com qualquer um deles. Sessão fica no cookie de `localhost`, então alternar entre os caminhos compartilha sessão. Em prod, cada domínio tem sessão isolada.
+OAuth works locally with the AT Protocol loopback client format, so no client metadata has to be hosted.
 
-### Variáveis de ambiente
+### Environment variables
 
-| Variável              | Obrigatória | Descrição                                                            |
-| --------------------- | ----------- | -------------------------------------------------------------------- |
-| `SESSION_SECRET`      | sim         | ≥32 chars. Cifragem do cookie de sessão. Gere com `openssl rand -base64 48`. |
-| `LANDING_SUBDOMAIN`   | não         | Subdomínio tratado como root (ex.: `www`).                           |
-| `SNAPSHOT_SECRET`     | não         | Chave HMAC dos links de snapshot. Cai no `SESSION_SECRET` se ausente. |
-| `STAGING_HOSTS`       | não         | Hosts extras exatos → domínio (ex.: `skypicker-staging.vercel.app=skypicker.site`). |
+Never commit real values. Generate each secret separately:
 
-> O origin (host + protocolo) é derivado do request — não há `PUBLIC_URL` fixa. Isso permite servir múltiplos domínios pelo mesmo deploy, cada um com seu próprio cliente OAuth.
+```bash
+openssl rand -base64 32
+```
+
+| Variable            | Required | Description                                                                                                                                           |
+| ------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SESSION_SECRET`    | yes      | At least 32 characters. Encrypts the OAuth session cookie. Rotating it signs everyone out.                                                           |
+| `SNAPSHOT_SECRET`   | no       | At least 32 characters. HMAC key for snapshot links; falls back to `SESSION_SECRET` when unset or empty. Rotating it invalidates every existing link. Recommended in production so the two can be rotated independently. |
+| `STAGING_HOSTS`     | no       | Extra exact hostnames that serve a known domain, as `host=domain` pairs separated by commas, e.g. `my-app-staging.vercel.app=skypicker.site,my-app-pt-staging.vercel.app=sorteio.blue`. Entries naming an unknown domain are ignored. |
+| `DEV_DOMAIN`        | no       | Domain rendered on loopback hosts (`skypicker.site` or `sorteio.blue`). Unknown values fall back to `skypicker.site`.                                 |
+| `LANDING_SUBDOMAIN` | no       | Subdomain treated as the root (e.g. `www`).                                                                                                           |
+
+For a build or a quick local check, the placeholder values in `.env.example` are enough (`set -a; . ./.env.example; set +a; pnpm build`).
+
+> The origin (host and scheme) comes from the request, after the Host allowlist; there is no fixed public URL. That is what lets one deploy serve several domains, each with its own OAuth client. Off loopback the origin is always `https`.
 
 ### Scripts
 
 ```bash
-pnpm dev            # servidor de desenvolvimento
-pnpm build          # build de produção (requer PUBLIC_URL e SESSION_SECRET)
-pnpm start          # serve o build
+pnpm dev            # development server on 127.0.0.1:3000
+pnpm build          # production build (needs SESSION_SECRET)
+pnpm start          # serve the build
+pnpm lint           # ESLint, fails on any warning
 pnpm typecheck      # tsc --noEmit
-pnpm lint           # next lint (deprecado no Next 16, ainda funciona)
+pnpm test           # Vitest suites (pure logic, routes with mocked @atproto calls)
 pnpm format:write   # prettier --write
-pnpm brand-assets   # regenera favicon, apple-touch-icon e OG da home a partir de lib/brand.ts
+pnpm brand-assets   # regenerate favicon, apple-touch-icon and home OG images from lib/brand.ts
 ```
 
 ---
 
 ## Deploy
 
-**Não é mais Vercel-only**. A arquitetura é portátil:
+The architecture is portable:
 
-- **Sessão**: cookie cifrado (iron-session) — funciona em qualquer runtime Node/Edge.
-- **Sem KV/Redis/DB**.
-- **Paginação no cliente**: cada request HTTP do servidor é curto (<2s), evitando timeouts de plataformas serverless.
+- **Session**: an encrypted cookie (iron-session), no server-side store.
+- **No KV, Redis or database.**
+- **Client-side pagination**: every server request is short, so serverless timeouts are not an issue.
 
-Funciona em Vercel, Cloudflare Workers, Fly.io, Render, AWS, Docker self-host, Railway etc. O `vercel.json` limita `maxDuration` a 60s (teto do plano Hobby); nenhuma rota faz trabalho ilimitado numa só chamada.
+`vercel.json` caps `maxDuration` at 60 s; no route does unbounded work in one call.
 
-### Cliente OAuth (multi-domínio)
+### OAuth clients (one per domain)
 
-Cada domínio servido pelo deploy tem seu **próprio cliente OAuth**, derivado dinamicamente a partir do `host` do request. Em produção, **ambos** `https://skypicker.site/client-metadata.json` e `https://sorteio.blue/client-metadata.json` precisam estar acessíveis publicamente em HTTPS — o Authorization Server do Bluesky faz fetch nessas URLs pra validar cada cliente.
+Each domain the deploy serves gets **its own OAuth client**, derived from the request host. In production both `https://skypicker.site/client-metadata.json` and `https://sorteio.blue/client-metadata.json` must be publicly reachable over HTTPS; the authorization server fetches them to validate each client. The client name shown on the consent screen is the domain's brand (`SkyPicker` or `sorteio.blue`).
 
-Sessões OAuth são per-domain (cookies são domain-scoped). Login em `skypicker.site` não vale em `sorteio.blue` — usuário loga em cada domínio que for usar.
+Sessions are per host: signing in on `skypicker.site` does not sign you in on `sorteio.blue`.
 
-Em desenvolvimento (host `localhost:*` ou `127.0.0.1:*`), o app usa o formato especial `http://localhost?redirect_uri=...&scope=atproto` previsto na spec do AT Proto OAuth — sem necessidade de hospedar metadata.
+On loopback hosts (`127.0.0.1:*`, `localhost:*`, `[::1]:*`) the app uses the `http://localhost?redirect_uri=...&scope=...` client format from the AT Protocol OAuth spec, so nothing has to be hosted.
 
-Pra testar 2 domínios localmente, aliase em `/etc/hosts` e use portas:
+### Staging and previews
 
-```
-127.0.0.1 skypicker.local
-127.0.0.1 sorteio.local
-```
+A preview deploy is only served when its hostname is listed in `STAGING_HOSTS` (set it on the Preview environment only); every other host gets `400 bad host`. Use a stable preview alias (for example the branch alias), not the per-commit URL. Each alias becomes its own OAuth client with `client-metadata.json` on that host, and renders the domain it is mapped to.
 
-Cada um vira seu próprio "cliente" automaticamente.
+### Brand
 
-### Staging
-
-Aliases de staging entram via `STAGING_HOSTS` (só no target Preview da Vercel), sem afrouxar a allowlist. Cada alias vira seu próprio cliente OAuth, com `client-metadata.json` no próprio host.
-
-### Marca
-
-A cor do projeto é o magenta do DS joseli.to (`#D6008F`/branco no claro, `#EE6ABE`/preto no escuro), definida só em `lib/brand.ts`. O CSS recebe as variáveis pelo `app/layout.tsx`; OG e ícones importam direto.
+The project colour is the joseli.to DS magenta (`#D6008F` on white in light, `#EE6ABE` on black in dark), defined only in `lib/brand.ts` for images and icons; pages use the DS tokens.
 
 ---
 
-## Limites práticos
+## Practical limits
 
-Não há cap rígido em código, mas existem limites físicos:
+There is no hard cap in code, but there are physical limits:
 
-- **Cota OAuth do visitante** ≈ 5000 req/5min. Com `limit=100` por página, isso dá ~500k participantes por sessão (250k se buscar likes+reposts em paralelo).
-- **Latência de rede** × páginas. A 150ms/call, 1000 chamadas levam ~2.5min. UI mostra progresso e respeita `Retry-After` em 429.
-- Posts gigantes podem precisar de uma pausa entre tentativas — o app não trava, só espera.
+- **The visitor's OAuth quota**, about 5000 requests per 5 minutes. With `limit=100` per page that is roughly 500k participants per session (250k when fetching likes and reposts in parallel).
+- **Network latency** times pages. At 150 ms per call, 1000 calls take about 2.5 minutes. The UI shows progress and honours `Retry-After` on 429.
+- Very large posts may hit the rate limit; the app waits and resumes instead of failing.
+- Snapshot links hold up to 100 winners.
 
 ---
 
-## Créditos
+## Credits
 
-Feito de Pernambuco com carinho por **[Joselito](https://joseli.to)**.
-Código-fonte em [github.com/breakzplatform](https://github.com/breakzplatform).
+Made with love from Pernambuco by **[Joselito](https://joseli.to)**.
+Source code at [github.com/breakzplatform](https://github.com/breakzplatform).
