@@ -96,35 +96,74 @@ export async function collectParticipants(
 
   const [likes, reposts] = await Promise.all(tasks)
 
-  let pool: string[]
-  switch (mode) {
-    case "likes":
-      pool = likes
-      break
-    case "reposts":
-      pool = reposts
-      break
-    case "and": {
-      const repostSet = new Set(reposts)
-      pool = likes.filter((d) => repostSet.has(d))
-      break
-    }
-    case "or": {
-      pool = Array.from(new Set([...likes, ...reposts]))
-      break
-    }
-  }
+  const pool = buildPool(likes, reposts, mode)
 
   return { pool, totalLikes: likes.length, totalReposts: reposts.length }
 }
 
-export function pickWinners(pool: string[], count: number): string[] {
-  const n = Math.min(count, pool.length)
-  if (n <= 0) return []
+export const MIN_WINNERS = 1
+export const MAX_WINNERS = 1000
+
+/** Winner count from user input: an integer in [MIN_WINNERS, MAX_WINNERS]. */
+export function clampWinnerCount(value: unknown): number {
+  const n = Math.floor(Number(value))
+  if (!Number.isFinite(n)) return MIN_WINNERS
+  return Math.max(MIN_WINNERS, Math.min(MAX_WINNERS, n))
+}
+
+/**
+ * Unique participant DIDs for a filter mode. Pages can overlap when a post
+ * gets new likes mid-collection, so every mode dedupes; order follows first
+ * appearance (likes before reposts).
+ */
+export function buildPool(
+  likes: readonly string[],
+  reposts: readonly string[],
+  mode: FilterMode
+): string[] {
+  switch (mode) {
+    case "likes":
+      return Array.from(new Set(likes))
+    case "reposts":
+      return Array.from(new Set(reposts))
+    case "and": {
+      const repostSet = new Set(reposts)
+      return Array.from(new Set(likes.filter((d) => repostSet.has(d))))
+    }
+    case "or":
+      return Array.from(new Set([...likes, ...reposts]))
+  }
+}
+
+/** Uniform integer in [0, max) from the platform CSPRNG, without modulo bias. */
+export function secureRandomInt(max: number): number {
+  if (!Number.isInteger(max) || max <= 0 || max > 2 ** 32) {
+    throw new RangeError(`invalid range: ${max}`)
+  }
+  const limit = 2 ** 32 - (2 ** 32 % max)
+  const buf = new Uint32Array(1)
+  while (true) {
+    globalThis.crypto.getRandomValues(buf)
+    if (buf[0] < limit) return buf[0] % max
+  }
+}
+
+/**
+ * Draws `count` distinct entries with a partial Fisher–Yates shuffle, so every
+ * subset of the pool is equally likely. Returns the whole pool (shuffled) when
+ * `count` exceeds it.
+ */
+export function pickWinners(
+  pool: readonly string[],
+  count: number,
+  randomInt: (max: number) => number = secureRandomInt
+): string[] {
+  const n = Math.min(Math.floor(count), pool.length)
+  if (!(n > 0)) return []
 
   const arr = pool.slice()
   for (let i = 0; i < n; i++) {
-    const j = i + Math.floor(Math.random() * (arr.length - i))
+    const j = i + randomInt(arr.length - i)
     ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
   return arr.slice(0, n)

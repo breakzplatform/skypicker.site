@@ -4,8 +4,11 @@
 import { useEffect, useRef, useState } from "react"
 
 import {
+  clampWinnerCount,
   collectParticipants,
   fetchProfiles,
+  MAX_WINNERS,
+  MIN_WINNERS,
   pickWinners,
   resolvePostUri,
   type FilterMode,
@@ -46,7 +49,7 @@ export function Raffle({
   const [postUrl, setPostUrl] = useState("")
   const [title, setTitle] = useState("")
   const [mode, setMode] = useState<FilterMode>("or")
-  const [count, setCount] = useState(1)
+  const [count, setCount] = useState("1")
   const [busy, setBusy] = useState(false)
   const [phase, setPhase] = useState<string | null>(null)
   const [progress, setProgress] = useState<RaffleProgress | null>(null)
@@ -106,7 +109,7 @@ export function Raffle({
       }
 
       setPhase(strings.progress.sampling)
-      const winnerDids = pickWinners(pool, count)
+      const winnerDids = pickWinners(pool, clampWinnerCount(count))
 
       setPhase(strings.progress.fetchingProfiles)
       const profiles = await fetchProfiles(winnerDids, signal)
@@ -186,9 +189,7 @@ export function Raffle({
       <SignIn
         strings={strings.signin}
         error={
-          error && (
-            <ErrorLine message={`${strings.signin.error} (${error})`} />
-          )
+          error && <ErrorLine message={`${strings.signin.error} (${error})`} />
         }
       />
     )
@@ -257,14 +258,11 @@ export function Raffle({
               <span className="field cast">
                 <input
                   type="number"
-                  min={1}
-                  max={1000}
+                  min={MIN_WINNERS}
+                  max={MAX_WINNERS}
                   value={count}
-                  onChange={(e) =>
-                    setCount(
-                      Math.max(1, Math.min(1000, Number(e.target.value)))
-                    )
-                  }
+                  onChange={(e) => setCount(e.target.value)}
+                  onBlur={() => setCount(String(clampWinnerCount(count)))}
                   disabled={busy}
                 />
               </span>
@@ -280,7 +278,10 @@ export function Raffle({
               {strings.cancel}
             </button>
           ) : (
-            <button type="submit" className="btn lg primary cast press sp-submit">
+            <button
+              type="submit"
+              className="btn lg primary cast press sp-submit"
+            >
               {strings.submit}
             </button>
           )}
@@ -292,8 +293,7 @@ export function Raffle({
                 <>
                   {" — "}
                   {progress.likesDone ? "✓" : "…"}{" "}
-                  {progress.likes.toLocaleString(locale)}{" "}
-                  {strings.likesLabel}
+                  {progress.likes.toLocaleString(locale)} {strings.likesLabel}
                   {" · "}
                   {progress.repostsDone ? "✓" : "…"}{" "}
                   {progress.reposts.toLocaleString(locale)}{" "}
@@ -315,8 +315,7 @@ export function Raffle({
           </h2>
           <p className="meta panel-b">
             {strings.poolLabel}: {totals.likes.toLocaleString(locale)}{" "}
-            {strings.likesLabel} ·{" "}
-            {totals.reposts.toLocaleString(locale)}{" "}
+            {strings.likesLabel} · {totals.reposts.toLocaleString(locale)}{" "}
             {strings.repostsLabel}
           </p>
           <ol className="sp-winners sp-section">
