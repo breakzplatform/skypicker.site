@@ -2,6 +2,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
+import { getOriginFromHeaders } from "@/lib/oauth/origin"
 import { getSiteDomain, siteContent } from "@/lib/site"
 import { decodeSnapshot, type Snapshot } from "@/lib/snapshot"
 import { SiteFooter, TopBar } from "@/components/site-shell"
@@ -62,6 +63,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    metadataBase: new URL(await getOriginFromHeaders()),
     openGraph: {
       title,
       description,
