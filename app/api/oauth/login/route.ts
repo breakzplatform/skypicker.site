@@ -2,22 +2,11 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { getOAuthClient } from "@/lib/oauth/client"
 import { getOriginFromRequest } from "@/lib/oauth/origin"
+import { safeReturnTo } from "@/lib/oauth/return-to"
 
 export const dynamic = "force-dynamic"
 
 const DEFAULT_PDS = "https://bsky.social"
-
-function safeReturnTo(raw: string | null, origin: string): string {
-  if (!raw) return "/"
-  if (!raw.startsWith("/") || raw.startsWith("//")) return "/"
-  try {
-    const target = new URL(raw, origin)
-    if (target.origin !== new URL(origin).origin) return "/"
-    return target.pathname + target.search + target.hash
-  } catch {
-    return "/"
-  }
-}
 
 const HOSTNAME = /^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?$/i
 
