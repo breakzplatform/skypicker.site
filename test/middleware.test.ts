@@ -95,6 +95,39 @@ describe("middleware", () => {
     ).toEqual({ status: 200, site: "sorteio.blue" })
   })
 
+  it("falls back to the default domain for an unknown DEV_DOMAIN", () => {
+    vi.stubEnv("DEV_DOMAIN", "evil.example.com")
+    expect(outcome(middleware(request("/", "localhost:3000")))).toEqual({
+      rewrite: "/skypicker.site",
+      site: "skypicker.site",
+    })
+  })
+
+  it.each([
+    "/api/oauth/login",
+    "/api/oauth/callback",
+    "/api/at/likes",
+    "/api/snapshot",
+    "/r/abc.def",
+    "/client-metadata.json",
+    "/sorteio.blue",
+  ])("rejects hostile hosts on %s", (path) => {
+    for (const host of [
+      "evil.example.com",
+      "skypicker.site:443@evil.example.com",
+    ]) {
+      expect(
+        outcome(
+          middleware(
+            request(path, "skypicker.site", {
+              "x-forwarded-host": host,
+            })
+          )
+        )
+      ).toMatchObject({ status: 400 })
+    }
+  })
+
   it.each(["/api/oauth/login", "/r/abc.def", "/client-metadata.json"])(
     "passes %s through untouched",
     (path) => {

@@ -14,7 +14,9 @@ export function isKnownDomain(value: string): value is KnownDomain {
 function stagingHosts(): Map<string, KnownDomain> {
   const hosts = new Map<string, KnownDomain>()
   for (const entry of (process.env.STAGING_HOSTS ?? "").split(",")) {
-    const [host, domain] = entry.split("=").map((part) => part.trim().toLowerCase())
+    const [host, domain] = entry
+      .split("=")
+      .map((part) => part.trim().toLowerCase())
     if (host && domain && isKnownDomain(domain)) hosts.set(host, domain)
   }
   return hosts
@@ -33,6 +35,27 @@ export function knownDomainForHost(host: string): KnownDomain | null {
   const name = hostname(host)
   const known = KNOWN_DOMAINS.find((d) => name === d || name.endsWith(`.${d}`))
   return known ?? stagingDomainForHost(name)
+}
+
+const LOOPBACK_HOST = /^(localhost|127\.0\.0\.1|\[::1\])(:\d{1,5})?$/i
+
+/** DNS hostname with an optional port; no userinfo, path, spaces or commas. */
+const DNS_HOST =
+  /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?::\d{1,5})?$/i
+
+export function isLoopbackHost(host: string): boolean {
+  return LOOPBACK_HOST.test(host)
+}
+
+/**
+ * Whether a raw Host header value is one this app serves: a loopback host, or
+ * a well-formed hostname for a known domain, one of its subdomains or a
+ * STAGING_HOSTS alias.
+ */
+export function isAllowedHost(host: string): boolean {
+  return (
+    isLoopbackHost(host) || (DNS_HOST.test(host) && !!knownDomainForHost(host))
+  )
 }
 
 /** Request header the middleware sets to the known domain a page renders. */

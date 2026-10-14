@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
 import { getOAuthClient } from "@/lib/oauth/client"
 import { getOriginFromRequest } from "@/lib/oauth/origin"
@@ -37,7 +37,12 @@ function loginCandidates(raw: string | undefined): string[] {
 }
 
 export async function GET(request: NextRequest) {
-  const origin = getOriginFromRequest(request)
+  let origin: string
+  try {
+    origin = getOriginFromRequest(request)
+  } catch {
+    return new NextResponse("bad host", { status: 400 })
+  }
   const returnTo = safeReturnTo(
     request.nextUrl.searchParams.get("return_to"),
     origin

@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
 import { getOAuthClient } from "@/lib/oauth/client"
 import { getOriginFromRequest } from "@/lib/oauth/origin"
@@ -7,7 +7,12 @@ import { getOAuthCookie } from "@/lib/oauth/session"
 export const dynamic = "force-dynamic"
 
 export async function POST(request: NextRequest) {
-  const origin = getOriginFromRequest(request)
+  let origin: string
+  try {
+    origin = getOriginFromRequest(request)
+  } catch {
+    return new NextResponse("bad host", { status: 400 })
+  }
   const cookie = await getOAuthCookie(origin)
   const did = cookie.did
 

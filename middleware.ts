@@ -2,18 +2,15 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import {
   DEFAULT_DOMAIN,
+  isAllowedHost,
   isKnownDomain,
+  isLoopbackHost,
   KNOWN_DOMAINS,
-  knownDomainForHost,
   SITE_DOMAIN_HEADER,
   stagingDomainForHost,
   type KnownDomain,
 } from "./lib/hosts"
 import { getDomain } from "./lib/utils"
-
-function isLoopback(host: string): boolean {
-  return /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(host)
-}
 
 function knownDomainInPath(pathname: string): KnownDomain | undefined {
   return KNOWN_DOMAINS.find(
@@ -35,6 +32,12 @@ export function middleware(request: NextRequest) {
     request.headers.get("host") ??
     url.host
 
+  // Every route, API and snapshot pages included, builds absolute URLs and
+  // OAuth metadata from the Host header, so unknown hosts stop here.
+  if (!isAllowedHost(realHost.toLowerCase())) {
+    return new NextResponse("bad host", { status: 400 })
+  }
+
   if (
     url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/r/") ||
@@ -50,11 +53,7 @@ export function middleware(request: NextRequest) {
     })
   }
 
-  const hostIsLoopback = isLoopback(realHost)
-
-  if (!hostIsLoopback && !knownDomainForHost(realHost)) {
-    return new NextResponse("bad host", { status: 400 })
-  }
+  const hostIsLoopback = isLoopbackHost(realHost)
 
   const overrideDomain = url.searchParams.get("dev_domain")
   if (overrideDomain && !isKnownDomain(overrideDomain)) {
@@ -70,7 +69,8 @@ export function middleware(request: NextRequest) {
   } else if (stagingDomain) {
     domain = stagingDomain
   } else if (hostIsLoopback) {
-    domain = process.env.DEV_DOMAIN ?? DEFAULT_DOMAIN
+    const devDomain = process.env.DEV_DOMAIN ?? ""
+    domain = isKnownDomain(devDomain) ? devDomain : DEFAULT_DOMAIN
   } else {
     try {
       const parsed = getDomain(realHost.split(":")[0])

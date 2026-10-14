@@ -22,6 +22,13 @@ function assertRedirectUri(uri: string): RedirectUri {
   throw new Error(`invalid redirect_uri: ${uri}`)
 }
 
+/** Name shown on the authorization screen: the brand of the serving domain. */
+export function oauthClientName(origin: string): string {
+  return knownDomainForHost(new URL(origin).host) === "sorteio.blue"
+    ? "sorteio.blue"
+    : "SkyPicker"
+}
+
 export function getOAuthClient(origin: string): NodeOAuthClient {
   const cleanOrigin = canonicalizeLoopback(origin.replace(/\/$/, ""))
   const cached = cache.get(cleanOrigin)
@@ -38,10 +45,7 @@ export function getOAuthClient(origin: string): NodeOAuthClient {
   const client = new NodeOAuthClient({
     clientMetadata: {
       client_id: clientId,
-      client_name:
-        knownDomainForHost(new URL(cleanOrigin).host) === "sorteio.blue"
-          ? "sorteio.blue"
-          : "SkyPicker",
+      client_name: oauthClientName(cleanOrigin),
       client_uri: cleanOrigin,
       logo_uri: `${cleanOrigin}/favicon.ico`,
       redirect_uris: [callbackUrl],
