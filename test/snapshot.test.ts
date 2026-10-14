@@ -153,12 +153,15 @@ describe("snapshot", () => {
       expect(() => decodeSnapshot(encoded)).toThrow(/signature/)
     })
 
-    it("falls back to SESSION_SECRET when SNAPSHOT_SECRET is unset", () => {
-      vi.stubEnv("SNAPSHOT_SECRET", undefined)
-      vi.stubEnv("SESSION_SECRET", SECRET_B)
-      const encoded = encodeSnapshot(buildSnapshot(baseInput))
-      expect(decodeSnapshot(encoded).p).toBe(baseInput.postUri)
-    })
+    it.each([undefined, ""])(
+      "falls back to SESSION_SECRET when SNAPSHOT_SECRET is %j",
+      (value) => {
+        vi.stubEnv("SNAPSHOT_SECRET", value)
+        vi.stubEnv("SESSION_SECRET", SECRET_B)
+        const encoded = encodeSnapshot(buildSnapshot(baseInput))
+        expect(decodeSnapshot(encoded).p).toBe(baseInput.postUri)
+      }
+    )
 
     it("refuses to sign with a short or missing secret", () => {
       vi.stubEnv("SNAPSHOT_SECRET", "too-short")
@@ -188,5 +191,30 @@ describe("snapshot", () => {
         Date.parse("2020-01-01T00:00:00Z")
       )
     })
+  })
+})
+
+describe("snapshot decompression", () => {
+  it("refuses payloads that inflate past the JSON limit", async () => {
+    vi.stubEnv("SNAPSHOT_SECRET", SECRET_A)
+    const { createHmac } = await import("node:crypto")
+    // ~100 kB of JSON compresses to well under the 6 kB payload cap.
+    const json = JSON.stringify({
+      v: 1,
+      m: "or",
+      p: "x",
+      w: [],
+      pad: "a".repeat(100_000),
+    })
+    const payload = deflateRawSync(Buffer.from(json))
+    expect(payload.length).toBeLessThan(6 * 1024)
+    const sig = createHmac("sha256", `snapshot-v1:${SECRET_A}`)
+      .update(payload)
+      .digest()
+    expect(() =>
+      decodeSnapshot(
+        `${payload.toString("base64url")}.${sig.toString("base64url")}`
+      )
+    ).toThrow(/buffer|length|large/i)
   })
 })

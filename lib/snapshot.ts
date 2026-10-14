@@ -27,9 +27,10 @@ const MAX_WINNERS = 100
 const MAX_HANDLE_LENGTH = 253
 const MAX_DISPLAY_NAME_LENGTH = 64
 const MAX_PAYLOAD_BYTES = 6 * 1024
+const MAX_JSON_BYTES = 64 * 1024
 
 function getSecret(): Buffer {
-  const secret = process.env.SNAPSHOT_SECRET ?? process.env.SESSION_SECRET
+  const secret = process.env.SNAPSHOT_SECRET || process.env.SESSION_SECRET
   if (!secret || secret.length < 32) {
     throw new Error(
       "SNAPSHOT_SECRET (or SESSION_SECRET) must be set to ≥32 chars"
@@ -141,14 +142,13 @@ export function decodeSnapshot(encoded: string): Snapshot {
   }
 
   const expectedSig = sign(payload)
-  if (
-    sig.length !== expectedSig.length ||
-    !timingSafeEqual(sig, expectedSig)
-  ) {
+  if (sig.length !== expectedSig.length || !timingSafeEqual(sig, expectedSig)) {
     throw new Error("invalid signature")
   }
 
-  const json = inflateRawSync(payload).toString("utf-8")
+  const json = inflateRawSync(payload, {
+    maxOutputLength: MAX_JSON_BYTES,
+  }).toString("utf-8")
   const data = JSON.parse(json) as Snapshot
 
   if (data.v !== SNAPSHOT_VERSION) {
@@ -156,6 +156,9 @@ export function decodeSnapshot(encoded: string): Snapshot {
   }
   if (!isValidMode(data.m)) {
     throw new Error("invalid mode in snapshot")
+  }
+  if (!Array.isArray(data.w) || typeof data.p !== "string") {
+    throw new Error("invalid snapshot shape")
   }
 
   return data

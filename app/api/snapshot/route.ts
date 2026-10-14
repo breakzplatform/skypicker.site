@@ -1,5 +1,6 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
+import { getCurrentDid } from "@/lib/atproto"
 import { buildSnapshot, encodeSnapshot, type FilterMode } from "@/lib/snapshot"
 
 const VALID_MODES: readonly FilterMode[] = ["likes", "reposts", "and", "or"]
@@ -22,6 +23,13 @@ type Body = {
 }
 
 export async function POST(request: NextRequest) {
+  // Signed links are only minted for signed-in users. The server still cannot
+  // prove the winners were drawn here (the draw runs in the browser); see the
+  // open question in the PR.
+  if (!(await getCurrentDid())) {
+    return NextResponse.json({ error: "not authenticated" }, { status: 401 })
+  }
+
   let body: Body
   try {
     body = (await request.json()) as Body
@@ -29,7 +37,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 })
   }
 
-  if (!body.postUri || !body.mode || !Array.isArray(body.winners)) {
+  if (!body?.postUri || !body.mode || !Array.isArray(body.winners)) {
     return NextResponse.json({ error: "missing fields" }, { status: 400 })
   }
   if (!isValidMode(body.mode)) {
