@@ -17,6 +17,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache"
   },
   "dependencies": {
+    "@atproto-labs/fetch-node": "0.2.0",
     "@atproto/api": "^0.19.12",
     "@atproto/jwk-jose": "^0.1.11",
     "@atproto/oauth-client-node": "^0.3.17",

@@ -1,9 +1,21 @@
+import { safeFetchWrap } from "@atproto-labs/fetch-node"
 import { NodeOAuthClient } from "@atproto/oauth-client-node"
 
 import { knownDomainForHost } from "../hosts"
 import { getSessionStore, getStateStore } from "./stores"
 
 const cache = new Map<string, NodeOAuthClient>()
+
+/**
+ * Handles, DIDs and PDS addresses typed at sign-in make the server fetch
+ * metadata from arbitrary hosts. This fetch refuses private, loopback and
+ * link-local addresses (checked at DNS lookup, so redirects are covered too),
+ * IP literals, non-standard ports, plain http and responses over 512 kB.
+ */
+export const oauthFetch = safeFetchWrap({
+  allowImplicitRedirect: true,
+  timeout: 10_000,
+})
 
 function isLocalhostOrigin(origin: string): boolean {
   return /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(origin)
@@ -43,6 +55,7 @@ export function getOAuthClient(origin: string): NodeOAuthClient {
     : `${cleanOrigin}/client-metadata.json`
 
   const client = new NodeOAuthClient({
+    fetch: oauthFetch,
     clientMetadata: {
       client_id: clientId,
       client_name: oauthClientName(cleanOrigin),
