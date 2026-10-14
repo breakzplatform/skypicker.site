@@ -6,8 +6,8 @@
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
     "preview": "next build && next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -33,6 +33,7 @@
     "tailwind-merge": "^2.6.1"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@types/node": "^22.19.17",
     "@types/react": "^19.2.14",
