@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import {
   buildPool,
   clampWinnerCount,
+  collectParticipants,
   MAX_WINNERS,
   MIN_WINNERS,
   pickWinners,
@@ -159,5 +160,101 @@ describe("secureRandomInt", () => {
 
   it.each([0, -1, 1.5, NaN, 2 ** 33])("rejects range %j", (max) => {
     expect(() => secureRandomInt(max)).toThrow(RangeError)
+  })
+})
+
+describe("collectParticipants", () => {
+  const pages: Record<
+    string,
+    Array<{ dids: string[]; cursor: string | null }>
+  > = {
+    "/api/at/likes": [
+      { dids: ["did:plc:a", "did:plc:b"], cursor: "p2" },
+      { dids: ["did:plc:c"], cursor: null },
+    ],
+    "/api/at/reposts": [{ dids: ["did:plc:c", "did:plc:d"], cursor: null }],
+  }
+
+  function mockFetch(rateLimitFirst = false) {
+    const calls: Array<{ url: string; body: unknown }> = []
+    let limited = rateLimitFirst
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init: RequestInit) => {
+        const body = JSON.parse(String(init.body))
+        calls.push({ url, body })
+        if (limited) {
+          limited = false
+          return new Response("{}", {
+            status: 429,
+            headers: { "retry-after": "2" },
+          })
+        }
+        const page = body.cursor === "p2" ? 1 : 0
+        return Response.json(pages[url][page])
+      })
+    )
+    return calls
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.useRealTimers()
+  })
+
+  it.each<[FilterMode, string[], number, number]>([
+    ["or", ["did:plc:a", "did:plc:b", "did:plc:c", "did:plc:d"], 3, 2],
+    ["and", ["did:plc:c"], 3, 2],
+    ["likes", ["did:plc:a", "did:plc:b", "did:plc:c"], 3, 0],
+    ["reposts", ["did:plc:c", "did:plc:d"], 0, 2],
+  ])("mode %s pages through the proxies", async (mode, pool, tl, tr) => {
+    const calls = mockFetch()
+    const progress = vi.fn()
+    const result = await collectParticipants(
+      "at://did:plc:x/app.bsky.feed.post/1",
+      mode,
+      new AbortController().signal,
+      progress
+    )
+    expect(result).toEqual({ pool, totalLikes: tl, totalReposts: tr })
+    expect(calls[0].body).toMatchObject({ cursor: null })
+    if (mode === "likes") {
+      expect(calls.every((c) => c.url === "/api/at/likes")).toBe(true)
+    }
+    if (mode === "reposts") {
+      expect(calls.every((c) => c.url === "/api/at/reposts")).toBe(true)
+    }
+    expect(progress).toHaveBeenLastCalledWith(
+      expect.objectContaining({ likesDone: true, repostsDone: true })
+    )
+  })
+
+  it("waits out a 429 and resumes", async () => {
+    vi.useFakeTimers()
+    const calls = mockFetch(true)
+    const done = collectParticipants(
+      "at://did:plc:x/app.bsky.feed.post/1",
+      "likes",
+      new AbortController().signal,
+      () => {}
+    )
+    await vi.advanceTimersByTimeAsync(1999)
+    expect(calls).toHaveLength(1)
+    await vi.advanceTimersByTimeAsync(1)
+    await expect(done).resolves.toMatchObject({ totalLikes: 3 })
+  })
+
+  it("stops when aborted", async () => {
+    mockFetch()
+    const controller = new AbortController()
+    controller.abort()
+    await expect(
+      collectParticipants(
+        "at://did:plc:x/app.bsky.feed.post/1",
+        "or",
+        controller.signal,
+        () => {}
+      )
+    ).rejects.toThrow(/abort/)
   })
 })

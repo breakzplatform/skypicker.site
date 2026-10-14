@@ -1,5 +1,6 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
+import { isDid, upstreamErrorResponse } from "@/lib/at-proxy"
 import { getCurrentAgent } from "@/lib/atproto"
 
 export const dynamic = "force-dynamic"
@@ -12,15 +13,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "not authenticated" }, { status: 401 })
   }
 
-  let body: { dids?: string[] }
+  let body: { dids?: unknown }
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: "invalid json" }, { status: 400 })
   }
 
-  const dids = Array.isArray(body.dids)
-    ? body.dids.filter((d): d is string => typeof d === "string" && d.length > 0)
+  const raw = body?.dids
+  const dids = Array.isArray(raw)
+    ? raw.filter((d): d is string => typeof d === "string" && d.length > 0)
     : []
   if (dids.length === 0) {
     return NextResponse.json({ profiles: [] })
@@ -31,8 +33,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     )
   }
-  const DID_RE = /^did:[a-z]+:[A-Za-z0-9._:%-]+$/i
-  if (!dids.every((d) => d.length <= 320 && DID_RE.test(d))) {
+  if (!dids.every(isDid)) {
     return NextResponse.json({ error: "invalid did" }, { status: 400 })
   }
 
@@ -40,7 +41,6 @@ export async function POST(request: NextRequest) {
     const res = await agent.app.bsky.actor.getProfiles({ actors: dids })
     return NextResponse.json({ profiles: res.data.profiles })
   } catch (err) {
-    const message = err instanceof Error ? err.message : "unknown error"
-    return NextResponse.json({ error: message }, { status: 500 })
+    return upstreamErrorResponse(err)
   }
 }

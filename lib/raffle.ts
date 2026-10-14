@@ -13,22 +13,19 @@ export type RaffleResult = {
   totalReposts: number
 }
 
-async function fetchPaged(
-  endpoint: "/api/at/likes" | "/api/at/reposts",
-  uri: string,
-  signal: AbortSignal,
-  onPage: (count: number, done: boolean) => void
-): Promise<string[]> {
-  const ids: string[] = []
-  let cursor: string | null = null
-
+/** POSTs JSON to an /api/at proxy, waiting out 429s for as long as needed. */
+async function postJson<T>(
+  endpoint: string,
+  body: unknown,
+  signal: AbortSignal
+): Promise<T> {
   while (true) {
     if (signal.aborted) throw new Error("aborted")
 
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ uri, cursor }),
+      body: JSON.stringify(body),
       signal,
     })
 
@@ -47,7 +44,25 @@ async function fetchPaged(
       throw new Error(err.error ?? `HTTP ${res.status}`)
     }
 
-    const data = (await res.json()) as { dids: string[]; cursor: string | null }
+    return (await res.json()) as T
+  }
+}
+
+async function fetchPaged(
+  endpoint: "/api/at/likes" | "/api/at/reposts",
+  uri: string,
+  signal: AbortSignal,
+  onPage: (count: number, done: boolean) => void
+): Promise<string[]> {
+  const ids: string[] = []
+  let cursor: string | null = null
+
+  while (true) {
+    const data: { dids: string[]; cursor: string | null } = await postJson(
+      endpoint,
+      { uri, cursor },
+      signal
+    )
     ids.push(...data.dids)
     cursor = data.cursor
 
@@ -184,19 +199,12 @@ export async function fetchProfiles(
   const batchSize = 25
 
   for (let i = 0; i < dids.length; i += batchSize) {
-    if (signal.aborted) throw new Error("aborted")
     const batch = dids.slice(i, i + batchSize)
-    const res = await fetch("/api/at/profiles", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ dids: batch }),
-      signal,
-    })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: res.statusText }))
-      throw new Error(err.error ?? `HTTP ${res.status}`)
-    }
-    const data = (await res.json()) as { profiles: ProfileView[] }
+    const data = await postJson<{ profiles: ProfileView[] }>(
+      "/api/at/profiles",
+      { dids: batch },
+      signal
+    )
     result.push(...data.profiles)
   }
 
@@ -213,15 +221,5 @@ export async function resolvePostUri(
   url: string,
   signal: AbortSignal
 ): Promise<ResolvedPost> {
-  const res = await fetch("/api/at/post", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ url }),
-    signal,
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }))
-    throw new Error(err.error ?? `HTTP ${res.status}`)
-  }
-  return (await res.json()) as ResolvedPost
+  return postJson<ResolvedPost>("/api/at/post", { url }, signal)
 }

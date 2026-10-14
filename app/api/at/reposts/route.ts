@@ -1,5 +1,6 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 
+import { isCursor, isPostUri, upstreamErrorResponse } from "@/lib/at-proxy"
 import { getCurrentAgent } from "@/lib/atproto"
 
 export const dynamic = "force-dynamic"
@@ -10,21 +11,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "not authenticated" }, { status: 401 })
   }
 
-  let body: { uri?: string; cursor?: string }
+  let body: { uri?: unknown; cursor?: unknown }
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: "invalid json" }, { status: 400 })
   }
 
-  if (
-    typeof body.uri !== "string" ||
-    !body.uri.startsWith("at://") ||
-    body.uri.length > 512
-  ) {
+  if (!body || !isPostUri(body.uri)) {
     return NextResponse.json({ error: "invalid uri" }, { status: 400 })
   }
-  if (body.cursor !== undefined && typeof body.cursor !== "string") {
+  if (!isCursor(body.cursor)) {
     return NextResponse.json({ error: "invalid cursor" }, { status: 400 })
   }
 
@@ -39,7 +36,6 @@ export async function POST(request: NextRequest) {
       cursor: res.data.cursor ?? null,
     })
   } catch (err) {
-    const message = err instanceof Error ? err.message : "unknown error"
-    return NextResponse.json({ error: message }, { status: 500 })
+    return upstreamErrorResponse(err)
   }
 }
