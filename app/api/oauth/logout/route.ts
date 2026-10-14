@@ -26,5 +26,3 @@ export async function POST(request: NextRequest) {
   cookie.destroy()
   return NextResponse.redirect(new URL("/", origin), { status: 303 })
 }
-
-export const GET = POST

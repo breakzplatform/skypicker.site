@@ -115,6 +115,28 @@ p {
   gap: var(--space-4);
   margin-bottom: var(--space-6);
 }
+/* Sign-out is a POST form; its button reads as the DS plain link. */
+.sp-session form {
+  display: inline;
+}
+.sp-linkbutton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  text-decoration-thickness: var(--underline-thickness);
+  cursor: pointer;
+}
+.sp-linkbutton:hover {
+  background: var(--link);
+  color: var(--text-inverse);
+  text-decoration: none;
+}
 .sp-session code {
   font: var(--type-code);
   text-transform: none;

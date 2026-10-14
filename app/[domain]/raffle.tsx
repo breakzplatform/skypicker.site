@@ -201,7 +201,11 @@ export function Raffle({
         <span>
           {strings.signedInAs} <code>@{sessionHandle ?? sessionDid}</code>
         </span>
-        <a href="/api/oauth/logout">{strings.signOut}</a>
+        <form action="/api/oauth/logout" method="POST">
+          <button type="submit" className="sp-linkbutton">
+            {strings.signOut}
+          </button>
+        </form>
       </div>
 
       <section className="panel cast">

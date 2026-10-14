@@ -1,9 +1,9 @@
 import { cookies } from "next/headers"
-import { getIronSession, type SessionOptions } from "iron-session"
 import type {
   NodeSavedSession,
   NodeSavedState,
 } from "@atproto/oauth-client-node"
+import { getIronSession, type SessionOptions } from "iron-session"
 
 export type StoredState = { v: NodeSavedState; exp: number }
 
@@ -23,34 +23,27 @@ function sessionPassword(): string {
   return secret
 }
 
-function isLoopbackHostname(hostname: string): boolean {
-  return /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/i.test(hostname)
-}
-
 function cookieName(origin: string): string {
   const host = new URL(origin).hostname.toLowerCase()
   return `skypicker_oauth_${host.replace(/[^a-z0-9]+/g, "_")}`
 }
 
-function options(origin: string): SessionOptions {
-  const hostname = new URL(origin).hostname
-  const isProd = process.env.NODE_ENV === "production"
-  const loopback = isLoopbackHostname(hostname)
+export function sessionOptions(origin: string): SessionOptions {
   return {
     cookieName: cookieName(origin),
     password: sessionPassword(),
+    // Host-only (no Domain attribute), so sibling subdomains never see it.
     cookieOptions: {
-      secure: isProd,
+      secure: new URL(origin).protocol === "https:",
       sameSite: "lax",
       httpOnly: true,
       path: "/",
       maxAge: 60 * 60 * 24 * 30,
-      ...(isProd && !loopback ? { domain: hostname } : {}),
     },
   }
 }
 
 export async function getOAuthCookie(origin: string) {
   const store = await cookies()
-  return getIronSession<OAuthCookie>(store, options(origin))
+  return getIronSession<OAuthCookie>(store, sessionOptions(origin))
 }
