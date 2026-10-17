@@ -1,5 +1,6 @@
 {
   "name": "next-template",
+  "license": "GPL-3.0-only",
   "version": "0.0.2",
   "private": true,
   "scripts": {
