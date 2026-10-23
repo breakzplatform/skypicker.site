@@ -71,6 +71,9 @@
       "copiedLong": "Não deu para encurtar; link completo copiado",
       "share": "Compartilhar link",
       "sharedLong": "Não deu para encurtar; link completo compartilhado",
+      "postOnBluesky": "Postar no Bluesky",
+      "composeIntro": "Resultado do sorteio",
+      "composeSummary": "{winners} {label} entre {pool} participantes.",
       "downloadOg": "Baixar imagem",
       "snapshotHint": "Link assinado e imutável. Qualquer pessoa com ele confere o resultado.",
       "postUrlHint": "Cole um link de post de qualquer cliente da Atmosphere com /profile/…/post/… ou uma URI at://."
@@ -206,6 +209,9 @@
       "copiedLong": "Couldn't shorten; full link copied",
       "share": "Share link",
       "sharedLong": "Couldn't shorten; full link shared",
+      "postOnBluesky": "Post on Bluesky",
+      "composeIntro": "Giveaway result",
+      "composeSummary": "{winners} {label} among {pool} participants.",
       "downloadOg": "Download image",
       "snapshotHint": "Signed, immutable link. Anyone with it can check the result.",
       "postUrlHint": "Paste a post link from any Atmosphere client using /profile/…/post/… or an at:// URI."

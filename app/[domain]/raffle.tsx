@@ -15,6 +15,7 @@ import {
   type ProfileView,
   type RaffleProgress,
 } from "@/lib/raffle"
+import { buildComposeText, buildComposeUrl } from "@/lib/bluesky-compose"
 import { shortenResultUrl, type ShortLink } from "@/lib/short-link"
 import type { SiteContent } from "@/lib/site"
 import { SignIn } from "@/components/sign-in"
@@ -63,6 +64,7 @@ export function Raffle({
   const [totals, setTotals] = useState<{
     likes: number
     reposts: number
+    poolSize: number
     uri: string
     authorHandle: string
     mode: FilterMode
@@ -127,6 +129,7 @@ export function Raffle({
       setTotals({
         likes: totalLikes,
         reposts: totalReposts,
+        poolSize: pool.length,
         uri: post.uri,
         authorHandle: post.authorHandle,
         mode,
@@ -144,8 +147,8 @@ export function Raffle({
     }
   }
 
-  async function onCreateSnapshot() {
-    if (!winners || !totals || snapshotBusy) return
+  async function onCreateSnapshot(): Promise<string | null> {
+    if (!winners || !totals || snapshotBusy) return null
     setSnapshotBusy(true)
     setError(null)
     try {
@@ -172,21 +175,54 @@ export function Raffle({
       }
       const { path } = (await res.json()) as { path: string }
       setSnapshotPath(path)
+      return path
     } catch (err) {
       setError((err as Error).message)
+      return null
     } finally {
       setSnapshotBusy(false)
     }
   }
 
-  async function prepareShareLink(): Promise<ShortLink | null> {
-    if (!snapshotPath) return null
-    if (shortLinkRef.current?.path === snapshotPath) {
-      return shortLinkRef.current.link
-    }
-    const link = await shortenResultUrl(window.location.origin + snapshotPath)
-    if (link.shortened) shortLinkRef.current = { path: snapshotPath, link }
+  async function prepareShareLink(
+    path: string | null = snapshotPath
+  ): Promise<ShortLink | null> {
+    if (!path) return null
+    if (shortLinkRef.current?.path === path) return shortLinkRef.current.link
+    const link = await shortenResultUrl(window.location.origin + path)
+    if (link.shortened) shortLinkRef.current = { path, link }
     return link
+  }
+
+  async function onPostOnBluesky() {
+    if (!winners || !totals) return
+    // Open the tab synchronously so the popup blocker allows it after awaits.
+    const tab = window.open("about:blank", "_blank")
+    const path = snapshotPath ?? (await onCreateSnapshot())
+    const link = await prepareShareLink(path)
+    if (!link) {
+      tab?.close()
+      return
+    }
+    const url = buildComposeUrl(
+      buildComposeText(
+        {
+          intro: strings.composeIntro,
+          summary: strings.composeSummary,
+          winner: strings.winner,
+          winners: strings.winners,
+          locale,
+        },
+        {
+          title: totals.title,
+          winnerCount: winners.length,
+          poolSize: totals.poolSize,
+          link: link.url,
+        }
+      )
+    )
+    if (tab) tab.location.href = url
+    else window.open(url, "_blank")
   }
 
   function announce(message: string) {
@@ -430,16 +466,26 @@ export function Raffle({
           <div className="panel-b sp-section sp-stack">
             <span className="label m-0">{strings.shareTitle}</span>
             {!snapshotPath ? (
-              <button
-                type="button"
-                onClick={onCreateSnapshot}
-                disabled={snapshotBusy}
-                className="btn primary cast press sp-submit"
-              >
-                {snapshotBusy
-                  ? strings.creatingSnapshot
-                  : strings.createSnapshot}
-              </button>
+              <div className="sp-actions">
+                <button
+                  type="button"
+                  onClick={onCreateSnapshot}
+                  disabled={snapshotBusy}
+                  className="btn primary cast press"
+                >
+                  {snapshotBusy
+                    ? strings.creatingSnapshot
+                    : strings.createSnapshot}
+                </button>
+                <button
+                  type="button"
+                  onClick={onPostOnBluesky}
+                  disabled={snapshotBusy}
+                  className="btn cast press"
+                >
+                  {strings.postOnBluesky}
+                </button>
+              </div>
             ) : (
               <div className="sp-actions">
                 <a
@@ -466,6 +512,13 @@ export function Raffle({
                     {strings.share}
                   </button>
                 )}
+                <button
+                  type="button"
+                  onClick={onPostOnBluesky}
+                  className="btn cast press"
+                >
+                  {strings.postOnBluesky}
+                </button>
                 <a
                   href={`${snapshotPath}/og.png?dl=1`}
                   download
