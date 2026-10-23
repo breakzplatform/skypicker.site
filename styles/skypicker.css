@@ -17,9 +17,9 @@ p {
 }
 
 .sp-page {
-  max-width: calc(720px + 2 * var(--page-pad-x));
+  max-width: 880px;
   margin: 0 auto;
-  padding: 0 var(--page-pad-x) var(--page-pad-bottom);
+  padding: 0 24px 64px;
 }
 
 .sp-topbar {
