@@ -88,10 +88,12 @@
             "newRaffle": "Fazer outro sorteio"
         },
         "footer": {
-            "by": "Diretamente de Pernambuco por <a href=\"https://joseli.to\">Joselito</a>, com muito amor e carinho.",
+            "by": "Direto do Brasil pelo Joselito, com muito carinho. Não tem relação com o Bluesky.",
             "noCookies": "Este site só armazena um cookie de sessão OAuth assinado, sem rastreamento.",
             "ghFork": "Veja o código-fonte no GitHub",
-            "support": "Apoie este projeto"
+            "support": "Apoie este projeto:",
+            "partOf": "parte do",
+            "byAuthor": "por"
         },
         "intro": {
             "lead": "Sorteie entre quem curtiu ou repostou um post.",
@@ -216,10 +218,12 @@
             "newRaffle": "Run another raffle"
         },
         "footer": {
-            "by": "Directly from Brazil by <a href=\"https://joseli.to\">Joselito</a>, with much love and care.",
+            "by": "Directly from Brazil by Joselito, with much love and care. It is not related to Bluesky.",
             "noCookies": "This site only stores a signed OAuth session cookie, no tracking.",
             "ghFork": "View source on GitHub",
-            "support": "Support this project"
+            "support": "Support this project:",
+            "partOf": "part of",
+            "byAuthor": "by"
         },
         "intro": {
             "lead": "Draw winners from a post’s likes or reposts.",

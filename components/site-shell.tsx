@@ -10,16 +10,16 @@ import type { SiteContent } from "@/lib/site"
 import { ThemeSwitch } from "@/components/theme-switch"
 
 const SUPPORT_LINKS = [
-  { label: "Pix", href: "https://pix.joseli.to", ink: "ink-pix" },
+  { label: "Pix", href: "https://pix.joseli.to", ink: "pix" },
   {
     label: "Buy Me a Coffee",
     href: "https://buymeacoffee.com/joselito",
-    ink: "ink-yellow",
+    ink: "coffee",
   },
   {
     label: "GitHub Sponsors",
     href: "https://github.com/sponsors/breakzplatform",
-    ink: "ink-sponsors",
+    ink: "sponsors",
   },
 ]
 
@@ -46,35 +46,32 @@ export async function TopBar({ content }: { content: SiteContent }) {
 
 export function SiteFooter({ content }: { content: SiteContent }) {
   return (
-    <footer className="sp-foot">
-      <div className="sp-chips">
-        <span className="label m-0">{content.footer.support}</span>
+    <footer className="pt-6">
+      <p className="db-meta mb-6 text-center">
+        {content.footer.noCookies} · {content.footer.partOf}{" "}
+        <a href="https://notx.blue">notx.blue</a> {content.footer.byAuthor}{" "}
+        <a href="https://bsky.app/profile/joseli.to">@joseli.to</a> ·{" "}
+        <a href="https://github.com/breakzplatform/skypicker.site">
+          {content.footer.ghFork}
+        </a>
+      </p>
+      <p className="db-note mb-6 text-center">{content.footer.by}</p>
+      <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
+        <span className="db-micro text-text-3 mr-1">
+          {content.footer.support}
+        </span>
         {SUPPORT_LINKS.map((link) => (
           <a
             key={link.href}
             href={link.href}
             target="_blank"
             rel="noopener"
-            className={`sp-chip cast press ${link.ink}`}
+            className={`db-chip db-chip-${link.ink} cast press`}
           >
             {link.label}
           </a>
         ))}
       </div>
-      <p
-        className="sp-note"
-        dangerouslySetInnerHTML={{ __html: content.footer.by }}
-      />
-      <p className="sp-note">{content.footer.noCookies}</p>
-      <p className="sp-note">
-        <a
-          href="https://github.com/breakzplatform/skypicker.site"
-          target="_blank"
-          rel="noopener"
-        >
-          {content.footer.ghFork}
-        </a>
-      </p>
     </footer>
   )
 }

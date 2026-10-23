@@ -256,49 +256,6 @@ a.btn.primary:hover {
   color: var(--project-ink-contrast);
 }
 
-/* Support chips: each takes a DS ink with its on-* partner (Pix, Buy Me a
-   Coffee on yellow, Sponsors on its own soft pink) and keeps it on :visited
-   and :hover. Order is fixed: Pix > Buy Me a Coffee > GitHub Sponsors. */
-.sp-chips {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-5);
-}
-.sp-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 9px;
-  font: var(--type-label);
-  letter-spacing: var(--tracking-meta);
-  text-transform: uppercase;
-  text-decoration: none;
-}
-a.sp-chip,
-a.sp-chip:visited,
-a.sp-chip:hover {
-  background: var(--ink);
-  color: var(--on-ink);
-  text-decoration: none;
-}
-
-.sp-foot {
-  margin-top: var(--space-12);
-  padding-top: var(--space-8);
-  border-top: var(--border);
-  display: grid;
-  gap: var(--space-4);
-  text-align: center;
-}
-.sp-foot .sp-chips {
-  margin-bottom: var(--space-6);
-}
-.sp-note {
-  font: var(--type-dek);
-  color: var(--text-3);
-}
-
 /* Result page: a smaller masthead that links home, then the result. */
 .sp-masthead-sm {
   margin: var(--space-8) 0 var(--space-10);
@@ -351,4 +308,20 @@ a.db-btn, a.db-btn:visited, a.db-btn:hover { color: var(--text-1); background: v
 .faq-item[open] summary::after { content: '−'; }
 .faq-item[open] summary { color: var(--project-ink); }
 .faq-item p { padding: 0 var(--space-6) var(--space-5); color: var(--text-2); font: var(--type-dek); }
+
+
+.db-meta { font: var(--type-meta); text-transform: uppercase; letter-spacing: var(--tracking-meta); color: var(--text-3); }
+.db-micro { font: var(--type-label); text-transform: uppercase; letter-spacing: var(--tracking-meta); }
+/* Running machine output and fine print: typewriter, but readable. */
+.db-note { font: var(--type-code); color: var(--text-3); }
+
+
+.db-chip {
+  display: inline-flex; align-items: center; padding: 5px 9px;
+  font: var(--type-label); text-transform: uppercase; letter-spacing: var(--tracking-meta); text-decoration: none;
+}
+a.db-chip-pix, a.db-chip-pix:visited, a.db-chip-pix:hover { background: var(--ink-pix); color: var(--on-pix); }
+a.db-chip-apoiase, a.db-chip-apoiase:visited, a.db-chip-apoiase:hover { background: var(--ink-orange); color: var(--on-orange); }
+a.db-chip-coffee, a.db-chip-coffee:visited, a.db-chip-coffee:hover { background: var(--ink-yellow); color: var(--on-yellow); }
+a.db-chip-sponsors, a.db-chip-sponsors:visited, a.db-chip-sponsors:hover { background: var(--ink-sponsors); color: var(--on-sponsors); }
 
