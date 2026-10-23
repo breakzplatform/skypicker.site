@@ -88,41 +88,22 @@ p {
   color: var(--text-1);
 }
 
-.sp-session {
+.profile {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  align-items: center;
+  gap: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: var(--border);
 }
-/* Sign-out is a POST form; its button reads as the DS plain link. */
-.sp-session form {
-  display: inline;
+.profile > div { flex: 1; min-width: 0; }
+.name {
+  font: var(--type-feed-title);
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: anywhere;
 }
-.sp-linkbutton {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--link);
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  text-decoration: underline;
-  text-underline-offset: var(--underline-offset);
-  text-decoration-thickness: var(--underline-thickness);
-  cursor: pointer;
-}
-.sp-linkbutton:hover {
-  background: var(--link);
-  color: var(--text-inverse);
-  text-decoration: none;
-}
-.sp-session code {
-  font: var(--type-code);
-  text-transform: none;
-  letter-spacing: 0;
-  color: var(--text-1);
-}
+.handle { color: var(--text-3); overflow-wrap: anywhere; }
+
+.profile .avatar { width: 48px; height: 48px; border: var(--border); }
 
 .sp-row-fields {
   display: grid;

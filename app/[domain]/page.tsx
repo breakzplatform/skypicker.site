@@ -27,12 +27,16 @@ export async function generateMetadata({
   }
 }
 
-async function sessionHandle(did: string): Promise<string | null> {
+async function sessionProfile(did: string) {
   try {
     const agent = await getCurrentAgent()
     if (!agent) return null
     const profile = await agent.app.bsky.actor.getProfile({ actor: did })
-    return profile.data.handle
+    return {
+      handle: profile.data.handle,
+      displayName: profile.data.displayName,
+      avatar: profile.data.avatar,
+    }
   } catch {
     return null
   }
@@ -51,7 +55,7 @@ export default async function IndexPage({
   const c = siteContent(domain)
 
   const sessionDid = await getCurrentDid()
-  const handle = sessionDid ? await sessionHandle(sessionDid) : null
+  const profile = sessionDid ? await sessionProfile(sessionDid) : null
 
   return (
     <div className="sp-page">
@@ -63,7 +67,7 @@ export default async function IndexPage({
 
         <Raffle
           sessionDid={sessionDid}
-          sessionHandle={handle}
+          sessionProfile={profile}
           strings={{ ...c.raffle, signin: c.signin, intro: c.intro }}
           locale={c.meta.locale}
           initialError={sp.oauth_error}

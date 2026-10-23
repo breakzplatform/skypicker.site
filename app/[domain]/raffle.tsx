@@ -35,13 +35,17 @@ function ErrorLine({ message }: { message: string }) {
 
 export function Raffle({
   sessionDid,
-  sessionHandle,
+  sessionProfile,
   strings,
   locale,
   initialError,
 }: {
   sessionDid: string | null
-  sessionHandle: string | null
+  sessionProfile: {
+    handle: string
+    displayName?: string
+    avatar?: string
+  } | null
   strings: RaffleStrings
   /** BCP 47 locale for number formatting. */
   locale: string
@@ -199,129 +203,151 @@ export function Raffle({
 
   return (
     <>
-      <div className="sp-session meta">
-        <span>
-          {strings.signedInAs} <code>@{sessionHandle ?? sessionDid}</code>
-        </span>
-        <form action="/api/oauth/logout" method="POST">
-          <button type="submit" className="sp-linkbutton">
-            {strings.signOut}
-          </button>
-        </form>
-      </div>
-
       <section className="panel cast">
         <h2 className="panel-h">{strings.panelTitle}</h2>
-        <form onSubmit={onSortear} className="panel-b sp-stack">
-          <p>
-            <strong>{strings.intro.lead}</strong> {strings.intro.text}
-          </p>
-          <label className="field-block">
-            <span className="label">{strings.postLabel}</span>
-            <span className="field cast">
-              <input
-                type="text"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck={false}
-                value={postUrl}
-                onChange={(e) => setPostUrl(e.target.value)}
-                aria-describedby="post-url-hint"
-                placeholder={strings.postUrlPlaceholder}
-                required
-                disabled={busy}
-              />
+        <div className="panel-b sp-stack">
+          <div className="profile">
+            <span
+              className={`sp-avatar avatar${sessionProfile?.avatar ? "" : "screen"}`}
+              aria-hidden="true"
+            >
+              {sessionProfile?.avatar && (
+                <img
+                  src={sessionProfile.avatar}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="sp-avatar-image"
+                />
+              )}
             </span>
-          </label>
-
-          <p id="post-url-hint" className="hint">
-            {strings.postUrlHint}
-          </p>
-
-          <label className="field-block">
-            <span className="label">{strings.titleLabel}</span>
-            <span className="field cast">
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder={strings.titlePlaceholder}
-                maxLength={100}
-                disabled={busy}
-              />
-            </span>
-          </label>
-
-          <div className="sp-row-fields">
-            <label className="field-block m-0">
-              <span className="label">{strings.modeLabel}</span>
-              <span className="field cast">
-                <select
-                  value={mode}
-                  onChange={(e) => setMode(e.target.value as FilterMode)}
-                  disabled={busy}
-                >
-                  {MODES.map((m) => (
-                    <option key={m} value={m}>
-                      {strings.modes[m]}
-                    </option>
-                  ))}
-                </select>
-              </span>
-            </label>
-
-            <label className="field-block m-0">
-              <span className="label">{strings.countLabel}</span>
+            <div>
+              <p className="name">
+                {sessionProfile?.displayName ||
+                  sessionProfile?.handle ||
+                  sessionDid}
+              </p>
+              {sessionProfile?.handle && (
+                <p className="handle">@{sessionProfile.handle}</p>
+              )}
+            </div>
+            <form action="/api/oauth/logout" method="POST">
+              <button type="submit" className="btn cast press">
+                {strings.signOut}
+              </button>
+            </form>
+          </div>
+          <form onSubmit={onSortear} className="sp-stack">
+            <p>
+              <strong>{strings.intro.lead}</strong> {strings.intro.text}
+            </p>
+            <label className="field-block">
+              <span className="label">{strings.postLabel}</span>
               <span className="field cast">
                 <input
-                  type="number"
-                  min={MIN_WINNERS}
-                  max={MAX_WINNERS}
-                  value={count}
-                  onChange={(e) => setCount(e.target.value)}
-                  onBlur={() => setCount(String(clampWinnerCount(count)))}
+                  type="text"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  value={postUrl}
+                  onChange={(e) => setPostUrl(e.target.value)}
+                  aria-describedby="post-url-hint"
+                  placeholder={strings.postUrlPlaceholder}
+                  required
                   disabled={busy}
                 />
               </span>
             </label>
-          </div>
 
-          {busy ? (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="btn lg cast press sp-submit"
-            >
-              {strings.cancel}
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="btn lg primary cast press sp-submit"
-            >
-              {strings.submit}
-            </button>
-          )}
-
-          {phase && (
-            <p className="sp-status" aria-live="polite">
-              {phase}
-              {progress && (
-                <>
-                  {" — "}
-                  {progress.likesDone ? "✓" : "…"}{" "}
-                  {progress.likes.toLocaleString(locale)} {strings.likesLabel}
-                  {" · "}
-                  {progress.repostsDone ? "✓" : "…"}{" "}
-                  {progress.reposts.toLocaleString(locale)}{" "}
-                  {strings.repostsLabel}
-                </>
-              )}
+            <p id="post-url-hint" className="hint">
+              {strings.postUrlHint}
             </p>
-          )}
 
-          {error && <ErrorLine message={error} />}
-        </form>
+            <label className="field-block">
+              <span className="label">{strings.titleLabel}</span>
+              <span className="field cast">
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={strings.titlePlaceholder}
+                  maxLength={100}
+                  disabled={busy}
+                />
+              </span>
+            </label>
+
+            <div className="sp-row-fields">
+              <label className="field-block m-0">
+                <span className="label">{strings.modeLabel}</span>
+                <span className="field cast">
+                  <select
+                    value={mode}
+                    onChange={(e) => setMode(e.target.value as FilterMode)}
+                    disabled={busy}
+                  >
+                    {MODES.map((m) => (
+                      <option key={m} value={m}>
+                        {strings.modes[m]}
+                      </option>
+                    ))}
+                  </select>
+                </span>
+              </label>
+
+              <label className="field-block m-0">
+                <span className="label">{strings.countLabel}</span>
+                <span className="field cast">
+                  <input
+                    type="number"
+                    min={MIN_WINNERS}
+                    max={MAX_WINNERS}
+                    value={count}
+                    onChange={(e) => setCount(e.target.value)}
+                    onBlur={() => setCount(String(clampWinnerCount(count)))}
+                    disabled={busy}
+                  />
+                </span>
+              </label>
+            </div>
+
+            {busy ? (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="btn lg cast press sp-submit"
+              >
+                {strings.cancel}
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="btn lg primary cast press sp-submit"
+              >
+                {strings.submit}
+              </button>
+            )}
+
+            {phase && (
+              <p className="sp-status" aria-live="polite">
+                {phase}
+                {progress && (
+                  <>
+                    {" — "}
+                    {progress.likesDone ? "✓" : "…"}{" "}
+                    {progress.likes.toLocaleString(locale)} {strings.likesLabel}
+                    {" · "}
+                    {progress.repostsDone ? "✓" : "…"}{" "}
+                    {progress.reposts.toLocaleString(locale)}{" "}
+                    {strings.repostsLabel}
+                  </>
+                )}
+              </p>
+            )}
+
+            {error && <ErrorLine message={error} />}
+          </form>
+        </div>
       </section>
 
       {winners && totals && (
