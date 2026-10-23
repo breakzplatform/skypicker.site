@@ -1,0 +1,325 @@
+/* SkyPicker / sorteio.blue components on top of the joseli.to design system.
+   Nothing here invents a value: colours, rules, gaps and fonts are DS tokens,
+   and the halftone shadow, press and lift come from .cast / .press / .lift in
+   the markup. */
+
+/* The project ink is the DS magenta in every theme; this rule has to sit on
+   `:root, [data-theme]` after the DS imports so it beats each theme block's
+   default (terminal still folds it to amber, as the DS wants). */
+:root,
+[data-theme] {
+  --target: 44px;
+  --project-ink: var(--ink-magenta);
+  --project-ink-contrast: var(--on-magenta);
+}
+
+p {
+  margin: 0;
+}
+
+.sp-page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
+
+.sp-topbar {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 16px;
+}
+
+/* A single-purpose tool page: the masthead is centred and the wordmark runs
+   past the top of the type scale, as on down.blue. */
+.sp-masthead {
+  text-align: center;
+  margin: var(--space-10) 0 var(--space-11);
+}
+.sp-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18em;
+  margin: 0;
+  font: var(--weight-display) clamp(44px, 12vw, 96px) / 1.1 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--text-1);
+  white-space: nowrap;
+}
+.sp-wordmark .ink-block {
+  margin-left: 0.04em;
+}
+.sp-stack {
+  display: grid;
+  gap: var(--space-6);
+}
+.sp-stack > .field-block {
+  margin: 0;
+}
+
+/* Sign-in: two equally weighted choices, stacked on phones. */
+.sp-signin {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .sp-signin {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.sp-signin form {
+  display: contents;
+}
+.sp-signin .btn {
+  width: 100%;
+  min-height: 56px;
+  font-size: var(--text-body);
+}
+.sp-atmo {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+  font: var(--type-dek);
+  font-size: var(--text-body);
+  color: var(--text-2);
+}
+.sp-atmo strong {
+  color: var(--text-1);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: var(--border);
+}
+.profile > div { flex: 1; min-width: 0; }
+.name {
+  font: var(--type-feed-title);
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: anywhere;
+}
+.handle { color: var(--text-3); overflow-wrap: anywhere; }
+
+.profile .avatar { width: 48px; height: 48px; border: var(--border); }
+
+.sp-row-fields {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 560px) {
+  .sp-row-fields {
+    grid-template-columns: 1fr 9rem;
+  }
+}
+.field select {
+  appearance: none;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-1) 50%),
+    linear-gradient(135deg, var(--text-1) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 55%, calc(100% - 10px) 55%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 28px;
+}
+.field select option {
+  background: var(--surface-page);
+  color: var(--text-1);
+}
+.sp-submit {
+  width: 100%;
+}
+
+/* Machine output: typewriter, lowercase-friendly. */
+.sp-status {
+  font: var(--type-code);
+  font-size: var(--text-body-sm);
+  color: var(--text-2);
+}
+.sp-status-error {
+  color: var(--status-error);
+  font-weight: var(--weight-bold);
+}
+
+/* User-supplied text (error details, handles, DIDs, titles) can be one long
+   unbroken token; let it break instead of widening the page on phones. */
+.sp-status,
+.sp-session code,
+.sp-result-title,
+.sp-page .meta {
+  overflow-wrap: anywhere;
+}
+
+.sp-results {
+  margin-top: var(--space-10);
+}
+.sp-section {
+  border-top: var(--border);
+}
+.sp-section-label {
+  padding: var(--space-5) var(--box-pad);
+  border-top: var(--border);
+}
+
+/* Winner rows sit inside a panel that already casts, so they stay flat. */
+.sp-winners {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sp-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--box-pad);
+  border-top: var(--border-hair);
+  color: var(--text-1);
+  text-decoration: none;
+}
+.sp-winners > li:first-child .sp-row {
+  border-top: 0;
+}
+a.sp-row,
+a.sp-row:visited,
+a.sp-row:hover {
+  color: var(--text-1);
+  background: transparent;
+  text-decoration: none;
+}
+a.sp-row:hover {
+  background: var(--surface-fill);
+}
+.sp-rank {
+  min-width: 1.6em;
+  text-align: right;
+  font: var(--type-rank);
+  color: var(--spot);
+}
+.sp-avatar {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border: var(--border);
+  object-fit: cover;
+  background-color: var(--surface-fill);
+}
+.sp-avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+[data-theme="terminal"] .sp-avatar {
+  isolation: isolate;
+  background-color: var(--project-ink);
+}
+[data-theme="terminal"] .sp-avatar-image {
+  filter: grayscale(1);
+  mix-blend-mode: multiply;
+}
+[data-theme="terminal"] .sp-avatar.screen {
+  --dot-ink: var(--project-ink);
+  background-color: var(--surface-card);
+}
+
+.sp-who {
+  display: grid;
+  min-width: 0;
+}
+.sp-name {
+  font: var(--type-title);
+  overflow-wrap: anywhere;
+}
+.sp-handle {
+  font: var(--type-meta);
+  color: var(--text-3);
+  overflow-wrap: anywhere;
+}
+
+.sp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+a.btn,
+a.btn:visited,
+a.btn:hover {
+  color: var(--text-1);
+  text-decoration: none;
+}
+a.btn.primary,
+a.btn.primary:visited,
+a.btn.primary:hover {
+  color: var(--project-ink-contrast);
+}
+
+/* Result page: a smaller masthead that links home, then the result. */
+.sp-masthead-sm {
+  margin: var(--space-8) 0 var(--space-10);
+}
+.sp-masthead-sm .sp-wordmark {
+  font-size: clamp(34px, 9vw, 52px);
+}
+.sp-result-title {
+  font: var(--type-display);
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: anywhere;
+}
+
+.db-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-3);
+  background: var(--surface-page); color: var(--text-1);
+  font: var(--weight-bold) var(--text-body-sm)/1.25 var(--font-body);
+  padding: 8px 12px; cursor: pointer; text-align: center; text-decoration: none;
+}
+a.db-btn, a.db-btn:visited, a.db-btn:hover { color: var(--text-1); background: var(--surface-page); text-decoration: none; }
+
+.db-btn-sm { padding: 4px 7px; font-size: var(--text-meta); }
+
+.db-panel { background: var(--surface-card); }
+.db-panel-head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  margin: 0; padding: var(--box-head-pad); border-bottom: var(--border);
+  background: var(--project-ink); color: var(--project-ink-contrast);
+  font: var(--weight-bold) var(--text-caption)/1.3 var(--font-mono);
+  letter-spacing: var(--tracking-meta); text-transform: uppercase;
+}
+
+.faq-list { display: flex; flex-direction: column; padding: 0; }
+.faq-item { border-bottom: 1px dotted var(--border-dotted); }
+.faq-item:last-child { border-bottom: 0; }
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--target);
+  padding: var(--space-4) var(--space-6);
+  font: var(--weight-bold) var(--text-body-sm)/1.35 var(--font-body);
+  cursor: pointer;
+}
+.faq-item summary { justify-content: space-between; gap: var(--space-4); list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: '+'; font-family: var(--font-mono); flex: none; }
+.faq-item[open] summary::after { content: '−'; }
+.faq-item[open] summary { color: var(--project-ink); }
+.faq-item p { padding: 0 var(--space-6) var(--space-5); color: var(--text-2); font: var(--type-dek); }
+
+
+.db-meta { font: var(--type-meta); text-transform: uppercase; letter-spacing: var(--tracking-meta); color: var(--text-3); }
+.db-micro { font: var(--type-label); text-transform: uppercase; letter-spacing: var(--tracking-meta); color: var(--text-3); }
+/* Running machine output and fine print: typewriter, but readable. */
+.db-note { font: var(--type-code); color: var(--text-3); }
+
+
+.db-chip {
+  display: inline-flex; align-items: center; padding: 5px 9px;
+  font: var(--type-label); text-transform: uppercase; letter-spacing: var(--tracking-meta); text-decoration: none;
+}
+a.db-chip-pix, a.db-chip-pix:visited, a.db-chip-pix:hover { background: var(--ink-pix); color: var(--on-pix); }
+a.db-chip-apoiase, a.db-chip-apoiase:visited, a.db-chip-apoiase:hover { background: var(--ink-orange); color: var(--on-orange); }
+a.db-chip-coffee, a.db-chip-coffee:visited, a.db-chip-coffee:hover { background: var(--ink-yellow); color: var(--on-yellow); }
+a.db-chip-sponsors, a.db-chip-sponsors:visited, a.db-chip-sponsors:hover { background: var(--ink-sponsors); color: var(--on-sponsors); }
+

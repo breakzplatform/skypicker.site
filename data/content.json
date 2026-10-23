@@ -1,86 +1,278 @@
 {
-    "sorteio.blue": {
-        "meta": {
-            "lang": "pt-br",
-            "title": "sorteio.blue · Sorteios no Bluesky",
-            "description": "Faça sorteios de forma simples no Bluesky com o sorteio.blue"
-        },
-        "title": "sorteio.blue",
-        "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
-        "description": "Informe a URL do post no campo abaixo, seu e-mail e sua senha do Bluesky e aperte em &quot;Sortear&quot;. <strong>Os resultados já serão listados de forma aleatória</strong>.",
-        "supporters": "Apoiadores",
-        "form": {
-            "submit": "Sortear",
-            "user": "E-mail ou usuário",
-            "pass": "Senha (App Password)",
-            "errors": {
-                "error1": "Por favor insira um link válido de um post do Bluesky"
-            }
-        },
-        "results": {
-            "postCombined": {
-                "title": "Likes e Reposts",
-                "info": "curtiram e repostaram"
-            },
-            "postCombinedOr": {
-                "title": "Likes ou Reposts",
-                "info": "curtiram ou repostaram"
-            },
-            "postReposts": {
-                "title": "Reposts",
-                "info": "repostaram"
-            },
-            "postLikes": {
-                "title": "Likes",
-                "info": "curtiram este post"
-            }
-        },
-        "footer": {
-            "by": "Diretamente de Pernambuco por <a href=\"https://joseli.to\">Joselito</a>, com muito amor e carinho.",
-            "noCookies": "Este site não utiliza nenhum cookie nem coleta absolutamente nenhum dado.",
-            "ghFork": "Veja o código-fonte no GitHub"
-        }
+  "sorteio.blue": {
+    "meta": {
+      "lang": "pt-BR",
+      "locale": "pt-BR",
+      "title": "sorteio.blue · Sorteios no Bluesky",
+      "description": "Faça sorteios de forma simples no Bluesky com o sorteio.blue"
     },
-    "skypicker.site": {
-        "meta": {
-            "lang": "en",
-            "title": "SkyPicker · Host giveaways on Bluesky",
-            "description": "Host giveaways easily on Bluesky with SkyPicker"
+    "title": "sorteio.blue",
+    "wordmark": {
+      "before": "sorteio",
+      "ink": ".blue",
+      "after": ""
+    },
+    "theme": {
+      "names": {
+        "light": "claro",
+        "dark": "escuro",
+        "terminal": "terminal"
+      },
+      "label": "Tema: {current}, toque para {next}"
+    },
+    "signin": {
+      "title": "Entrar",
+      "why": "Entre para sortear. Cada pessoa usa a própria cota de API, então um sorteio não atrasa o de ninguém.",
+      "atmosphere": "Funciona com o Bluesky e com qualquer servidor do AT Protocol (Atmosphere).",
+      "bluesky": "Entrar com o Bluesky",
+      "other": "Entrar com outra conta da Atmosphere",
+      "handleLabel": "Seu handle ou servidor",
+      "handlePlaceholder": "voce.exemplo.com ou https://pds.exemplo.com",
+      "continue": "Continuar",
+      "handleHint": "Buscamos o servidor (PDS) do seu handle e levamos você até ele para entrar. Sua senha nunca passa por este site.",
+      "error": "Não deu para entrar com essa conta. Confira o handle ou o endereço do servidor."
+    },
+    "raffle": {
+      "panelTitle": "Novo sorteio",
+      "postLabel": "Link do post",
+      "postUrlPlaceholder": "bsky.app/profile/handle.bsky.social/post/abc123",
+      "titleLabel": "Título (opcional)",
+      "titlePlaceholder": "Sorteio de adesivos",
+      "modeLabel": "Considerar",
+      "countLabel": "Ganhadores",
+      "submit": "Sortear",
+      "cancel": "Cancelar",
+      "modes": {
+        "likes": "Apenas likes",
+        "reposts": "Apenas reposts",
+        "and": "Likes E reposts (interseção)",
+        "or": "Likes OU reposts (união)"
+      },
+      "progress": {
+        "resolving": "Localizando o post...",
+        "fetching": "Carregando participantes...",
+        "sampling": "Sorteando...",
+        "fetchingProfiles": "Buscando perfis dos sorteados..."
+      },
+      "noParticipants": "Nenhum participante encontrado neste post.",
+      "signedInAs": "Conectado como",
+      "signOut": "Sair",
+      "winner": "ganhador",
+      "winners": "ganhadores",
+      "poolLabel": "Participantes",
+      "likesLabel": "likes",
+      "repostsLabel": "reposts",
+      "shareTitle": "Compartilhar",
+      "createSnapshot": "Gerar link compartilhável",
+      "creatingSnapshot": "Gerando...",
+      "openSnapshot": "Abrir página do resultado",
+      "copyLink": "Copiar link curto",
+      "copied": "Link copiado",
+      "copiedLong": "Não deu para encurtar; link completo copiado",
+      "share": "Compartilhar link",
+      "sharedLong": "Não deu para encurtar; link completo compartilhado",
+      "postOnBluesky": "Postar no Bluesky",
+      "composeIntro": "Resultado do sorteio",
+      "composeSummary": "{winners} {label} entre {pool} participantes.",
+      "downloadOg": "Baixar imagem",
+      "snapshotHint": "Link assinado e imutável. Qualquer pessoa com ele confere o resultado.",
+      "postUrlHint": "Cole um link de post de qualquer cliente da Atmosphere com /profile/…/post/… ou uma URI at://."
+    },
+    "snapshot": {
+      "kicker": "Resultado do sorteio",
+      "fallbackTitle": "Sorteio no Bluesky",
+      "modes": {
+        "likes": "Apenas likes",
+        "reposts": "Apenas reposts",
+        "and": "Likes e reposts",
+        "or": "Likes ou reposts"
+      },
+      "postBy": "post de",
+      "shareTitle": "Compartilhar",
+      "downloadOg": "Baixar imagem",
+      "openOg": "Abrir imagem",
+      "shareHint": "A imagem é gerada a partir deste link. O resultado é assinado, então qualquer pessoa com o link pode conferir."
+    },
+    "footer": {
+      "tagline": "Em desenvolvimento. Bugs acontecem",
+      "foundBug": "achou um?",
+      "bugFormUrl": "https://q.joseli.to/forms/notx-blue-bugs-pt",
+      "partOf": "parte do",
+      "byAuthor": "por",
+      "viewSource": "Ver código",
+      "fromBrazil": "Direto do Brasil pelo Joselito, com muito carinho. Este site só guarda um cookie de sessão OAuth assinado, sem rastreamento. Este site não tem relação com o Bluesky.",
+      "support": "Apoie este projeto:"
+    },
+    "intro": {
+      "lead": "Sorteie entre quem curtiu ou repostou um post.",
+      "text": "Entre com sua conta, cole o link e escolha quantas pessoas vão ganhar."
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "items": [
+        {
+          "question": "Como funciona o sorteio?",
+          "answer": "Cole o link de um post, escolha o filtro de likes/reposts e a quantidade de ganhadores. Seu navegador carrega todas as páginas disponíveis, remove contas duplicadas e sorteia ganhadores distintos desse grupo."
         },
-        "title": "SkyPicker",
-        "subtitle": "Host a giveaway on Bluesky in seconds with ease.",
-        "description": "Enter the post URL in the field below, fill your credentials and click on \"Randomize.\" <strong>The results will be listed randomly</strong>.",
-        "supporters": "Supperters",
-        "form": {
-            "submit": "Randomize",
-            "user": "E-mail or Username",
-            "pass": "App Password",
-            "errors": {
-                "error1": "Please enter a valid link to a Bluesky post"
-            }
+        {
+          "question": "Quem participa?",
+          "answer": "Você escolhe apenas likes, apenas reposts, ambos (interseção) ou qualquer um deles (união). Cada conta participa uma vez. Respostas não contam. O grupo reflete os dados retornados pela API durante a coleta."
         },
-        "results": {
-            "postCombined": {
-                "title": "Likes and Reposts",
-                "info": "liked and reposted"
-            },
-            "postCombinedOr": {
-                "title": "Likes or Reposts",
-                "info": "liked or reposted"
-            },
-            "postReposts": {
-                "title": "Reposts",
-                "info": "reposted"
-            },
-            "postLikes": {
-                "title": "Likes",
-                "info": "liked this post"
-            }
+        {
+          "question": "O sorteio é aleatório?",
+          "answer": "O navegador usa um embaralhamento parcial Fisher–Yates com crypto.getRandomValues e amostragem por rejeição para evitar viés de módulo. Cada conta do grupo tem a mesma chance. Um resultado assinado protege os dados registrados; não prova que o navegador fez um sorteio justo."
         },
-        "footer": {
-            "by": "Directly from Brazil by <a href=\"https://joseli.to\">Joselito</a>, with much love and care.",
-            "noCookies": "This site does not use any cookies or collect any data.",
-            "ghFork": "View source on GitHub"
+        {
+          "question": "Por que preciso entrar?",
+          "answer": "O OAuth permite usar sua própria cota de API para ler posts e participantes. Sua senha fica no seu servidor e nunca é armazenada aqui. O cookie de sessão é por domínio: ao trocar de idioma, talvez você precise entrar novamente."
+        },
+        {
+          "question": "O que o link do resultado contém? Ele expira?",
+          "answer": "O conteúdo assinado v2 inclui DID de quem criou, data, URI do post e handle do autor, filtro, totais de likes/reposts, título opcional e DIDs, handles e nomes dos ganhadores (até 100). Qualquer pessoa com o link pode ler. Não há prazo de validade; trocar a chave de assinatura invalida links antigos. O mesmo link funciona nos dois domínios."
+        },
+        {
+          "question": "Posso usar outro cliente ou PDS da Atmosphere?",
+          "answer": "Sim. O OAuth aceita contas em qualquer PDS do AT Protocol. O link pode vir de bsky.app, Witchsky, Deer, Blacksky, Northsky ou qualquer host que use /profile/<ator>/post/<rkey>. URIs at:// de app.bsky.feed.post também funcionam. O host do link nunca é acessado."
         }
+      ]
     }
+  },
+  "skypicker.site": {
+    "meta": {
+      "lang": "en",
+      "locale": "en-US",
+      "title": "skypicker.site · Host giveaways on Bluesky",
+      "description": "Host giveaways easily on Bluesky with skypicker.site"
+    },
+    "title": "skypicker.site",
+    "wordmark": {
+      "before": "",
+      "ink": "skypicker",
+      "after": ".site"
+    },
+    "theme": {
+      "names": {
+        "light": "light",
+        "dark": "dark",
+        "terminal": "terminal"
+      },
+      "label": "Theme: {current}, tap for {next}"
+    },
+    "signin": {
+      "title": "Sign in",
+      "why": "Sign in to run the raffle. Each visitor uses their own API quota, so one giveaway never slows down another.",
+      "atmosphere": "Works with Bluesky and any AT Protocol (Atmosphere) server.",
+      "bluesky": "Sign in with Bluesky",
+      "other": "Sign in with another Atmosphere account",
+      "handleLabel": "Your handle or server",
+      "handlePlaceholder": "you.example.com or https://pds.example.com",
+      "continue": "Continue",
+      "handleHint": "We look up the server (PDS) behind your handle and send you there to sign in. Your password never touches this site.",
+      "error": "Could not sign in with that account. Check the handle or the server address."
+    },
+    "raffle": {
+      "panelTitle": "New giveaway",
+      "postLabel": "Post link",
+      "postUrlPlaceholder": "bsky.app/profile/handle.bsky.social/post/abc123",
+      "titleLabel": "Title (optional)",
+      "titlePlaceholder": "Sticker giveaway",
+      "modeLabel": "Filter",
+      "countLabel": "Winners",
+      "submit": "Randomize",
+      "cancel": "Cancel",
+      "modes": {
+        "likes": "Likes only",
+        "reposts": "Reposts only",
+        "and": "Likes AND reposts (intersection)",
+        "or": "Likes OR reposts (union)"
+      },
+      "progress": {
+        "resolving": "Resolving post...",
+        "fetching": "Loading participants...",
+        "sampling": "Drawing winners...",
+        "fetchingProfiles": "Fetching winner profiles..."
+      },
+      "noParticipants": "No participants found on this post.",
+      "signedInAs": "Signed in as",
+      "signOut": "Sign out",
+      "winner": "winner",
+      "winners": "winners",
+      "poolLabel": "Pool",
+      "likesLabel": "likes",
+      "repostsLabel": "reposts",
+      "shareTitle": "Share",
+      "createSnapshot": "Create shareable link",
+      "creatingSnapshot": "Creating...",
+      "openSnapshot": "Open result page",
+      "copyLink": "Copy short link",
+      "copied": "Link copied",
+      "copiedLong": "Couldn't shorten; full link copied",
+      "share": "Share link",
+      "sharedLong": "Couldn't shorten; full link shared",
+      "postOnBluesky": "Post on Bluesky",
+      "composeIntro": "Giveaway result",
+      "composeSummary": "{winners} {label} among {pool} participants.",
+      "downloadOg": "Download image",
+      "snapshotHint": "Signed, immutable link. Anyone with it can check the result.",
+      "postUrlHint": "Paste a post link from any Atmosphere client using /profile/…/post/… or an at:// URI."
+    },
+    "snapshot": {
+      "kicker": "Raffle result",
+      "fallbackTitle": "Bluesky giveaway",
+      "modes": {
+        "likes": "Likes only",
+        "reposts": "Reposts only",
+        "and": "Likes and reposts",
+        "or": "Likes or reposts"
+      },
+      "postBy": "post by",
+      "shareTitle": "Share",
+      "downloadOg": "Download image",
+      "openOg": "Open image",
+      "shareHint": "The image is generated from this link. The result is signed, so anyone with the link can verify it."
+    },
+    "footer": {
+      "tagline": "Work in Progress. Expect bugs",
+      "foundBug": "found one?",
+      "bugFormUrl": "https://q.joseli.to/forms/notx-blue-bugs",
+      "partOf": "part of",
+      "byAuthor": "by",
+      "viewSource": "View-source",
+      "fromBrazil": "Directly from Brazil by Joselito, with much love and care. This site only stores a signed OAuth session cookie, with no tracking. This site is not related to Bluesky.",
+      "support": "Support this project:"
+    },
+    "intro": {
+      "lead": "Draw winners from a post’s likes or reposts.",
+      "text": "Sign in, paste the post link and choose how many people win."
+    },
+    "faq": {
+      "title": "FAQ",
+      "items": [
+        {
+          "question": "How does the draw work?",
+          "answer": "Paste a post link, choose a likes/reposts filter and a winner count. Your browser loads all available pages, removes duplicate accounts and draws distinct winners from that pool."
+        },
+        {
+          "question": "Who is eligible?",
+          "answer": "Choose likes only, reposts only, both (intersection), or either (union). Each account enters once. Replies do not count. The pool reflects the API responses collected during the draw."
+        },
+        {
+          "question": "Is the draw random?",
+          "answer": "The browser uses a partial Fisher–Yates shuffle with crypto.getRandomValues and rejection sampling to avoid modulo bias. Each account in the pool has the same chance. A signed result protects the recorded data; it does not prove that the browser ran a fair draw."
+        },
+        {
+          "question": "Why do I need to sign in?",
+          "answer": "OAuth lets the app use your own API quota to read posts and participants. Your password stays with your server and is never stored here. The session cookie is per domain, so switching languages may require signing in again."
+        },
+        {
+          "question": "What does the result link contain? Does it expire?",
+          "answer": "The signed v2 payload contains the creator DID, date, post URI and author handle, filter, like/repost totals, optional title, and winner DIDs, handles and names (up to 100 winners). Anyone with the link can read it. There is no expiry; changing the signing secret invalidates old links. The same link works on both domains."
+        },
+        {
+          "question": "Can I use another Atmosphere client or PDS?",
+          "answer": "Yes. OAuth supports accounts on any AT Protocol PDS. Post links can come from bsky.app, Witchsky, Deer, Blacksky, Northsky or any host using /profile/<actor>/post/<rkey>. at:// URIs for app.bsky.feed.post also work. The link host is never fetched."
+        }
+      ]
+    }
+  }
 }
