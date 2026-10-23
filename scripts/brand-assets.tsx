@@ -14,7 +14,7 @@ import { renderHomeImage } from "../lib/og-image"
 
 const PUBLIC_DIR = join(process.cwd(), "public")
 
-/** The square target mark; same geometry as components/brand-mark.tsx. */
+/** The standalone square target mark used by app icons. */
 const markSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="${brand.ink}"/><circle cx="32" cy="32" r="18" fill="none" stroke="${brand.onInk}" stroke-width="7"/><circle cx="32" cy="32" r="6.5" fill="${brand.onInk}"/></svg>
 `
 

@@ -48,11 +48,6 @@ p {
 .sp-wordmark .ink-block {
   margin-left: 0.04em;
 }
-.sp-mark {
-  width: 0.72em;
-  height: 0.72em;
-  flex: none;
-}
 /* The subheadline keeps real breathing room under the wordmark. */
 .sp-lede {
   margin: var(--space-9) auto 0;

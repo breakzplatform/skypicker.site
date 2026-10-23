@@ -162,23 +162,6 @@ function Cast({
   )
 }
 
-function Mark({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64">
-      <rect width="64" height="64" fill={brand.ink} />
-      <circle
-        cx="32"
-        cy="32"
-        r="18"
-        fill="none"
-        stroke={brand.onInk}
-        strokeWidth="7"
-      />
-      <circle cx="32" cy="32" r="6.5" fill={brand.onInk} />
-    </svg>
-  )
-}
-
 function Wordmark({ domain, size }: { domain: KnownDomain; size: number }) {
   const site = SITE[domain]
   return (
@@ -195,7 +178,6 @@ function Wordmark({ domain, size }: { domain: KnownDomain; size: number }) {
         color: brand.text,
       }}
     >
-      <Mark size={Math.round(size * 0.72)} />
       <div style={{ display: "flex", alignItems: "center" }}>
         <span>{site.name}</span>
         <span
