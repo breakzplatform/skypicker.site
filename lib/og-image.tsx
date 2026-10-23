@@ -5,6 +5,7 @@ import { ImageResponse } from "next/og"
 
 import { brand } from "./brand"
 import type { KnownDomain } from "./hosts"
+import { fitOgText, winnerGrid } from "./og-layout"
 import type { Snapshot } from "./snapshot"
 
 export const OG_SIZE = { width: 1200, height: 630 } as const
@@ -248,71 +249,68 @@ export async function renderHomeImage(
 ): Promise<ImageResponse> {
   const site = SITE[domain]
   return new ImageResponse(
-    (
-      <Page>
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            padding: "64px 76px 76px 64px",
-          }}
+    <Page>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          padding: "64px 76px 76px 64px",
+        }}
+      >
+        <Cast
+          width={1200 - 64 - 76}
+          height={630 - 64 - 76}
+          style={{ flexDirection: "column" }}
         >
-          <Cast
-            width={1200 - 64 - 76}
-            height={630 - 64 - 76}
-            style={{ flexDirection: "column" }}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "14px 24px",
+              background: brand.ink,
+              color: brand.onInk,
+              borderBottom: `${BORDER}px solid ${brand.text}`,
+            }}
           >
+            <Meta size={22} color={brand.onInk}>
+              {site.tagline}
+            </Meta>
+            <Meta size={22} color={brand.onInk}>
+              {domain}
+            </Meta>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              padding: "0 56px",
+            }}
+          >
+            <Wordmark domain={domain} size={124} />
             <div
               style={{
+                marginTop: 40,
+                fontSize: 38,
+                fontWeight: 700,
+                lineHeight: 1.25,
+                color: brand.text,
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "14px 24px",
-                background: brand.ink,
-                color: brand.onInk,
-                borderBottom: `${BORDER}px solid ${brand.text}`,
               }}
             >
-              <Meta size={22} color={brand.onInk}>
-                {site.tagline}
-              </Meta>
-              <Meta size={22} color={brand.onInk}>
-                {domain}
-              </Meta>
+              {subtitle}
             </div>
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                padding: "0 56px",
-              }}
-            >
-              <Wordmark domain={domain} size={124} />
-              <div
-                style={{
-                  marginTop: 40,
-                  fontSize: 38,
-                  fontWeight: 700,
-                  lineHeight: 1.25,
-                  color: brand.text,
-                  display: "flex",
-                }}
-              >
-                {subtitle}
-              </div>
-            </div>
-          </Cast>
-        </div>
-      </Page>
-    ),
+          </div>
+        </Cast>
+      </div>
+    </Page>,
     { ...OG_SIZE, fonts: await loadFonts() }
   )
 }
 
-const AVATAR_SIZE = 128
-const MAX_AVATARS = 5
+const MAX_AVATARS = 10
 
 const PUBLIC_APPVIEW = "https://public.api.bsky.app"
 const AVATAR_TIMEOUT_MS = 3000
@@ -369,191 +367,231 @@ function participantCount(snapshot: Snapshot): number {
   }
 }
 
-function truncate(text: string, max: number): string {
-  return text.length > max ? `${text.slice(0, max - 1)}…` : text
+function FittedText({
+  text,
+  width,
+  maximumSize,
+  minimumSize,
+  maximumLines,
+  monospace = false,
+  color = brand.text,
+}: {
+  text: string
+  width: number
+  maximumSize: number
+  minimumSize: number
+  maximumLines: number
+  monospace?: boolean
+  color?: string
+}) {
+  const fitted = fitOgText(text, {
+    width,
+    maximumSize,
+    minimumSize,
+    maximumLines,
+    monospace,
+  })
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width,
+        fontFamily: monospace ? MONO : SANS,
+        fontWeight: 700,
+        fontSize: fitted.fontSize,
+        lineHeight: 1.15,
+        color,
+      }}
+    >
+      {fitted.lines.map((line, index) => (
+        <div key={index} style={{ display: "flex", whiteSpace: "pre" }}>
+          {line}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 export async function renderSnapshotImage(
   snapshot: Snapshot,
-  domain: KnownDomain = "skypicker.site"
+  domain: KnownDomain = "skypicker.site",
+  avatarOverrides?: ReadonlyMap<string, string>
 ): Promise<ImageResponse> {
   const site = SITE[domain]
   const labels = LABELS[site.locale]
   const numberLocale = site.locale === "pt" ? "pt-BR" : "en-US"
   const winners = snapshot.w.slice(0, MAX_AVATARS)
   const remaining = snapshot.w.length - winners.length
-  const title = truncate(snapshot.t ?? labels.fallbackTitle, 70)
-  const avatars = await fetchAvatars(winners.map((w) => w.did))
+  const grid = winnerGrid(winners.length)
+  const avatars =
+    avatarOverrides ?? (await fetchAvatars(winners.map((w) => w.did)))
+  const metadata = `${snapshot.w.length} ${snapshot.w.length === 1 ? labels.winner : labels.winners} · ${participantCount(snapshot).toLocaleString(numberLocale)} ${labels.participants} · ${labels.modes[snapshot.m]}${snapshot.ph ? ` · @${snapshot.ph}` : ""}`
 
   return new ImageResponse(
-    (
-      <Page>
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            padding: "44px 64px 52px",
-          }}
-        >
+    <Page>
+      <div
+        style={{
+          position: "absolute",
+          top: 44,
+          left: 64,
+          width: 1072,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Wordmark domain={domain} size={46} />
+        <Meta size={20}>{formatDate(snapshot.ts, site.locale)}</Meta>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: 112,
+          left: 64,
+          width: 1072,
+          height: 12,
+          borderTop: `6px solid ${brand.text}`,
+          borderBottom: `2px solid ${brand.text}`,
+          display: "flex",
+        }}
+      />
+      <div
+        style={{ position: "absolute", top: 142, left: 64, display: "flex" }}
+      >
+        <Meta size={22} color={brand.spot}>
+          {labels.kicker}
+        </Meta>
+      </div>
+      <div
+        style={{ position: "absolute", top: 173, left: 64, display: "flex" }}
+      >
+        <FittedText
+          text={snapshot.t ?? labels.fallbackTitle}
+          width={1072}
+          maximumSize={58}
+          minimumSize={32}
+          maximumLines={2}
+        />
+      </div>
+      <div
+        style={{ position: "absolute", top: 253, left: 64, display: "flex" }}
+      >
+        <FittedText
+          text={metadata}
+          width={1072}
+          maximumSize={20}
+          minimumSize={14}
+          maximumLines={2}
+          monospace
+          color={brand.text3}
+        />
+      </div>
+      {winners.map((winner, index) => {
+        const left = 64 + (index % grid.columns) * (grid.width + grid.gap)
+        const top =
+          (grid.rows > 1 ? 300 : 322) +
+          Math.floor(index / grid.columns) * (grid.height + grid.gap)
+        const compact = grid.rows > 1
+        return (
           <div
+            key={winner.did}
             style={{
+              position: "absolute",
+              left,
+              top,
               display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              flexDirection: "column",
+              width: grid.width,
             }}
           >
-            <Wordmark domain={domain} size={46} />
-            <Meta size={20}>{formatDate(snapshot.ts, site.locale)}</Meta>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              marginTop: 22,
-              borderTop: `6px solid ${brand.text}`,
-              borderBottom: `2px solid ${brand.text}`,
-              height: 12,
-            }}
-          />
-
-          <div style={{ display: "flex", marginTop: 26 }}>
-            <Meta size={22} color={brand.spot}>
-              {labels.kicker}
-            </Meta>
-          </div>
-          <div
-            style={{
-              marginTop: 8,
-              fontFamily: SERIF,
-              fontSize: title.length > 40 ? 50 : 64,
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-              lineHeight: 1.08,
-              display: "flex",
-            }}
-          >
-            {title}
-          </div>
-          <div style={{ display: "flex", marginTop: 14 }}>
-            <Meta size={20}>
-              {`${snapshot.w.length} ${snapshot.w.length === 1 ? labels.winner : labels.winners} · ${participantCount(snapshot).toLocaleString(numberLocale)} ${labels.participants} · ${labels.modes[snapshot.m]}${snapshot.ph ? ` · @${truncate(snapshot.ph, 28)}` : ""}`}
-            </Meta>
-          </div>
-
-          <div
-            style={{
-              marginTop: "auto",
-              display: "flex",
-              gap: 44,
-              alignItems: "flex-start",
-            }}
-          >
-            {winners.map((w, i) => (
-              <div
-                key={w.did}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  width: AVATAR_SIZE + SHADOW,
-                }}
+            <div
+              style={{ display: "flex", position: "relative", paddingLeft: 8 }}
+            >
+              <Cast
+                width={grid.avatarSize}
+                height={grid.avatarSize}
+                background={brand.sunken}
               >
-                <div style={{ display: "flex", position: "relative" }}>
-                  <Cast
-                    width={AVATAR_SIZE}
-                    height={AVATAR_SIZE}
-                    background={brand.sunken}
-                  >
-                    {avatars.has(w.did) ? (
-                      <img
-                        src={avatars.get(w.did)}
-                        alt=""
-                        width={AVATAR_SIZE - 2 * BORDER}
-                        height={AVATAR_SIZE - 2 * BORDER}
-                        style={{ objectFit: "cover" }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          display: "flex",
-                          width: "100%",
-                          height: "100%",
-                          ...dotField(brand.ink),
-                        }}
-                      />
-                    )}
-                  </Cast>
+                {avatars.has(winner.did) ? (
+                  <img
+                    src={avatars.get(winner.did)}
+                    alt=""
+                    width={grid.avatarSize - 2 * BORDER}
+                    height={grid.avatarSize - 2 * BORDER}
+                    style={{ objectFit: "cover" }}
+                  />
+                ) : (
                   <div
                     style={{
-                      position: "absolute",
-                      top: -14,
-                      left: -14,
-                      minWidth: 44,
-                      height: 44,
-                      padding: "0 8px",
-                      background: brand.ink,
-                      color: brand.onInk,
-                      border: `${BORDER}px solid ${brand.text}`,
-                      fontFamily: SERIF,
-                      fontSize: 26,
-                      fontWeight: 700,
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      width: "100%",
+                      height: "100%",
+                      ...dotField(brand.ink),
                     }}
-                  >
-                    {i + 1}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    marginTop: 20,
-                    fontSize: 21,
-                    fontWeight: 700,
-                    display: "flex",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    maxWidth: "100%",
-                  }}
-                >
-                  {truncate(w.n ?? w.h, 14)}
-                </div>
-                <div
-                  style={{
-                    marginTop: 2,
-                    fontFamily: MONO,
-                    fontWeight: 700,
-                    fontSize: 15,
-                    color: brand.text3,
-                    display: "flex",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    maxWidth: "100%",
-                  }}
-                >
-                  @{truncate(w.h, 16)}
-                </div>
-              </div>
-            ))}
-            {remaining > 0 && (
+                  />
+                )}
+              </Cast>
               <div
                 style={{
-                  height: AVATAR_SIZE,
+                  position: "absolute",
+                  top: -10,
+                  left: 0,
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "center",
+                  minWidth: compact ? 26 : 36,
+                  height: compact ? 26 : 36,
+                  padding: "0 4px",
+                  background: brand.ink,
+                  color: brand.onInk,
+                  border: `2px solid ${brand.text}`,
                   fontFamily: SERIF,
-                  fontSize: 34,
                   fontWeight: 700,
-                  color: brand.ink,
-                  whiteSpace: "nowrap",
+                  fontSize: compact ? 18 : 24,
                 }}
               >
-                {labels.more(remaining)}
+                {index + 1}
               </div>
-            )}
+            </div>
+            <div style={{ display: "flex", marginTop: compact ? 18 : 22 }}>
+              <FittedText
+                text={winner.n || winner.h}
+                width={grid.width}
+                maximumSize={compact ? 18 : 28}
+                minimumSize={compact ? 12 : 18}
+                maximumLines={compact ? 2 : 3}
+              />
+            </div>
+            <div style={{ display: "flex", marginTop: 3 }}>
+              <FittedText
+                text={`@${winner.h}`}
+                width={grid.width}
+                maximumSize={compact ? 15 : 24}
+                minimumSize={compact ? 12 : 13}
+                maximumLines={3}
+                monospace
+                color={brand.text3}
+              />
+            </div>
           </div>
+        )
+      })}
+      {remaining > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 18,
+            right: 64,
+            display: "flex",
+            color: brand.ink,
+            fontSize: 18,
+          }}
+        >
+          {labels.more(remaining)}
         </div>
-      </Page>
-    ),
+      )}
+    </Page>,
     { ...OG_SIZE, fonts: await loadFonts() }
   )
 }
