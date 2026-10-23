@@ -72,6 +72,25 @@ describe("resolveOrigin", () => {
 })
 
 describe("getOriginFromRequest", () => {
+  it.each(["staging.skypicker.site", "staging.sorteio.blue"])(
+    "uses an allowlisted Host without forwarded headers: %s",
+    (host) => {
+      vi.stubEnv("STAGING_HOSTS", undefined)
+      const request = new NextRequest(
+        "http://internal.invalid/api/oauth/login",
+        { headers: { host } }
+      )
+      expect(getOriginFromRequest(request)).toBe(`https://${host}`)
+    }
+  )
+
+  it("rejects an untrusted Host without forwarded headers", () => {
+    const request = new NextRequest("http://internal.invalid/api/oauth/login", {
+      headers: { host: "evil.example" },
+    })
+    expect(() => getOriginFromRequest(request)).toThrow(UntrustedHostError)
+  })
+
   it("prefers x-forwarded-host and validates it", () => {
     const ok = new NextRequest("http://internal.invalid/api/oauth/login", {
       headers: {

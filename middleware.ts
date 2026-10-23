@@ -95,7 +95,11 @@ export function middleware(request: NextRequest) {
 
   const forwarded = { headers: withSiteDomain(request, domain) }
 
-  if (subdomain && subdomain !== process.env.LANDING_SUBDOMAIN) {
+  if (
+    subdomain &&
+    subdomain !== "staging" &&
+    subdomain !== process.env.LANDING_SUBDOMAIN
+  ) {
     return NextResponse.rewrite(
       new URL(`/${domain}/${subdomain}${suffix}${cleanedSearch}`, url),
       { request: forwarded }

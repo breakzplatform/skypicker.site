@@ -35,6 +35,25 @@ describe("middleware", () => {
     vi.stubEnv("DEV_DOMAIN", undefined)
   })
 
+  it.each(["skypicker.site", "sorteio.blue"])(
+    "serves staging.%s without aliases",
+    (domain) => {
+      vi.stubEnv("STAGING_HOSTS", undefined)
+      vi.stubEnv("LANDING_SUBDOMAIN", undefined)
+      expect(
+        outcome(middleware(request("/?a=1", `staging.${domain}`)))
+      ).toEqual({ rewrite: `/${domain}?a=1`, site: domain })
+    }
+  )
+
+  it("preserves other subdomain routing", () => {
+    vi.stubEnv("STAGING_HOSTS", undefined)
+    vi.stubEnv("LANDING_SUBDOMAIN", undefined)
+    expect(
+      outcome(middleware(request("/path", "other.skypicker.site")))
+    ).toEqual({ rewrite: "/skypicker.site/other/path", site: "skypicker.site" })
+  })
+
   it.each([
     ["skypicker.site", "/", "/skypicker.site", "skypicker.site"],
     ["sorteio.blue", "/", "/sorteio.blue", "sorteio.blue"],

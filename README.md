@@ -186,6 +186,31 @@ The architecture is portable:
 
 `vercel.json` caps `maxDuration` at 60 s; no route does unbounded work in one call.
 
+### Deploying to Netlify
+
+`netlify.toml` runs `pnpm build` with Node 24, matching `engines.node`.
+Use Netlify's automatically installed [OpenNext adapter](https://docs.netlify.com/build/frameworks/framework-setup-guides/nextjs/overview/).
+Set these environment variables for builds and functions:
+
+- `SESSION_SECRET`: a random secret of at least 32 characters.
+- `SNAPSHOT_SECRET`: a separate random secret of at least 32 characters.
+- `STAGING_HOSTS=staging.skypicker.site=skypicker.site,staging.sorteio.blue=sorteio.blue`
+
+Both staging subdomains also resolve to their domain root without the explicit
+aliases. Other subdomains retain the existing subdomain routing rules.
+OAuth origins use the allowlisted `x-forwarded-host` when present, falling back
+to the allowlisted `host`; forwarded headers are not required. Non-loopback
+origins always use HTTPS. An untrusted forwarded host is rejected, not bypassed.
+
+Middleware uses edge-compatible JavaScript (`psl`, with no Node filesystem or
+crypto imports). Route handlers and server components use the default Node
+runtime; snapshot/OG routes explicitly select `nodejs`. There are no Server
+Actions in this app. Both snapshot image routes are covered by font file tracing
+in `next.config.mjs`, so the OpenNext function can read `assets/fonts` at runtime.
+After deploying, verify OAuth callbacks on both staging hosts and request both
+`/r/<snapshot>/opengraph-image` and `/r/<snapshot>/og.png` to check the packaged
+fonts. Site setup, DNS and deployment are managed separately.
+
 ### OAuth clients (one per domain)
 
 Each domain the deploy serves gets **its own OAuth client**, derived from the request host. In production both `https://skypicker.site/client-metadata.json` and `https://sorteio.blue/client-metadata.json` must be publicly reachable over HTTPS; the authorization server fetches them to validate each client. The client name shown on the consent screen is the domain's brand (`SkyPicker` or `sorteio.blue`).
