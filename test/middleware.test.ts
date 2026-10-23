@@ -122,12 +122,19 @@ describe("middleware", () => {
     })
   })
 
+  it("serves short links without a domain rewrite", () => {
+    expect(
+      outcome(middleware(request("/s/Qj7XT", "staging.sorteio.blue")))
+    ).toEqual({ passthrough: true })
+  })
+
   it.each([
     "/api/oauth/login",
     "/api/oauth/callback",
     "/api/at/likes",
     "/api/snapshot",
     "/r/abc.def",
+    "/s/Qj7XT",
     "/client-metadata.json",
     "/sorteio.blue",
   ])("rejects hostile hosts on %s", (path) => {

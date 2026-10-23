@@ -15,6 +15,7 @@ import {
   type ProfileView,
   type RaffleProgress,
 } from "@/lib/raffle"
+import { shortenResultUrl, type ShortLink } from "@/lib/short-link"
 import type { SiteContent } from "@/lib/site"
 import { SignIn } from "@/components/sign-in"
 
@@ -70,10 +71,13 @@ export function Raffle({
   const [error, setError] = useState<string | null>(initialError ?? null)
   const [snapshotPath, setSnapshotPath] = useState<string | null>(null)
   const [snapshotBusy, setSnapshotBusy] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [shareStatus, setShareStatus] = useState<string | null>(null)
+  const shortLinkRef = useRef<{ path: string; link: ShortLink } | null>(null)
+  const [canShare, setCanShare] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
+    setCanShare(typeof navigator.share === "function")
     return () => abortRef.current?.abort()
   }, [])
 
@@ -90,7 +94,8 @@ export function Raffle({
     setWinners(null)
     setTotals(null)
     setSnapshotPath(null)
-    setCopied(false)
+    setShareStatus(null)
+    shortLinkRef.current = null
     setBusy(true)
 
     const controller = new AbortController()
@@ -174,13 +179,38 @@ export function Raffle({
     }
   }
 
+  async function prepareShareLink(): Promise<ShortLink | null> {
+    if (!snapshotPath) return null
+    if (shortLinkRef.current?.path === snapshotPath) {
+      return shortLinkRef.current.link
+    }
+    const link = await shortenResultUrl(window.location.origin + snapshotPath)
+    if (link.shortened) shortLinkRef.current = { path: snapshotPath, link }
+    return link
+  }
+
+  function announce(message: string) {
+    setShareStatus(message)
+    setTimeout(() => setShareStatus(null), 2500)
+  }
+
   async function onCopyLink() {
-    if (!snapshotPath) return
-    const fullUrl = window.location.origin + snapshotPath
+    const link = await prepareShareLink()
+    if (!link) return
     try {
-      await navigator.clipboard.writeText(fullUrl)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(link.url)
+      announce(
+        link.shortened ? `✓ ${strings.copied}` : `✓ ${strings.copiedLong}`
+      )
+    } catch {}
+  }
+
+  async function onShareLink() {
+    const link = await prepareShareLink()
+    if (!link) return
+    try {
+      await navigator.share({ url: link.url })
+      if (!link.shortened) announce(strings.sharedLong)
     } catch {}
   }
 
@@ -425,8 +455,17 @@ export function Raffle({
                   onClick={onCopyLink}
                   className="btn cast press"
                 >
-                  {copied ? `✓ ${strings.copied}` : strings.copyLink}
+                  {shareStatus ?? strings.copyLink}
                 </button>
+                {canShare && (
+                  <button
+                    type="button"
+                    onClick={onShareLink}
+                    className="btn cast press"
+                  >
+                    {strings.share}
+                  </button>
+                )}
                 <a
                   href={`${snapshotPath}/og.png?dl=1`}
                   download

@@ -46,6 +46,7 @@ export function middleware(request: NextRequest) {
   if (
     url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/r/") ||
+    url.pathname.startsWith("/s/") ||
     url.pathname === "/client-metadata.json"
   ) {
     if (url.pathname.startsWith("/r/")) {

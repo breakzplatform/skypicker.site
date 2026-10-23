@@ -66,8 +66,11 @@
       "createSnapshot": "Gerar link compartilhável",
       "creatingSnapshot": "Gerando...",
       "openSnapshot": "Abrir página do resultado",
-      "copyLink": "Copiar link",
+      "copyLink": "Copiar link curto",
       "copied": "Link copiado",
+      "copiedLong": "Não deu para encurtar; link completo copiado",
+      "share": "Compartilhar link",
+      "sharedLong": "Não deu para encurtar; link completo compartilhado",
       "downloadOg": "Baixar imagem",
       "snapshotHint": "Link assinado e imutável. Qualquer pessoa com ele confere o resultado.",
       "postUrlHint": "Cole um link de post de qualquer cliente da Atmosphere com /profile/…/post/… ou uma URI at://."
@@ -85,8 +88,7 @@
       "shareTitle": "Compartilhar",
       "downloadOg": "Baixar imagem",
       "openOg": "Abrir imagem",
-      "shareHint": "A imagem é gerada a partir deste link. O resultado é assinado, então qualquer pessoa com o link pode conferir.",
-      "newRaffle": "Fazer outro sorteio"
+      "shareHint": "A imagem é gerada a partir deste link. O resultado é assinado, então qualquer pessoa com o link pode conferir."
     },
     "footer": {
       "tagline": "Em desenvolvimento. Bugs acontecem",
@@ -199,8 +201,11 @@
       "createSnapshot": "Create shareable link",
       "creatingSnapshot": "Creating...",
       "openSnapshot": "Open result page",
-      "copyLink": "Copy link",
+      "copyLink": "Copy short link",
       "copied": "Link copied",
+      "copiedLong": "Couldn't shorten; full link copied",
+      "share": "Share link",
+      "sharedLong": "Couldn't shorten; full link shared",
       "downloadOg": "Download image",
       "snapshotHint": "Signed, immutable link. Anyone with it can check the result.",
       "postUrlHint": "Paste a post link from any Atmosphere client using /profile/…/post/… or an at:// URI."
@@ -218,8 +223,7 @@
       "shareTitle": "Share",
       "downloadOg": "Download image",
       "openOg": "Open image",
-      "shareHint": "The image is generated from this link. The result is signed, so anyone with the link can verify it.",
-      "newRaffle": "Run another raffle"
+      "shareHint": "The image is generated from this link. The result is signed, so anyone with the link can verify it."
     },
     "footer": {
       "tagline": "Work in Progress. Expect bugs",
