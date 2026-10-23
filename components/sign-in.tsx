@@ -12,9 +12,11 @@ import type { SiteContent } from "@/lib/site"
  */
 export function SignIn({
   strings,
+  intro,
   error,
 }: {
   strings: SiteContent["signin"]
+  intro: SiteContent["intro"]
   error?: React.ReactNode
 }) {
   const [otherOpen, setOtherOpen] = useState(false)
@@ -26,6 +28,9 @@ export function SignIn({
     <section className="panel cast">
       <h2 className="panel-h">{strings.title}</h2>
       <div className="panel-b sp-stack">
+        <p>
+          <strong>{intro.lead}</strong> {intro.text}
+        </p>
         <p>{strings.why}</p>
         <p className="sp-atmo">
           <strong>{strings.atmosphere}</strong>

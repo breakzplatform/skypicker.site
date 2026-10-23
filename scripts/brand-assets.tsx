@@ -62,7 +62,7 @@ async function main() {
   await writeFile(join(PUBLIC_DIR, "apple-touch-icon.png"), await png(180))
 
   for (const domain of KNOWN_DOMAINS) {
-    const image = await renderHomeImage(domain, content[domain].subtitle)
+    const image = await renderHomeImage(domain, content[domain].meta.description)
     await writeFile(
       join(PUBLIC_DIR, `og-${domain}.png`),
       Buffer.from(await image.arrayBuffer())

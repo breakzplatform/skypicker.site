@@ -11,8 +11,6 @@
             "name": "sorteio",
             "suffix": ".blue"
         },
-        "subtitle": "Faça um sorteio pelo Bluesky em segundos de forma simples.",
-        "description": "Entre com sua conta, cole o link do post, escolha quantas pessoas vão ganhar e aperte em &quot;Sortear&quot;.",
         "theme": {
             "names": {
                 "light": "claro",
@@ -93,6 +91,10 @@
             "noCookies": "Este site só armazena um cookie de sessão OAuth assinado, sem rastreamento.",
             "ghFork": "Veja o código-fonte no GitHub",
             "support": "Apoie este projeto"
+        },
+        "intro": {
+            "lead": "Sorteie entre quem curtiu ou repostou um post.",
+            "text": "Entre com sua conta, cole o link e escolha quantas pessoas vão ganhar."
         }
     },
     "skypicker.site": {
@@ -107,8 +109,6 @@
             "name": "skypicker",
             "suffix": ".site"
         },
-        "subtitle": "Host a giveaway on Bluesky in seconds with ease.",
-        "description": "Sign in, paste the post link, choose how many winners and click &quot;Randomize&quot;.",
         "theme": {
             "names": {
                 "light": "light",
@@ -189,6 +189,10 @@
             "noCookies": "This site only stores a signed OAuth session cookie, no tracking.",
             "ghFork": "View source on GitHub",
             "support": "Support this project"
+        },
+        "intro": {
+            "lead": "Draw winners from a post’s likes or reposts.",
+            "text": "Sign in, paste the post link and choose how many people win."
         }
     }
 }

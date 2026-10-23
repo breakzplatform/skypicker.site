@@ -48,22 +48,6 @@ p {
 .sp-wordmark .ink-block {
   margin-left: 0.04em;
 }
-/* The subheadline keeps real breathing room under the wordmark. */
-.sp-lede {
-  margin: var(--space-9) auto 0;
-  max-width: var(--measure-dek);
-  font: var(--type-title);
-  font-size: var(--text-feed-title);
-  color: var(--text-1);
-}
-.sp-dek {
-  margin: var(--space-6) auto 0;
-  max-width: var(--measure-dek);
-  font: var(--type-dek);
-  font-size: var(--text-body);
-  color: var(--text-2);
-}
-
 .sp-stack {
   display: grid;
   gap: var(--space-6);

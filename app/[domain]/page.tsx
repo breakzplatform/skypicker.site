@@ -1,11 +1,11 @@
-import { Raffle } from "./raffle"
-
 import { getCurrentAgent, getCurrentDid } from "@/lib/atproto"
 import { isKnownDomain } from "@/lib/hosts"
 import { getOriginFromHeaders } from "@/lib/oauth/origin"
 import { siteContent } from "@/lib/site"
 import { SiteFooter, TopBar } from "@/components/site-shell"
 import { Wordmark } from "@/components/wordmark"
+
+import { Raffle } from "./raffle"
 
 export async function generateMetadata({
   params,
@@ -58,17 +58,12 @@ export default async function IndexPage({
       <main>
         <header className="sp-masthead">
           <Wordmark content={c} />
-          <p className="sp-lede">{c.subtitle}</p>
-          <p
-            className="sp-dek"
-            dangerouslySetInnerHTML={{ __html: c.description }}
-          />
         </header>
 
         <Raffle
           sessionDid={sessionDid}
           sessionHandle={handle}
-          strings={{ ...c.raffle, signin: c.signin }}
+          strings={{ ...c.raffle, signin: c.signin, intro: c.intro }}
           locale={c.meta.locale}
           initialError={sp.oauth_error}
         />

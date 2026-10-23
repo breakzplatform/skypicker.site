@@ -20,6 +20,7 @@ import { SignIn } from "@/components/sign-in"
 
 export type RaffleStrings = SiteContent["raffle"] & {
   signin: SiteContent["signin"]
+  intro: SiteContent["intro"]
 }
 
 const MODES: FilterMode[] = ["or", "and", "likes", "reposts"]
@@ -188,6 +189,7 @@ export function Raffle({
     return (
       <SignIn
         strings={strings.signin}
+        intro={strings.intro}
         error={
           error && <ErrorLine message={`${strings.signin.error} (${error})`} />
         }
@@ -211,6 +213,9 @@ export function Raffle({
       <section className="panel cast">
         <h2 className="panel-h">{strings.panelTitle}</h2>
         <form onSubmit={onSortear} className="panel-b sp-stack">
+          <p>
+            <strong>{strings.intro.lead}</strong> {strings.intro.text}
+          </p>
           <label className="field-block">
             <span className="label">{strings.postLabel}</span>
             <span className="field cast">
