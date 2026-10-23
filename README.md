@@ -244,3 +244,11 @@ There is no hard cap in code, but there are physical limits:
 
 Made with love from Pernambuco by **[Joselito](https://joseli.to)**.
 Source code at [github.com/breakzplatform](https://github.com/breakzplatform).
+
+#### Netlify's injected badge
+
+The staging HTML includes `/.netlify/scripts/hud?variant=public`, injected by
+Netlify's edge servers rather than this app. In the `skypicker-staging` project,
+open **Project configuration → General → Powered by Netlify badge**, turn it off,
+and save. The setting applies to both staging domains on the next request; no
+redeploy is needed. See [Netlify's badge documentation](https://docs.netlify.com/manage/projects/powered-by-netlify-badge/).
