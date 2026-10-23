@@ -5,9 +5,10 @@ import { renderSnapshotImage } from "../lib/og-image"
 import { buildSnapshot } from "../lib/snapshot"
 
 async function main() {
-  const directory = join(process.cwd(), "docs/og-samples")
+  const directory = process.argv[2]
+  if (!directory) throw new Error("usage: render-og-samples.ts <output-dir>")
   await mkdir(directory, { recursive: true })
-  for (const count of [1, 2, 5, 10]) {
+  for (const count of [1, 2, 5, 10, 20, 50]) {
     for (const long of [false, true]) {
       const snapshot = buildSnapshot({
         creatorDid: "did:plc:example",
