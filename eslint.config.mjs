@@ -10,6 +10,7 @@ const config = [
   {
     ignores: [
       ".next/**",
+      ".netlify/**",
       "node_modules/**",
       "public/**",
       "dist/**",
