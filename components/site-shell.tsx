@@ -1,3 +1,11 @@
+import { headers } from "next/headers"
+
+import {
+  otherLanguageUrl,
+  SITE_PATH_HEADER,
+  SITE_QUERY_HEADER,
+} from "@/lib/hosts"
+import { getOriginFromHeaders } from "@/lib/oauth/origin"
 import type { SiteContent } from "@/lib/site"
 import { ThemeSwitch } from "@/components/theme-switch"
 
@@ -15,9 +23,22 @@ const SUPPORT_LINKS = [
   },
 ]
 
-export function TopBar({ content }: { content: SiteContent }) {
+export async function TopBar({ content }: { content: SiteContent }) {
+  const requestHeaders = await headers()
+  const href = otherLanguageUrl(
+    await getOriginFromHeaders(),
+    requestHeaders.get(SITE_PATH_HEADER) ?? "/",
+    requestHeaders.get(SITE_QUERY_HEADER) ?? "",
+    content.meta.lang === "en" ? "skypicker.site" : "sorteio.blue"
+  )
+  const other = content.meta.lang === "en" ? "pt-BR" : "en"
   return (
     <div className="sp-topbar">
+      {href && (
+        <a href={href} lang={other} className="db-btn db-btn-sm cast press">
+          {other === "en" ? "english" : "português"}
+        </a>
+      )}
       <ThemeSwitch strings={content.theme} />
     </div>
   )

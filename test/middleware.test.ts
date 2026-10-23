@@ -147,7 +147,7 @@ describe("middleware", () => {
     }
   })
 
-  it.each(["/api/oauth/login", "/r/abc.def", "/client-metadata.json"])(
+  it.each(["/api/oauth/login", "/client-metadata.json"])(
     "passes %s through untouched",
     (path) => {
       expect(outcome(middleware(request(path, "skypicker.site")))).toEqual({
@@ -155,4 +155,30 @@ describe("middleware", () => {
       })
     }
   )
+})
+
+it("forwards the original path and query, replacing forged headers", () => {
+  const response = middleware(
+    request("/r/token?x=1&x=2", "staging.sorteio.blue", {
+      "x-site-path": "//evil.example",
+      "x-site-query": "?bad=1",
+    })
+  )!
+  expect(response.headers.get("x-middleware-rewrite")).toBeNull()
+  expect(response.headers.get("x-middleware-request-x-site-domain")).toBe(
+    "sorteio.blue"
+  )
+  expect(response.headers.get("x-middleware-request-x-site-path")).toBe(
+    "/r/token"
+  )
+  expect(response.headers.get("x-middleware-request-x-site-query")).toBe(
+    "?x=1&x=2"
+  )
+})
+it("selects the snapshot language on loopback without rewriting its route", () => {
+  expect(
+    outcome(
+      middleware(request("/r/token?dev_domain=sorteio.blue", "localhost:3000"))
+    )
+  ).toEqual({ status: 200, site: "sorteio.blue" })
 })

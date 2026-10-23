@@ -6,7 +6,10 @@ import {
   isKnownDomain,
   isLoopbackHost,
   KNOWN_DOMAINS,
+  knownDomainForHost,
   SITE_DOMAIN_HEADER,
+  SITE_PATH_HEADER,
+  SITE_QUERY_HEADER,
   stagingDomainForHost,
   type KnownDomain,
 } from "./lib/hosts"
@@ -22,6 +25,8 @@ function knownDomainInPath(pathname: string): KnownDomain | undefined {
 function withSiteDomain(request: NextRequest, domain: string): Headers {
   const headers = new Headers(request.headers)
   headers.set(SITE_DOMAIN_HEADER, domain)
+  headers.set(SITE_PATH_HEADER, request.nextUrl.pathname)
+  headers.set(SITE_QUERY_HEADER, request.nextUrl.search)
   return headers
 }
 
@@ -43,6 +48,16 @@ export function middleware(request: NextRequest) {
     url.pathname.startsWith("/r/") ||
     url.pathname === "/client-metadata.json"
   ) {
+    if (url.pathname.startsWith("/r/")) {
+      const override = url.searchParams.get("dev_domain")
+      const domain =
+        isLoopbackHost(realHost) && override && isKnownDomain(override)
+          ? override
+          : (knownDomainForHost(realHost) ?? DEFAULT_DOMAIN)
+      return NextResponse.next({
+        request: { headers: withSiteDomain(request, domain) },
+      })
+    }
     return
   }
 
