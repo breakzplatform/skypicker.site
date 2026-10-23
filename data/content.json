@@ -34,7 +34,7 @@
         "raffle": {
             "panelTitle": "Novo sorteio",
             "postLabel": "Link do post",
-            "postUrlPlaceholder": "https://bsky.app/profile/handle.bsky.social/post/abc123",
+            "postUrlPlaceholder": "bsky.app/profile/handle.bsky.social/post/abc123",
             "titleLabel": "Título (opcional)",
             "titlePlaceholder": "Sorteio de adesivos",
             "modeLabel": "Considerar",
@@ -68,7 +68,8 @@
             "copyLink": "Copiar link",
             "copied": "Link copiado",
             "downloadOg": "Baixar imagem",
-            "snapshotHint": "Link assinado e imutável. Qualquer pessoa com ele confere o resultado."
+            "snapshotHint": "Link assinado e imutável. Qualquer pessoa com ele confere o resultado.",
+            "postUrlHint": "Cole um link de post de qualquer cliente da Atmosphere com /profile/…/post/… ou uma URI at://."
         },
         "snapshot": {
             "kicker": "Resultado do sorteio",
@@ -132,7 +133,7 @@
         "raffle": {
             "panelTitle": "New giveaway",
             "postLabel": "Post link",
-            "postUrlPlaceholder": "https://bsky.app/profile/handle.bsky.social/post/abc123",
+            "postUrlPlaceholder": "bsky.app/profile/handle.bsky.social/post/abc123",
             "titleLabel": "Title (optional)",
             "titlePlaceholder": "Sticker giveaway",
             "modeLabel": "Filter",
@@ -166,7 +167,8 @@
             "copyLink": "Copy link",
             "copied": "Link copied",
             "downloadOg": "Download image",
-            "snapshotHint": "Signed, immutable link. Anyone with it can check the result."
+            "snapshotHint": "Signed, immutable link. Anyone with it can check the result.",
+            "postUrlHint": "Paste a post link from any Atmosphere client using /profile/…/post/… or an at:// URI."
         },
         "snapshot": {
             "kicker": "Raffle result",

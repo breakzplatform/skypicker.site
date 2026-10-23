@@ -77,11 +77,7 @@ describe("validators", () => {
   it.each([
     "",
     "not a url",
-    "http://bsky.app/profile/alice.bsky.social/post/3kabc",
-    "https://evil.example/profile/alice.bsky.social/post/3kabc",
-    "https://bsky.app.evil.example/profile/a.b/post/3kabc",
     "https://user:pw@bsky.app/profile/alice.bsky.social/post/3kabc",
-    "https://bsky.app:444/profile/alice.bsky.social/post/3kabc",
     "https://bsky.app/profile/alice.bsky.social",
     "https://bsky.app/profile/alice.bsky.social/feed/3kabc",
     "https://bsky.app/profile/http:%2F%2F169.254.169.254/post/3kabc",
@@ -90,6 +86,14 @@ describe("validators", () => {
     "javascript:alert(1)",
   ])("rejects %j", (url) => {
     expect(parseBskyPostUrl(url)).toBeNull()
+  })
+  it.each([
+    "http://bsky.app/profile/alice.bsky.social/post/3kabc",
+    "https://evil.example/profile/alice.bsky.social/post/3kabc",
+    "https://bsky.app.evil.example/profile/a.b/post/3kabc",
+    "https://bsky.app:444/profile/alice.bsky.social/post/3kabc",
+  ])("accepts a compatible route on %s", (url) => {
+    expect(parseBskyPostUrl(url)?.rkey).toBe("3kabc")
   })
   it("rejects non-strings", () => {
     expect(parseBskyPostUrl(undefined)).toBeNull()
@@ -218,12 +222,20 @@ describe("/api/at routes", () => {
     expect(getProfile).toHaveBeenCalledWith({ actor: "alice.bsky.social" })
   })
 
-  it("refuse post links on other hosts", async () => {
+  it("resolves the actor without fetching the supplied host", async () => {
+    getProfile.mockResolvedValue({
+      data: { did: "did:plc:abc123", handle: "a.b" },
+    })
     const res = await post(
       req({ url: "https://169.254.169.254/profile/a.b/post/3kxyz" })
     )
-    expect(res.status).toBe(400)
-    expect(getProfile).not.toHaveBeenCalled()
+    expect(res.status).toBe(200)
+    expect(getProfile).toHaveBeenCalledWith({ actor: "a.b" })
+    expect(await res.json()).toEqual({
+      uri: URI,
+      authorDid: "did:plc:abc123",
+      authorHandle: "a.b",
+    })
   })
 
   it("validate profile batches", async () => {

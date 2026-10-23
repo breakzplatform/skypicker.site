@@ -18,8 +18,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 })
   }
 
-  // Only bsky.app post links: the handle is resolved through the signed-in
-  // user's PDS, never fetched as a URL, so this cannot reach other hosts.
+  // Resolve the actor through the signed-in user's PDS; never fetch the input URL.
   const parsed = parseBskyPostUrl(body?.url)
   if (!parsed) {
     return NextResponse.json({ error: "invalid post url" }, { status: 400 })

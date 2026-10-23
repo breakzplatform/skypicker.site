@@ -220,15 +220,23 @@ export function Raffle({
             <span className="label">{strings.postLabel}</span>
             <span className="field cast">
               <input
-                type="url"
+                type="text"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 value={postUrl}
                 onChange={(e) => setPostUrl(e.target.value)}
+                aria-describedby="post-url-hint"
                 placeholder={strings.postUrlPlaceholder}
                 required
                 disabled={busy}
               />
             </span>
           </label>
+
+          <p id="post-url-hint" className="hint">
+            {strings.postUrlHint}
+          </p>
 
           <label className="field-block">
             <span className="label">{strings.titleLabel}</span>

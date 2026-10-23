@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 
+import { extractProfileAndPost } from "./post-url"
+
 /** Request validation and error mapping shared by the /api/at/* proxies. */
 
 const DID = /^did:[a-z]+:[A-Za-z0-9._:%-]{1,256}$/
-const HANDLE =
-  /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/
 const RKEY = /^[A-Za-z0-9._~:-]{1,512}$/
 const MAX_CURSOR_LENGTH = 1024
 
@@ -34,35 +34,14 @@ export function isCursor(value: unknown): value is string | null | undefined {
   )
 }
 
-/**
- * Splits https://bsky.app/profile/<handle or did>/post/<rkey> into its parts.
- * Anything else, including other hosts and schemes, is rejected.
- */
+/** Parse an Atmosphere post link without fetching or trusting its host. */
 export function parseBskyPostUrl(
   raw: unknown
 ): { actor: string; rkey: string } | null {
   if (typeof raw !== "string") return null
-  let url: URL
   try {
-    url = new URL(raw.trim())
-  } catch {
-    return null
-  }
-  if (url.origin !== BSKY_ORIGIN || url.username || url.password) return null
-  const parts = url.pathname.split("/").filter(Boolean)
-  if (parts.length !== 4 || parts[0] !== "profile" || parts[2] !== "post") {
-    return null
-  }
-  const actor = decodeURIComponentSafe(parts[1])
-  const rkey = parts[3]
-  if (!actor || !(DID.test(actor) || HANDLE.test(actor))) return null
-  if (!isRecordKey(rkey)) return null
-  return { actor, rkey }
-}
-
-function decodeURIComponentSafe(value: string): string | null {
-  try {
-    return decodeURIComponent(value)
+    const { profile, post } = extractProfileAndPost(raw)
+    return { actor: profile, rkey: post }
   } catch {
     return null
   }
