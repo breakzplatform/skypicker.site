@@ -269,9 +269,6 @@ a.btn.primary:hover {
   letter-spacing: var(--tracking-display);
   overflow-wrap: anywhere;
 }
-.sp-back {
-  margin-top: var(--space-10);
-}
 
 .db-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--space-3);

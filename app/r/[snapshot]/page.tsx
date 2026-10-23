@@ -189,10 +189,6 @@ export default async function SnapshotPage({
             <p className="hint m-0">{c.snapshot.shareHint}</p>
           </div>
         </section>
-
-        <p className="sp-back">
-          <a href="/">← {c.snapshot.newRaffle}</a>
-        </p>
       </main>
       <SiteFooter content={c} />
     </div>
