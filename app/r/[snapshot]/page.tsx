@@ -59,21 +59,33 @@ export async function generateMetadata({
   const title = snapshot.t ?? c.snapshot.fallbackTitle
   const winners = snapshot.w.length === 1 ? c.raffle.winner : c.raffle.winners
   const description = `${snapshot.w.length} ${winners} · ${c.snapshot.modes[snapshot.m]}`
+  const origin = await getOriginFromHeaders()
+  // File-convention images resolve against the default metadataBase
+  // (localhost) behind the Netlify proxy, so point at the absolute URL.
+  const image = {
+    url: `${origin}/r/${encoded}/opengraph-image`,
+    width: 1200,
+    height: 630,
+    type: "image/png",
+    alt: c.snapshot.fallbackTitle,
+  }
 
   return {
     title,
     description,
-    metadataBase: new URL(await getOriginFromHeaders()),
+    metadataBase: new URL(origin),
     openGraph: {
       title,
       description,
       type: "article",
       publishedTime: new Date(snapshot.ts).toISOString(),
+      images: [image],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [image.url],
     },
   }
 }
