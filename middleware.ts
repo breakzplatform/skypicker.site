@@ -43,6 +43,16 @@ export function middleware(request: NextRequest) {
     return new NextResponse("bad host", { status: 400 })
   }
 
+  // The host's redirect rules run after this middleware, which would otherwise
+  // rewrite www.<domain> as a subdomain page.
+  const apex = realHost.toLowerCase().replace(/^www\./, "")
+  if (apex !== realHost.toLowerCase() && isKnownDomain(apex)) {
+    return NextResponse.redirect(
+      `https://${apex}${url.pathname}${url.search}`,
+      301
+    )
+  }
+
   if (
     url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/r/") ||

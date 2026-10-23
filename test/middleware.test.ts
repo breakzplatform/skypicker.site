@@ -46,6 +46,17 @@ describe("middleware", () => {
     }
   )
 
+  it.each(["skypicker.site", "sorteio.blue"])(
+    "redirects www.%s to the apex keeping path and query",
+    (domain) => {
+      const res = middleware(request("/r/abc?a=1", `www.${domain}`))
+      expect(res?.status).toBe(301)
+      expect(res?.headers.get("location")).toBe(
+        `https://${domain}/r/abc?a=1`
+      )
+    }
+  )
+
   it("preserves other subdomain routing", () => {
     vi.stubEnv("STAGING_HOSTS", undefined)
     vi.stubEnv("LANDING_SUBDOMAIN", undefined)
