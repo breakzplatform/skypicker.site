@@ -208,7 +208,11 @@ export function Raffle({
         <div className="panel-b sp-stack">
           <div className="profile">
             <span
-              className={`sp-avatar avatar${sessionProfile?.avatar ? "" : "screen"}`}
+              className={
+                sessionProfile?.avatar
+                  ? "sp-avatar avatar"
+                  : "sp-avatar avatar screen"
+              }
               aria-hidden="true"
             >
               {sessionProfile?.avatar && (

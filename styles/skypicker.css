@@ -8,6 +8,7 @@
    default (terminal still folds it to amber, as the DS wants). */
 :root,
 [data-theme] {
+  --target: 44px;
   --project-ink: var(--ink-magenta);
   --project-ink-contrast: var(--on-magenta);
 }

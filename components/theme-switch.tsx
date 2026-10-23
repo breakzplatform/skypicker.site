@@ -68,7 +68,7 @@ export function ThemeSwitch({ strings }: { strings: ThemeSwitchStrings }) {
       aria-label={strings.label
         .replace("{current}", strings.names[theme])
         .replace("{next}", strings.names[next])}
-      className="btn sm cast press theme-switch"
+      className="db-btn db-btn-sm cast press theme-switch"
     >
       <svg
         className="icon icon-sun"
