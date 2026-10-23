@@ -343,3 +343,31 @@ a.sp-chip:hover {
 a.db-btn, a.db-btn:visited, a.db-btn:hover { color: var(--text-1); background: var(--surface-page); text-decoration: none; }
 
 .db-btn-sm { padding: 4px 7px; font-size: var(--text-meta); }
+
+.db-panel { background: var(--surface-card); }
+.db-panel-head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  margin: 0; padding: var(--box-head-pad); border-bottom: var(--border);
+  background: var(--project-ink); color: var(--project-ink-contrast);
+  font: var(--weight-bold) var(--text-caption)/1.3 var(--font-mono);
+  letter-spacing: var(--tracking-meta); text-transform: uppercase;
+}
+
+.faq-list { display: flex; flex-direction: column; padding: 0; }
+.faq-item { border-bottom: 1px dotted var(--border-dotted); }
+.faq-item:last-child { border-bottom: 0; }
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--target);
+  padding: var(--space-4) var(--space-6);
+  font: var(--weight-bold) var(--text-body-sm)/1.35 var(--font-body);
+  cursor: pointer;
+}
+.faq-item summary { justify-content: space-between; gap: var(--space-4); list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: '+'; font-family: var(--font-mono); flex: none; }
+.faq-item[open] summary::after { content: '−'; }
+.faq-item[open] summary { color: var(--project-ink); }
+.faq-item p { padding: 0 var(--space-6) var(--space-5); color: var(--text-2); font: var(--type-dek); }
+

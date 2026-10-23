@@ -96,6 +96,35 @@
         "intro": {
             "lead": "Sorteie entre quem curtiu ou repostou um post.",
             "text": "Entre com sua conta, cole o link e escolha quantas pessoas vão ganhar."
+        },
+        "faq": {
+            "title": "Perguntas frequentes",
+            "items": [
+                {
+                    "question": "Como funciona o sorteio?",
+                    "answer": "Cole o link de um post, escolha o filtro de likes/reposts e a quantidade de ganhadores. Seu navegador carrega todas as páginas disponíveis, remove contas duplicadas e sorteia ganhadores distintos desse grupo."
+                },
+                {
+                    "question": "Quem participa?",
+                    "answer": "Você escolhe apenas likes, apenas reposts, ambos (interseção) ou qualquer um deles (união). Cada conta participa uma vez. Respostas não contam. O grupo reflete os dados retornados pela API durante a coleta."
+                },
+                {
+                    "question": "O sorteio é aleatório?",
+                    "answer": "O navegador usa um embaralhamento parcial Fisher–Yates com crypto.getRandomValues e amostragem por rejeição para evitar viés de módulo. Cada conta do grupo tem a mesma chance. Um resultado assinado protege os dados registrados; não prova que o navegador fez um sorteio justo."
+                },
+                {
+                    "question": "Por que preciso entrar?",
+                    "answer": "O OAuth permite usar sua própria cota de API para ler posts e participantes. Sua senha fica no seu servidor e nunca é armazenada aqui. O cookie de sessão é por domínio: ao trocar de idioma, talvez você precise entrar novamente."
+                },
+                {
+                    "question": "O que o link do resultado contém? Ele expira?",
+                    "answer": "O conteúdo assinado v2 inclui DID de quem criou, data, URI do post e handle do autor, filtro, totais de likes/reposts, título opcional e DIDs, handles e nomes dos ganhadores (até 100). Qualquer pessoa com o link pode ler. Não há prazo de validade; trocar a chave de assinatura invalida links antigos. O mesmo link funciona nos dois domínios."
+                },
+                {
+                    "question": "Posso usar outro cliente ou PDS da Atmosphere?",
+                    "answer": "Sim. O OAuth aceita contas em qualquer PDS do AT Protocol. O link pode vir de bsky.app, Witchsky, Deer, Blacksky, Northsky ou qualquer host que use /profile/<ator>/post/<rkey>. URIs at:// de app.bsky.feed.post também funcionam. O host do link nunca é acessado."
+                }
+            ]
         }
     },
     "skypicker.site": {
@@ -195,6 +224,35 @@
         "intro": {
             "lead": "Draw winners from a post’s likes or reposts.",
             "text": "Sign in, paste the post link and choose how many people win."
+        },
+        "faq": {
+            "title": "FAQ",
+            "items": [
+                {
+                    "question": "How does the draw work?",
+                    "answer": "Paste a post link, choose a likes/reposts filter and a winner count. Your browser loads all available pages, removes duplicate accounts and draws distinct winners from that pool."
+                },
+                {
+                    "question": "Who is eligible?",
+                    "answer": "Choose likes only, reposts only, both (intersection), or either (union). Each account enters once. Replies do not count. The pool reflects the API responses collected during the draw."
+                },
+                {
+                    "question": "Is the draw random?",
+                    "answer": "The browser uses a partial Fisher–Yates shuffle with crypto.getRandomValues and rejection sampling to avoid modulo bias. Each account in the pool has the same chance. A signed result protects the recorded data; it does not prove that the browser ran a fair draw."
+                },
+                {
+                    "question": "Why do I need to sign in?",
+                    "answer": "OAuth lets the app use your own API quota to read posts and participants. Your password stays with your server and is never stored here. The session cookie is per domain, so switching languages may require signing in again."
+                },
+                {
+                    "question": "What does the result link contain? Does it expire?",
+                    "answer": "The signed v2 payload contains the creator DID, date, post URI and author handle, filter, like/repost totals, optional title, and winner DIDs, handles and names (up to 100 winners). Anyone with the link can read it. There is no expiry; changing the signing secret invalidates old links. The same link works on both domains."
+                },
+                {
+                    "question": "Can I use another Atmosphere client or PDS?",
+                    "answer": "Yes. OAuth supports accounts on any AT Protocol PDS. Post links can come from bsky.app, Witchsky, Deer, Blacksky, Northsky or any host using /profile/<actor>/post/<rkey>. at:// URIs for app.bsky.feed.post also work. The link host is never fetched."
+                }
+            ]
         }
     }
 }

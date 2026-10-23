@@ -2,6 +2,7 @@ import { getCurrentAgent, getCurrentDid } from "@/lib/atproto"
 import { isKnownDomain } from "@/lib/hosts"
 import { getOriginFromHeaders } from "@/lib/oauth/origin"
 import { siteContent } from "@/lib/site"
+import { Faq } from "@/components/faq"
 import { SiteFooter, TopBar } from "@/components/site-shell"
 import { Wordmark } from "@/components/wordmark"
 
@@ -67,6 +68,7 @@ export default async function IndexPage({
           locale={c.meta.locale}
           initialError={sp.oauth_error}
         />
+        <Faq content={c.faq} />
       </main>
       <SiteFooter content={c} />
     </div>
