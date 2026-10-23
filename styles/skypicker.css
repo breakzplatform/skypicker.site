@@ -240,6 +240,25 @@ a.sp-row:hover {
   object-fit: cover;
   background-color: var(--surface-fill);
 }
+.sp-avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+[data-theme="terminal"] .sp-avatar {
+  isolation: isolate;
+  background-color: var(--project-ink);
+}
+[data-theme="terminal"] .sp-avatar-image {
+  filter: grayscale(1);
+  mix-blend-mode: multiply;
+}
+[data-theme="terminal"] .sp-avatar.screen {
+  --dot-ink: var(--project-ink);
+  background-color: var(--surface-card);
+}
+
 .sp-who {
   display: grid;
   min-width: 0;

@@ -333,7 +333,13 @@ export function Raffle({
                 >
                   <span className="sp-rank">{i + 1}</span>
                   {profile.avatar ? (
-                    <img src={profile.avatar} alt="" className="sp-avatar" />
+                    <span className="sp-avatar">
+                      <img
+                        src={profile.avatar}
+                        alt=""
+                        className="sp-avatar-image"
+                      />
+                    </span>
                   ) : (
                     <span className="sp-avatar screen" />
                   )}

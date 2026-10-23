@@ -147,11 +147,13 @@ export default async function SnapshotPage({
                   >
                     <span className="sp-rank">{i + 1}</span>
                     {liveProfile?.avatar ? (
-                      <img
-                        src={liveProfile.avatar}
-                        alt=""
-                        className="sp-avatar"
-                      />
+                      <span className="sp-avatar">
+                        <img
+                          src={liveProfile.avatar}
+                          alt=""
+                          className="sp-avatar-image"
+                        />
+                      </span>
                     ) : (
                       <span className="sp-avatar screen" />
                     )}
