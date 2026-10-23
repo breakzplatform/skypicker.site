@@ -72,7 +72,7 @@ export default async function IndexPage({
           locale={c.meta.locale}
           initialError={sp.oauth_error}
         />
-        <Faq content={c.faq} />
+        {!sessionDid && <Faq content={c.faq} />}
       </main>
       <SiteFooter content={c} />
     </div>
