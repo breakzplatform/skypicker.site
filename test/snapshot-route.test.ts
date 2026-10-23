@@ -46,11 +46,30 @@ describe("POST /api/snapshot", () => {
     const { id, path } = await res.json()
     expect(path).toBe(`/r/${id}`)
     expect(decodeSnapshot(id)).toMatchObject({
+      c: session.did,
       t: "Giveaway",
       m: "and",
       tl: [10, 4],
       w: [{ did: "did:plc:w1", h: "w1.bsky.social", n: "W" }],
     })
+  })
+
+  it.each(["did:plc:attacker", "invalid", null])(
+    "ignores body creator %j",
+    async (creator) => {
+      const res = await POST(
+        req({ ...body, c: creator, creator, creatorDid: creator })
+      )
+      expect(res.status).toBe(200)
+      expect(decodeSnapshot((await res.json()).id).c).toBe(session.did)
+    }
+  )
+
+  it("does not accept a body creator as authentication", async () => {
+    session.did = null
+    expect((await POST(req({ ...body, c: "did:plc:attacker" }))).status).toBe(
+      401
+    )
   })
 
   it.each([

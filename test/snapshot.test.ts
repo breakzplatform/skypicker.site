@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto"
 import { deflateRawSync } from "node:zlib"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -13,6 +14,7 @@ const SECRET_A = "test-secret-a-0123456789abcdefghijklmnop"
 const SECRET_B = "test-secret-b-0123456789abcdefghijklmnop"
 
 const baseInput = {
+  creatorDid: "did:plc:creator",
   title: "  Spring giveaway  ",
   postUri: "at://did:plc:author123/app.bsky.feed.post/3kabc",
   postHandle: "author.bsky.social",
@@ -51,6 +53,7 @@ describe("snapshot", () => {
       })
       expect(s).toEqual({
         v: SNAPSHOT_VERSION,
+        c: baseInput.creatorDid,
         t: "Spring giveaway",
         ts: Date.parse("2026-10-14T12:00:00Z"),
         p: baseInput.postUri,
@@ -77,6 +80,8 @@ describe("snapshot", () => {
 
     it.each([
       ["non at:// post uri", { postUri: "https://bsky.app/profile/x/post/y" }],
+      ["invalid creator", { creatorDid: "not-a-did" }],
+      ["missing creator", { creatorDid: undefined }],
       ["empty post uri", { postUri: "" }],
       ["unknown mode", { mode: "all" }],
       ["no winners", { winners: [] }],
@@ -99,6 +104,53 @@ describe("snapshot", () => {
   })
 
   describe("encode/decode", () => {
+    it.each([
+      undefined,
+      null,
+      "",
+      "not-a-did",
+      42,
+      `did:plc:${"a".repeat(321)}`,
+    ])("rejects signed snapshots with invalid creator %j", (c) => {
+      const payload = deflateRawSync(
+        Buffer.from(JSON.stringify({ ...buildSnapshot(baseInput), c }))
+      )
+      const signature = createHmac(
+        "sha256",
+        `snapshot-v${SNAPSHOT_VERSION}:${SECRET_A}`
+      )
+        .update(payload)
+        .digest("base64url")
+      expect(() =>
+        decodeSnapshot(`${payload.toString("base64url")}.${signature}`)
+      ).toThrow(/creator/)
+    })
+
+    it("rejects creator tampering with the original signature", () => {
+      const snapshot = buildSnapshot(baseInput)
+      const signature = encodeSnapshot(snapshot).split(".")[1]
+      const payload = deflateRawSync(
+        Buffer.from(JSON.stringify({ ...snapshot, c: "did:plc:attacker" }))
+      )
+      expect(() =>
+        decodeSnapshot(`${payload.toString("base64url")}.${signature}`)
+      ).toThrow(/signature/)
+    })
+
+    it("rejects legacy v1 links", () => {
+      const payload = deflateRawSync(
+        Buffer.from(
+          JSON.stringify({ ...buildSnapshot(baseInput), v: 1, c: undefined })
+        )
+      )
+      const signature = createHmac("sha256", `snapshot-v1:${SECRET_A}`)
+        .update(payload)
+        .digest("base64url")
+      expect(() =>
+        decodeSnapshot(`${payload.toString("base64url")}.${signature}`)
+      ).toThrow()
+    })
+
     it("round-trips", () => {
       const s = buildSnapshot(baseInput)
       const encoded = encodeSnapshot(s)
@@ -208,7 +260,10 @@ describe("snapshot decompression", () => {
     })
     const payload = deflateRawSync(Buffer.from(json))
     expect(payload.length).toBeLessThan(6 * 1024)
-    const sig = createHmac("sha256", `snapshot-v1:${SECRET_A}`)
+    const sig = createHmac(
+      "sha256",
+      `snapshot-v${SNAPSHOT_VERSION}:${SECRET_A}`
+    )
       .update(payload)
       .digest()
     expect(() =>

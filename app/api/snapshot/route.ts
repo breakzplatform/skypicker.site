@@ -25,8 +25,9 @@ type Body = {
 export async function POST(request: NextRequest) {
   // Signed links are only minted for signed-in users. The server still cannot
   // prove the winners were drawn here (the draw runs in the browser); see the
-  // open question in the PR.
-  if (!(await getCurrentDid())) {
+  // security notes in the README.
+  const creatorDid = await getCurrentDid()
+  if (!creatorDid) {
     return NextResponse.json({ error: "not authenticated" }, { status: 401 })
   }
 
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const snapshot = buildSnapshot({
+      creatorDid,
       title: body.title,
       postUri: body.postUri,
       postHandle: body.postHandle,

@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto"
 import { deflateRawSync, inflateRawSync } from "node:zlib"
 
-export const SNAPSHOT_VERSION = 1
+export const SNAPSHOT_VERSION = 2
 
 export type FilterMode = "likes" | "reposts" | "and" | "or"
 
@@ -12,6 +12,7 @@ export type SnapshotWinner = {
 }
 
 export type Snapshot = {
+  c: string
   v: typeof SNAPSHOT_VERSION
   t?: string
   ts: number
@@ -60,6 +61,7 @@ function clamp(s: string, max: number): string {
 }
 
 export function buildSnapshot(input: {
+  creatorDid: string
   title?: string
   postUri: string
   postHandle?: string
@@ -68,6 +70,9 @@ export function buildSnapshot(input: {
   totalReposts: number
   winners: SnapshotWinner[]
 }): Snapshot {
+  if (!isValidDid(input.creatorDid)) {
+    throw new Error("invalid creator DID")
+  }
   if (!input.postUri || !input.postUri.startsWith("at://")) {
     throw new Error("postUri must be an at:// uri")
   }
@@ -95,6 +100,7 @@ export function buildSnapshot(input: {
 
   return {
     v: SNAPSHOT_VERSION,
+    c: input.creatorDid,
     ...(input.title ? { t: clamp(input.title.trim(), MAX_TITLE_LENGTH) } : {}),
     ts: Date.now(),
     p: input.postUri,
@@ -153,6 +159,9 @@ export function decodeSnapshot(encoded: string): Snapshot {
 
   if (data.v !== SNAPSHOT_VERSION) {
     throw new Error(`unsupported snapshot version: ${data.v}`)
+  }
+  if (!isValidDid(data.c)) {
+    throw new Error("invalid creator DID in snapshot")
   }
   if (!isValidMode(data.m)) {
     throw new Error("invalid mode in snapshot")

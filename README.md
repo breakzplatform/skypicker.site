@@ -152,6 +152,15 @@ For a build or a quick local check, the placeholder values in `.env.example` are
 
 > The origin (host and scheme) comes from the request, after the Host allowlist; there is no fixed public URL. That is what lets one deploy serve several domains, each with its own OAuth client. Off loopback the origin is always `https`.
 
+### Snapshot security
+
+Snapshot v2 signs the creator DID (`c`) from the authenticated server session,
+never from request input. Decoding verifies the HMAC and validates the creator
+DID. Legacy v1 links are intentionally rejected; these links existed only in
+staging. Keep `SNAPSHOT_SECRET` private and stable to preserve v2 links.
+The signature proves attribution and payload integrity, not that the submitted
+winners were drawn fairly: the draw and winner list originate in the browser.
+
 ### Scripts
 
 ```bash
