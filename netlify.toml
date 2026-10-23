@@ -3,3 +3,15 @@
 
 [build.environment]
   NODE_VERSION = "24"
+
+[[redirects]]
+  from = "https://www.sorteio.blue/*"
+  to = "https://sorteio.blue/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.skypicker.site/*"
+  to = "https://skypicker.site/:splat"
+  status = 301
+  force = true
