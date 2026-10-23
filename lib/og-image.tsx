@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import { ImageResponse } from "next/og"
 
+import content from "../data/content.json"
 import { brand } from "./brand"
 import type { KnownDomain } from "./hosts"
 import { fitOgText, winnerGrid } from "./og-layout"
@@ -60,19 +61,12 @@ const TILT = "rotate(1.5deg)"
 
 type Locale = "en" | "pt"
 
-const SITE: Record<
-  KnownDomain,
-  { name: string; suffix: string; locale: Locale; tagline: string }
-> = {
+const SITE: Record<KnownDomain, { locale: Locale; tagline: string }> = {
   "skypicker.site": {
-    name: "skypicker",
-    suffix: ".site",
     locale: "en",
     tagline: "Giveaways on Bluesky and the Atmosphere",
   },
   "sorteio.blue": {
-    name: "sorteio",
-    suffix: ".blue",
     locale: "pt",
     tagline: "Sorteios no Bluesky e na Atmosphere",
   },
@@ -164,7 +158,7 @@ function Cast({
 }
 
 function Wordmark({ domain, size }: { domain: KnownDomain; size: number }) {
-  const site = SITE[domain]
+  const { wordmark } = content[domain]
   return (
     <div
       style={{
@@ -180,10 +174,10 @@ function Wordmark({ domain, size }: { domain: KnownDomain; size: number }) {
       }}
     >
       <div style={{ display: "flex", alignItems: "center" }}>
-        <span>{site.name}</span>
+        {wordmark.before && <span>{wordmark.before}</span>}
         <span
           style={{
-            marginLeft: size * 0.04,
+            marginLeft: wordmark.before ? size * 0.04 : 0,
             lineHeight: 0.8,
             padding: `${size * 0.08}px ${size * 0.07}px ${size * 0.04}px`,
             background: brand.ink,
@@ -191,8 +185,11 @@ function Wordmark({ domain, size }: { domain: KnownDomain; size: number }) {
             transform: TILT,
           }}
         >
-          {site.suffix}
+          {wordmark.ink}
         </span>
+        {wordmark.after && (
+          <span style={{ marginLeft: size * 0.04 }}>{wordmark.after}</span>
+        )}
       </div>
     </div>
   )

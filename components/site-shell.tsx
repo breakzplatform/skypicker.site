@@ -45,21 +45,24 @@ export async function TopBar({ content }: { content: SiteContent }) {
 }
 
 export function SiteFooter({ content }: { content: SiteContent }) {
+  const { footer } = content
   return (
     <footer className="pt-6">
       <p className="db-meta mb-6 text-center">
-        {content.footer.noCookies} · {content.footer.partOf}{" "}
-        <a href="https://notx.blue">notx.blue</a> {content.footer.byAuthor}{" "}
+        {footer.tagline} ·{" "}
+        <a href={footer.bugFormUrl} target="_blank" rel="noopener">
+          {footer.foundBug}
+        </a>{" "}
+        · {footer.partOf} <a href="https://notx.blue">notx.blue</a>{" "}
+        {footer.byAuthor}{" "}
         <a href="https://bsky.app/profile/joseli.to">@joseli.to</a> ·{" "}
         <a href="https://github.com/breakzplatform/skypicker.site">
-          {content.footer.ghFork}
+          {footer.viewSource}
         </a>
       </p>
-      <p className="db-note mb-6 text-center">{content.footer.by}</p>
+      <p className="db-note mb-6 text-center">{footer.fromBrazil}</p>
       <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
-        <span className="db-micro text-text-3 mr-1">
-          {content.footer.support}
-        </span>
+        <span className="db-micro text-text-3 mr-1">{footer.support}</span>
         {SUPPORT_LINKS.map((link) => (
           <a
             key={link.href}
