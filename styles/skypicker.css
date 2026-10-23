@@ -312,7 +312,7 @@ a.db-btn, a.db-btn:visited, a.db-btn:hover { color: var(--text-1); background: v
 
 
 .db-meta { font: var(--type-meta); text-transform: uppercase; letter-spacing: var(--tracking-meta); color: var(--text-3); }
-.db-micro { font: var(--type-label); text-transform: uppercase; letter-spacing: var(--tracking-meta); }
+.db-micro { font: var(--type-label); text-transform: uppercase; letter-spacing: var(--tracking-meta); color: var(--text-3); }
 /* Running machine output and fine print: typewriter, but readable. */
 .db-note { font: var(--type-code); color: var(--text-3); }
 
