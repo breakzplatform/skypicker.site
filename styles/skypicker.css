@@ -32,17 +32,26 @@ p {
 }
 
 /* A single-purpose tool page: the masthead is centred and the wordmark runs
-   past the top of the type scale, as on down.blue. */
+   past the top of the type scale, as on down.blue, with down.blue's 60px gap
+   (its mt-15) down to the first panel. */
 .sp-masthead {
   text-align: center;
-  margin: var(--space-10) 0 var(--space-11);
+  margin: var(--space-10) 0 calc(var(--space-10) + var(--space-8));
 }
 .sp-wordmark {
   display: inline-flex;
   align-items: center;
   gap: 0.18em;
   margin: 0;
-  font: var(--weight-display) clamp(44px, 12vw, 96px) / 1.1 var(--font-display);
+  /* down.blue's size wherever the name fits. --wordmark-em is the name's
+     width in ems (down.blue: 5); where down.blue's size would overflow the
+     880px column, less its 24px padding on each side, the cap shrinks it. */
+  font: var(--weight-display)
+    min(
+      clamp(var(--text-display-1), 13vw, 116px),
+      calc((min(100vw, 880px) - 48px) / var(--wordmark-em, 5))
+    ) /
+    1.1 var(--font-display);
   letter-spacing: var(--tracking-display);
   color: var(--text-1);
   white-space: nowrap;

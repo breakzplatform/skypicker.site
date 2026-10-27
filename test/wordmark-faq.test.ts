@@ -36,6 +36,17 @@ describe("per-domain wordmark", () => {
     expect(html).toContain(`sorteio<span ${INK}>.blue</span>`)
   })
   it.each(["skypicker.site", "sorteio.blue"] as const)(
+    "gives %s's width in ems to the size cap",
+    (domain) => {
+      const html = renderToStaticMarkup(
+        createElement(Wordmark, { content: siteContent(domain) })
+      )
+      expect(html).toContain(
+        `style="--wordmark-em:${siteContent(domain).wordmark.widthEm}"`
+      )
+    }
+  )
+  it.each(["skypicker.site", "sorteio.blue"] as const)(
     "titles %s with its own domain name",
     (domain) => {
       expect(siteContent(domain).meta.title.startsWith(`${domain} ·`)).toBe(

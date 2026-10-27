@@ -10,7 +10,8 @@
     "wordmark": {
       "before": "sorteio",
       "ink": ".blue",
-      "after": ""
+      "after": "",
+      "widthEm": 5.85
     },
     "theme": {
       "names": {
@@ -148,7 +149,8 @@
     "wordmark": {
       "before": "",
       "ink": "skypicker",
-      "after": ".site"
+      "after": ".site",
+      "widthEm": 6.75
     },
     "theme": {
       "names": {
