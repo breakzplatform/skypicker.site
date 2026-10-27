@@ -54,9 +54,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { snapshot: encoded } = await params
   const snapshot = decodeOrNotFound(encoded)
-  const c = siteContent(await getSiteDomain())
+  const domain = await getSiteDomain()
+  const c = siteContent(domain)
 
-  const title = snapshot.t ?? c.snapshot.fallbackTitle
+  const title = `${snapshot.t ?? c.snapshot.fallbackTitle} • ${domain}`
   const winners = snapshot.w.length === 1 ? c.raffle.winner : c.raffle.winners
   const description = `${snapshot.w.length} ${winners} · ${c.snapshot.modes[snapshot.m]}`
   const origin = await getOriginFromHeaders()

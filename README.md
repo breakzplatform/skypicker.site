@@ -229,6 +229,10 @@ The project colour is the joseli.to DS magenta (`#D6008F` on white in light, `#E
 
 ---
 
+### Page titles
+
+Every page's `<title>`, `og:title` and `twitter:title` read `<page description> • <domain>` (U+2022 with one space on each side), with the description in the page's language: `Sorteios no Bluesky • sorteio.blue` and `Host giveaways on Bluesky • skypicker.site`.
+
 ## Practical limits
 
 There is no hard cap in code, but there are physical limits:

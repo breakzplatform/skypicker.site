@@ -49,9 +49,7 @@ describe("per-domain wordmark", () => {
   it.each(["skypicker.site", "sorteio.blue"] as const)(
     "titles %s with its own domain name",
     (domain) => {
-      expect(siteContent(domain).meta.title.startsWith(`${domain} ·`)).toBe(
-        true
-      )
+      expect(siteContent(domain).meta.title.endsWith(` • ${domain}`)).toBe(true)
     }
   )
 })
