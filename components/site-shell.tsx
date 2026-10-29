@@ -12,6 +12,11 @@ import { ThemeSwitch } from "@/components/theme-switch"
 const SUPPORT_LINKS = [
   { label: "Pix", href: "https://pix.joseli.to", ink: "pix" },
   {
+    label: "Mercado Pago",
+    href: "https://link.mercadopago.com.br/breakzplatform",
+    ink: "mercadopago",
+  },
+  {
     label: "Buy Me a Coffee",
     href: "https://buymeacoffee.com/joselito",
     ink: "coffee",
