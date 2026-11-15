@@ -63,7 +63,8 @@ export function SiteFooter({ content }: { content: SiteContent }) {
         <a href="https://bsky.app/profile/joseli.to">@joseli.to</a> ·{" "}
         <a href="https://github.com/breakzplatform/skypicker.site">
           {footer.viewSource}
-        </a>
+        </a>{" "}
+        · <a href="https://notx.blue/privacy">{footer.privacyLink}</a>
       </p>
       <p className="db-note mb-6 text-center">{footer.fromBrazil}</p>
       <div className="mb-6 flex flex-wrap items-center justify-center gap-2">

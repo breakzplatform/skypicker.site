@@ -62,6 +62,8 @@ describe("footer", () => {
     expect(html).toContain("Work in Progress. Expect bugs")
     expect(html).toContain('href="https://q.joseli.to/forms/notx-blue-bugs"')
     expect(html).toContain("View-source")
+    expect(html).toContain('href="https://notx.blue/privacy"')
+    expect(html).toContain(">Privacy</a>")
     expect(html).toContain("Support this project:")
     expect(html).toContain("signed OAuth session cookie")
   })
