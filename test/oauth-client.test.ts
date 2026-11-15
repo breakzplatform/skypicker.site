@@ -27,6 +27,7 @@ describe("OAuth client metadata", () => {
       client_id: "https://sorteio.blue/client-metadata.json",
       client_name: "sorteio.blue",
       client_uri: "https://sorteio.blue",
+      policy_uri: "https://notx.blue/privacy",
       redirect_uris: ["https://sorteio.blue/api/oauth/callback"],
       token_endpoint_auth_method: "none",
       dpop_bound_access_tokens: true,

@@ -101,6 +101,7 @@
       "partOf": "parte do",
       "byAuthor": "por",
       "viewSource": "Ver código",
+      "privacyLink": "Privacidade",
       "fromBrazil": "Direto do Brasil pelo Joselito, com muito carinho. Este site só guarda um cookie de sessão OAuth assinado, sem rastreamento. Este site não tem relação com o Bluesky.",
       "support": "Apoie este projeto:"
     },
@@ -240,6 +241,7 @@
       "partOf": "part of",
       "byAuthor": "by",
       "viewSource": "View-source",
+      "privacyLink": "Privacy",
       "fromBrazil": "Directly from Brazil by Joselito, with much love and care. This site only stores a signed OAuth session cookie, with no tracking. This site is not related to Bluesky.",
       "support": "Support this project:"
     },

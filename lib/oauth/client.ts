@@ -60,6 +60,7 @@ export function getOAuthClient(origin: string): NodeOAuthClient {
       client_id: clientId,
       client_name: oauthClientName(cleanOrigin),
       client_uri: cleanOrigin,
+      policy_uri: "https://notx.blue/privacy",
       logo_uri: `${cleanOrigin}/favicon.ico`,
       redirect_uris: [callbackUrl],
       grant_types: ["authorization_code", "refresh_token"],
