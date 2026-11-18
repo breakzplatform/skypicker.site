@@ -14,12 +14,10 @@ export async function getCurrentAgent(): Promise<Agent | null> {
     const oauthSession = await client.restore(cookie.did)
     return new Agent(oauthSession)
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    console.warn(
-      "[atproto] session restore failed for %s: %s — destroying cookie",
-      cookie.did,
-      message
-    )
+    // Only the error type: the DID, and messages that may carry it, would put
+    // user data in the logs, which the privacy policy says never happens.
+    const kind = err instanceof Error ? err.name : typeof err
+    console.warn("[atproto] session restore failed (%s) — destroying cookie", kind)
     cookie.destroy()
     return null
   }
